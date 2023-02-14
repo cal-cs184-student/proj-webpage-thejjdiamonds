@@ -122,6 +122,8 @@
           	<p>
 			Here are two examples of our algorithm rasterizing some triangles. This simple sampling algorithm clearly leaves jagged edges and corners that are not as sharp, as there are less points sampled in the triangle. In other words, it doesn’t significantly reduce aliasing. In addition, this algorithm is no worse than one that checks each sample within the bounding box of the triangle since we do sample within the bounding box, thereby reducing the amount of pixels that we have to sample.
 			</p>
+			<p><img src="images/task1save.png" alt="test4 image 1" width="800px" align="middle"/></p>
+			<p><img src="images/task1img1.png" alt="test4 image 1" width="800px" align="middle"/></p>
         </section>
 		
 		<hr class="divider">
@@ -141,6 +143,10 @@
 		  	<li>Triangles are only drawn to the framebuffer once the entire triangle has been rasterized and is ready to be drawn (i.e. when resolve_to_framebuffer is called) and now directly as the triangle is being rasterized. This way, the background and foreground images stay cleanly separated.</li>
 		  </ul>
 		  <p>As you can see in the tip of the red triangle zoomed in, supersampling allows the edge to be more clearly defined and less jagged. As we increase the sampling_rate from 1 to 4 to 9 to 16, it gets better.</p>
+		  <p><img src="images/task2img1.png" alt="test4 image 1" width="800px" align="middle"/></p>
+		  <p><img src="images/task2img2.png" alt="test4 image 1" width="800px" align="middle"/></p>
+		  <p><img src="images/task2img3.png" alt="test4 image 1" width="800px" align="middle"/></p>
+		  <p><img src="images/task2img4.png" alt="test4 image 1" width="800px" align="middle"/></p>
 		</section>
 
 		<hr class="divider">
@@ -150,6 +156,7 @@
         <section id="idocs_sidebar">
           <h2>Task 3: Transforms</h2>
           <p>I rotated cubeman’s arms so that it looks like he is holding one hand at his waist and waving with the other hand. To make the bending arms look a bit more natural, those rotated forearm rectangles were also translated up and down and to the sides.</p>
+          <p><img src="images/my_robot.png" alt="test4 image 1" width="800px" align="middle"/></p>
         </section>
 		
         <hr class="divider">
@@ -159,6 +166,8 @@
         <section id="idocs_footer">
           <h2>Task 4: Barycentric coordinates</h2>
           <p>Barycentric coordinates are a coordinate system based on the vertices of a triangle. It provides a way to check if a point is within a triangle, and a way to linearly interpolate across the triangle. This linear interpolation isn’t just limited to position coordinates – it can be used to interpolate anything across a triangle, including color. This is what results in the lovely gradient we see in test7.svg, and also in these example triangles with three distinct colors at each corner:</p>
+          <p><img src="images/test9.png" alt="test4 image 1" width="800px" align="middle"/></p>
+          <p><img src="images/test7.png" alt="test4 image 1" width="800px" align="middle"/></p>
         </section>
         
 		<hr class="divider">
@@ -183,6 +192,36 @@
             	<li>Top Right: Bilinear, Sampling Rate 1</li>
             	<li>Bottom Right: Bilinear Sampling, Sampling Rate 16</li>
             </ul>
+            <div class="row">
+			  <div class="column">
+			    <img src="images/Task5_Nearest_1.png" alt="Snow" width="400px">
+			  </div>
+			  <div class="column">
+			    <img src="images/Task5_Nearest_16.png" alt="Forest" width="400px">
+			  </div>
+			</div>
+			<div class="row">
+			  <div class="column">
+			    <img src="images/Task5_Bilinear_1.png" alt="Snow" width="400px">
+			  </div>
+			  <div class="column">
+			    <img src="images/Task5_Bilinear_16.png" alt="Forest" width="400px">
+			  </div>
+			</div>
+			<!-- <table>
+			  <tr>
+			    <th>Company</th>
+			    <th>Contact</th>
+			  </tr>
+			  <tr>
+			    <td><img src="Task5_Nearest_1.png" alt="Snow" width="400px"></td>
+			    <td><img src="Task5_Nearest_16.png" alt="Forest" style="width:100%"></td>
+			  </tr>
+			  <tr>
+			    <td>Centro comercial Moctezuma</td>
+			    <td>Francisco Chang</td>
+			  </tr>
+			</table> -->
             <p>To compare between the different images, we zoomed in on an island. Comparing between both sampling methods and sampling rate, we first look at both methods when they’re sampled at a rate of 1 pixel. With an up close shot, we can see that with nearest sampling, there’s a bit more color variation than there is in bilinear sampling. In other words, if we were to focus on one pixel, there would be more color variation around it. The same can be said with a sampling rate of 16, so with bilinear sampling, overall, we tend to see “smoother” or more blended pixels and lines (and with the image above, it creates a more smooth map). This difference becomes more apparent when we’re working with sharp lines and especially with not as many colors - since bilinear sampling “averages” out the color, it becomes more distinct which sampling method is which based on the coloration of individual pixels. </p>
           </div>
         </section>
@@ -214,6 +253,22 @@
           	<li>Top Right: L_Nearest and P_Nearest</li>
           	<li>Bottom Right: L_Nearest and P_Linear</li>
           </ul>
+          <div class="row">
+			  <div class="column">
+			    <img src="images/Task6ZeroNearest.png" alt="Snow" width="400px">
+			  </div>
+			  <div class="column">
+			    <img src="images/Task6ZeroLinear.png" alt="Forest" width="400px">
+			  </div>
+			</div>
+			<div class="row">
+			  <div class="column">
+			    <img src="images/Task6NearestNearest.png" alt="Snow" width="400px">
+			  </div>
+			  <div class="column">
+			    <img src="images/Task6NearestLinear.png" alt="Forest" width="400px">
+			  </div>
+			</div>
           <p>Looking at the images with varying level sampling and pixel sampling, there is a notable difference between all of them. With just level zero and nearest pixel sampling, we result in an image that has more aliasing than the other images. Level zero and bilinear pixel sampling reduces the aliasing significantly. With nearest level sampling, it smooths out the images too, with a combination of nearest level and bilinear pixel sampling producing the most smooth image (with the edges more “blurred” out).</p>
         </section>
 		  
