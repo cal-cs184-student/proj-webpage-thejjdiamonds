@@ -103,7 +103,7 @@
         <section id="idocs_layout">
           <h2>Project 1: Overview</h2>
           <p><img src="images/lion.png" alt="rasterized lion" width="800px" align="middle"/></p>
-          <p class="lead mb-5">In this project, we implemented a simple rasterizer that can draw SVG components. The rasterizer implements several interesting features, including supersampling, transforms, and texture mapping.</p>
+          <p class="lead mb-5">In this project, we implemented a simple rasterizer that can draw SVG components. The rasterizer implements several interesting features, including pixel sampling, transforms, and texture mapping. We were also able to use those features in combination with each other, resulting in slightly different images depending on the method used. One of the most interesting things we learned was the huge difference between using different mipmap levels. For example, sampling at mipmap level 0 compared to level 1 produced signifcantly different results, more so than expected, as it was very clear how the image changed when we sampled at different resolutions. This becaome more apparent as we increased our level number. </p>
         </section>
 		
 		
@@ -111,7 +111,7 @@
 		============================ -->
         <section id="idocs_header">
           <h2>Task 1: Drawing Single-Color Triangles</h2>
-          <p>Triangles are rasterized by sampling across the pixels of a given image. The simplest approach, which is how we implemented Task 1, is to sample the point at the center of each pixel. We check if the point is within the triangle we are rasterizing, and if so, fill in the whole corresponding pixel with its corresponding color. The process is as follows: </p>
+          <p>Triangles are rasterized by sampling across the pixels of the frame and checking whether the pixel belongs in the triangle or not. The simplest approach, which is how we implemented Task 1, is to sample the point at the center of each pixel. We check if the point is within the triangle we are rasterizing, and if so, fill in the whole corresponding pixel with its corresponding color. The process is as follows: </p>
           	<ul>
           		<li>We calculate the smallest bounding box of pixels around the triangle that we need to sample – in essence, we determine the four corners of the smallest rectangle that will fully enclose the triangle we want to draw. This way, our algorithm avoids checking pixels unnecessarily.</li>
           		<li>Iterating through the pixels in the bounding box in row major order, we calculate the center point of each pixel.
@@ -134,18 +134,22 @@
           <h2>Task 2: Antialiasing by Supersampling</h2>
 		  <p>Adding supersampling will reduce aliasing, or at least diminish the look of the jagged lines. The lines are much sharper with supersampled rasterization, and the triangles that are rendered have a cleaner look.</p>
 		  <p>The supersampling algorithm is very similar to the original triangle rasterizer, except for two big changes: how points are sampled within a pixel, and how the color that eventually fills the pixel is determined. Due to these changes, some other functions and data structures were used to help.</p>
-		  <p>For our implementation, we iterate through the pixels in the bounding box of the triangle as usual. For every pixel we are on, we take n samples within the pixel instead of just one sample at the center of the pixel (n being the sample_rate). The samples are distributed evenly over the pixel, so there is another set of for loops sampling each of those points within a certain pixel. Now that the number of samples has increased by a factor of sample_rate times, we store the colors at each sample point in the sample_buffer array. The sample buffer size is also changed to account for supersampling, where it’s size is a result of sample_rate * width * height. This is different from how we just called fill_pixel for simple triangle rasterization.</p>
-		  <p>Now to draw to the actual framebuffer, the work is done in the resolve_to_framebuffer function. For every pixel that needs to be drawn, we average the colors stored in the corresponding sample buffer for all the points that were sampled in that pixel. Then this averaged color is what the pixel color is set to. We did this by setting the corresponding color in the rgb_framebuffer_target array and accounted for the difference in dimension between the sample_buffer and the rgb_frambuffer. With this change to how the sample_buffer is used, we also edited the fill_pixel function so that it still draws lines and points correctly even with supersampling by having it modify the sample_buffer directly.</p>
+		  <p>For our implementation, we iterate through the pixels in the bounding box of the triangle as usual. For every pixel we are on, we take n samples within the pixel instead of just one sample at the center of the pixel (n being the sample_rate). The samples are distributed evenly over the pixel, so there is another set of for loops sampling each of those points within a certain pixel. Now that the number of samples has increased by a factor of sample_rate times, we store the colors at each sample point in the sample_buffer array. The sample_buffer size is also changed to account for supersampling, where it’s size is a result of sample_rate * width * height. This is different from how we just called fill_pixel for simple triangle rasterization.</p>
+		  <p>Now to draw to the actual framebuffer, the work is done in the resolve_to_framebuffer function. For every pixel that needs to be drawn, we average the colors stored in the corresponding sample_buffer indices for all the points that were sampled in that pixel. Then this averaged color is what the pixel color is set to. We did this by setting the corresponding color in the rgb_framebuffer_target array and accounted for the difference in dimension between the sample_buffer and the rgb_frambuffer. With this change to how the sample_buffer is used, we also edited the fill_pixel function so that it still draws lines and points correctly even with supersampling by having it modify the sample_buffer directly.</p>
 		  <p>Specifically, these were the changes made to the original rasterizing pipeline:</p>
 		  <ul>
 		  	<li>The sample_buffer is resized to be larger whenever the sample_rate is changed.</li>
 		  	<li>We made it so that supersampling will mainly affect the  triangles that are rasterized, not lines and points. When redraw is called to draw the lines for the square boundary on the picture, it won’t be fading away as the sampling rate goes up.</li>
-		  	<li>Triangles are only drawn to the framebuffer once the entire triangle has been rasterized and is ready to be drawn (i.e. when resolve_to_framebuffer is called) and now directly as the triangle is being rasterized. This way, the background and foreground images stay cleanly separated.</li>
+		  	<li>Triangles are only drawn to the framebuffer once the entire triangle has been rasterized and is ready to be drawn (i.e. when resolve_to_framebuffer is called) and not directly as the triangle is being rasterized. This way, the background and foreground images stay cleanly separated.</li>
 		  </ul>
-		  <p>As you can see in the tip of the red triangle zoomed in, supersampling allows the edge to be more clearly defined and less jagged. As we increase the sampling_rate from 1 to 4 to 9 to 16, it gets better.</p>
+		  <p>As you can see in the corner of the red triangle zoomed in, supersampling allows the edges to be more clearly defined and less jagged. As we increase the sampling_rate from 1 to 4 to 9 to 16, it gets better and better.</p>
+		  <p>Supersample Rate 1:</p>
 		  <p><img src="images/task2img1.png" alt="test4 image 1" width="800px" align="middle"/></p>
+		  <p>Supersample Rate 4:</p>
 		  <p><img src="images/task2img2.png" alt="test4 image 1" width="800px" align="middle"/></p>
+		  <p>Supersample Rate 9:</p>
 		  <p><img src="images/task2img3.png" alt="test4 image 1" width="800px" align="middle"/></p>
+		  <p>Supersample Rate 16:</p>
 		  <p><img src="images/task2img4.png" alt="test4 image 1" width="800px" align="middle"/></p>
 		</section>
 
@@ -155,9 +159,9 @@
 		============================ -->
         <section id="idocs_sidebar">
           <h2>Task 3: Transforms</h2>
-          <p>I rotated cubeman’s arms so that it looks like he is holding one hand at his waist and waving with the other hand. To make the bending arms look a bit more natural, those rotated forearm rectangles were also translated up and down and to the sides.</p>
+          <p>I rotated cubeman’s arms so that it looks like he is holding one hand at his waist and waving with the other hand. To make the bending arms look a bit more natural, those rotated forearm rectangles were also translated to be closer to his body, and also translated up and down as needed.</p>
           <p><img src="images/my_robot.png" alt="test4 image 1" width="800px" align="middle"/></p>
-          <p>These are the matrices we implemented: </p>
+          <p>These are the matrices we implemented for each transform: </p>
           <p><img src="images/transformeq.png" alt="test4 image 1" width="800px" align="middle"/></p>
         </section>
 		
@@ -167,8 +171,9 @@
 		============================ -->
         <section id="idocs_footer">
           <h2>Task 4: Barycentric coordinates</h2>
-          <p>Barycentric coordinates are a coordinate system based on the vertices of a triangle. It provides a way to check if a point is within a triangle, and a way to linearly interpolate across the triangle. This linear interpolation isn’t just limited to position coordinates – it can be used to interpolate anything across a triangle, including color. This is what results in the lovely gradient we see in test7.svg, and also in these example triangles with three distinct colors at each corner:</p>
+          <p>Barycentric coordinates are a coordinate system based on the vertices of a triangle. It provides an easy way to check if a point is within a triangle, and a way to linearly interpolate across the triangle. This linear interpolation isn’t just limited to position coordinates – it can be used to interpolate anything across a triangle, including color. This is what results in the lovely gradient we see in test7.svg, and also in these example triangles with three distinct colors at each corner:</p>
           <p><img src="images/test9.png" alt="test4 image 1" width="800px" align="middle"/></p>
+          <p>The color wheel in test7:</p>
           <p><img src="images/test7.png" alt="test4 image 1" width="800px" align="middle"/></p>
           <p>Barycentric coordinates are calculated from the three vertices of a triangle as follows:</p>
           <p><img src="images/baryeq.png" alt="test4 image 1" width="800px" align="middle"/></p>
@@ -215,20 +220,6 @@
 			    <img src="images/Task5_Bilinear_16.png" alt="Forest" width="400px">
 			  </div>
 			</div>
-			<!-- <table>
-			  <tr>
-			    <th>Company</th>
-			    <th>Contact</th>
-			  </tr>
-			  <tr>
-			    <td><img src="Task5_Nearest_1.png" alt="Snow" width="400px"></td>
-			    <td><img src="Task5_Nearest_16.png" alt="Forest" style="width:100%"></td>
-			  </tr>
-			  <tr>
-			    <td>Centro comercial Moctezuma</td>
-			    <td>Francisco Chang</td>
-			  </tr>
-			</table> -->
             <p>To compare between the different images, we zoomed in on an island. Comparing between both sampling methods and sampling rate, we first look at both methods when they’re sampled at a rate of 1 pixel. With an up close shot, we can see that with nearest sampling, there’s a bit more color variation than there is in bilinear sampling. In other words, if we were to focus on one pixel, there would be more color variation around it. The same can be said with a sampling rate of 16, so with bilinear sampling, overall, we tend to see “smoother” or more blended pixels and lines (and with the image above, it creates a more smooth map). This difference becomes more apparent when we’re working with sharp lines and especially with not as many colors - since bilinear sampling “averages” out the color, it becomes more distinct which sampling method is which based on the coloration of individual pixels. </p>
           </div>
         </section>
