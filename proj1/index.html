@@ -183,7 +183,7 @@
             	<li>We can then find the texture coordinate with the barycentric coordinates by multiplying alpha, beta and gamma with the vertices of the triangle on the texture map (effectively applying the equation of (x, y) = (alpha * A) + (beta * B) + (gamma * C)) and then scaling it by the size of the mipmap level (which at this stage, is just 0).</li>
             	<li>Now that we have our corresponding texture map coordinate, we can use one of our pixel sampling methods, nearest or bilinear, to get the information we want from the texture map.</li>
             </ul>
-            <p><strong>Nearest sampling</strong> involves finding the closest pixel on the texture map relative to our current texture coordinate. This effectively means we round to obtain that nearest pixel. For our implementation of this sampling method, we scaled the coordinates by the (width - 1) and (height - 1) of the texture map inside the function to get the texture coordinate the main reason we decremented the height and width by 1 was to account for indexing). We then rounded it to the nearest pixel. This gets us the desired texture that we want to use.</p>
+            <p><strong>Nearest sampling</strong> involves finding the closest pixel on the texture map relative to our current texture coordinate. This effectively means we round to obtain that nearest pixel. For our implementation of this sampling method, we scaled the coordinates by the (width - 1) and (height - 1) of the texture map inside the function to get the texture coordinate (the main reason we decremented the height and width by 1 was to account for indexing). We then rounded it to the nearest pixel. This gets us the desired texture that we want to use.</p>
             <p><strong>Bilinear sampling</strong>, on the other hand, can be interpreted as interpolating or “averaging” the colors between the four pixels around our texture coordinate. So instead of using one pixel in bilinear sampling, we rely on four to find the texture we want to return. For this implementation, we started out similarly to nearest sampling, where we had to scale by the width and height of the mipmap. However, by using the floor and ceil function, we then calculated the horizontal and vertical offset, specifically the horizontal and vertical difference from the four nearest points. We then grabbed the associated texture for each of the four nearest points and interpolated them (two times horizontally, and one time vertically), which resulted in the desired texture.</p>
             <p>Images:</p>
             <ul>
@@ -237,13 +237,13 @@
           <ul>
           	<li>For each rasterized screen sample (or their subpixels if supersampling was included), we calculated the barycentric coordinates for three points: (x, y), (x + 1), (x, y + 1). The main reason for this is because we wanted to apply the formula of </li>
           	<li>By calculating the barycentric coordinates of those three points, we could obtain the derivatives as stated in the formula. The derivative can be thought of as an instantaneous rate of change, so once we computed the barycentric coordinates and found a corresponding point on the texture map, we could subtract them to obtain the derivative. More specifically, let’s say the vector v1 represents the point on the texture map of (x, y), v2 represents it for (x + 1, y) and v3 and represents it for (x, y + 1), then v2 - v1 and v3 - v1 will give us the needed derivatives.</li>
-          	<li>Once inside the get_level function, we scaled by the width and height of the mipmap accordingly, and then applied the formula to find the level. This involved calculating the expressions under the square root, which is finding the norm or magnitude of those vectors, applying the square root, taking the max of it, and then finding the log base 2 of it. And finally, we would get our desired mipmap level.</li>
+          	<li>Once inside the get_level function, we scaled by the width and height of the mipmap accordingly, and then applied the formula to find the level. This involved calculating the expressions under the square root, which is finding the norm or magnitude of those vectors, taking the max, and then finding the log base 2 of it. And finally, we would get our desired mipmap level.</li>
           </ul>
           <p>From here, we needed to get our desired texture point from the mipmap, and the means to get it was dependent on the type of level sampling we used:</p>
           <ul>
           	<li><strong>Always level 0:</strong> This means we would always sample from the lowest level, or level 0, where it was full resolution. With this choice, we would pixel sample normally, as we had done in Task 5. </li>
           	<li><strong>Nearest D (nearest level):</strong> This involved choosing the level that was considered the closest. Since there was a certain limit on the valid choices of mipmap level, we had to clamp down on the valid choices (i.e. if the calculated level was less than 0, we set the level to 0 and vice versa if it was greater than the size of the mipmap). We would then pass in the closest level into the pixel sampling functions that were implemented in Task 5. </li>
-          	<li><strong>Linear interpolation:</strong> This choice involved “interpolation” of the levels. Given the calculated level, we would want to find the level that is directly above it and directly below it. As we’ve done in the nearest sample, we also want to clamp down on the level so they’re both still valid mipmap levels. Finally, depending on the type of pixel sampling, both of the levels would be passed into the chosen pixel sampling functions and the results would be interpolated. </li>
+          	<li><strong>Linear interpolation:</strong> This choice involved “interpolation” of the levels. After we calculated the level, we wanted to find the weights that we would use to calculate the weighted average of the pixel sampling methods. In this case, the weight would be considered the difference between the level and the ones above it and below it. So depending on the type of pixel sampling method, the floor(level) and the ceil(level) would be passed into the appropriate methods and we would use the result to find the weighted average based on the weights we found earlier. And from there, it would return the desired texture we wanted.</li>
           </ul>
           <p>Now, there are three available methods we can use to create our image, with each method having its own tradeoffs. With level sampling, we use a significant more amount of memory, since we need to store the different levels. But in turn, it produces notable results for anti-aliasing and is faster than supersampling. Pixel sampling, on the other hand, doesn’t have as much memory overhead and tends to be faster compared to other methods, but can lead to more rendering artifacts. Depending on the pixel sampling method, bilinear can be slower than nearest pixel sampling. Finally, supersampling is the most expensive among the three, in terms of memory and speed, but it also significantly reduces aliasing. </p>
           <p>Example:</p>
@@ -255,21 +255,21 @@
           </ul>
           <div class="row">
 			  <div class="column">
-			    <img src="images/Task6ZeroNearest.png" alt="Snow" width="400px">
+			    <img src="images/Task6ZeroL_PNearest.png" alt="Snow" width="400px">
 			  </div>
 			  <div class="column">
-			    <img src="images/Task6ZeroLinear.png" alt="Forest" width="400px">
+			    <img src="images/Task6NearestL_PNearest.png" alt="Forest" width="400px">
 			  </div>
 			</div>
 			<div class="row">
 			  <div class="column">
-			    <img src="images/Task6NearestNearest.png" alt="Snow" width="400px">
+			    <img src="images/Task6ZeroL_PLinear.png" alt="Snow" width="400px">
 			  </div>
 			  <div class="column">
-			    <img src="images/Task6NearestLinear.png" alt="Forest" width="400px">
+			    <img src="images/Task6NearestL_PLinear.png" alt="Forest" width="400px">
 			  </div>
 			</div>
-          <p>Looking at the images with varying level sampling and pixel sampling, there is a notable difference between all of them. With just level zero and nearest pixel sampling, we result in an image that has more aliasing than the other images. Level zero and bilinear pixel sampling reduces the aliasing significantly. With nearest level sampling, it smooths out the images too, with a combination of nearest level and bilinear pixel sampling producing the most smooth image (with the edges more “blurred” out).</p>
+          <p>Looking at the images with varying level sampling and pixel sampling, there is a notable difference between all of them. With just level zero and nearest pixel sampling, we result in an image that has more aliasing than the other images. Level zero and bilinear pixel sampling reduces the aliasing to a certain extent. With nearest level sampling, it smooths out the images too, with a combination of nearest level and bilinear pixel sampling producing the most smooth image (with the edges more “blurred” out).</p>
         </section>
 		  
   
