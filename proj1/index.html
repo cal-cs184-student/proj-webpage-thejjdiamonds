@@ -103,7 +103,7 @@
         <section id="idocs_layout">
           <h2>Project 1: Overview</h2>
           <p><img src="images/lion.png" alt="rasterized lion" width="800px" align="middle"/></p>
-          <p class="lead mb-5">In this project, we implemented a simple rasterizer that can draw SVG components. The rasterizer implements several features, including supersampling, transforms, and texture mapping.</p>
+          <p class="lead mb-5">In this project, we implemented a simple rasterizer that can draw SVG components. The rasterizer implements several interesting features, including supersampling, transforms, and texture mapping.</p>
         </section>
 		
 		
@@ -157,6 +157,8 @@
           <h2>Task 3: Transforms</h2>
           <p>I rotated cubeman’s arms so that it looks like he is holding one hand at his waist and waving with the other hand. To make the bending arms look a bit more natural, those rotated forearm rectangles were also translated up and down and to the sides.</p>
           <p><img src="images/my_robot.png" alt="test4 image 1" width="800px" align="middle"/></p>
+          <p>These are the matrices we implemented: </p>
+          <p><img src="images/transformeq.png" alt="test4 image 1" width="800px" align="middle"/></p>
         </section>
 		
         <hr class="divider">
@@ -168,6 +170,11 @@
           <p>Barycentric coordinates are a coordinate system based on the vertices of a triangle. It provides a way to check if a point is within a triangle, and a way to linearly interpolate across the triangle. This linear interpolation isn’t just limited to position coordinates – it can be used to interpolate anything across a triangle, including color. This is what results in the lovely gradient we see in test7.svg, and also in these example triangles with three distinct colors at each corner:</p>
           <p><img src="images/test9.png" alt="test4 image 1" width="800px" align="middle"/></p>
           <p><img src="images/test7.png" alt="test4 image 1" width="800px" align="middle"/></p>
+          <p>Barycentric coordinates are calculated from the three vertices of a triangle as follows:</p>
+          <p><img src="images/baryeq.png" alt="test4 image 1" width="800px" align="middle"/></p>
+			<p>
+			Alpha, beta, and gamma end up being the values we want to weight the colors at each of the corresponding vertices to get the smooth gradient.
+			</p>
         </section>
         
 		<hr class="divider">
@@ -235,7 +242,7 @@
           <p>Level sampling is a process that refers to sampling from mipmaps, which can be thought of as different versions of a texture map where each version has some varying resolution or detail. Generally speaking, the higher you go up in mipmap levels, the lower the resolution becomes (and vice versa). With level sampling, we’re able to pick and choose which resolution we want to show for a certain pixel.</p>
           <p>Our implementation of level sampling was done in rasterize_textured_triangle. The overall structure of it was similar to what was done in previous methods, rasterize_triangle and rasterize_interpolated_color_triangle. The main process is as follows: </p>
           <ul>
-          	<li>For each rasterized screen sample (or their subpixels if supersampling was included), we calculated the barycentric coordinates for three points: (x, y), (x + 1), (x, y + 1). The main reason for this is because we wanted to apply the formula of </li>
+          	<li>For each rasterized screen sample (or their subpixels if supersampling was included), we calculated the barycentric coordinates for three points: (x, y), (x + 1), (x, y + 1). The main reason for this is because we wanted to apply the formula of  <img src="images/task6eq.png" alt="test4 image 1" width="800px" align="middle"/></li>
           	<li>By calculating the barycentric coordinates of those three points, we could obtain the derivatives as stated in the formula. The derivative can be thought of as an instantaneous rate of change, so once we computed the barycentric coordinates and found a corresponding point on the texture map, we could subtract them to obtain the derivative. More specifically, let’s say the vector v1 represents the point on the texture map of (x, y), v2 represents it for (x + 1, y) and v3 and represents it for (x, y + 1), then v2 - v1 and v3 - v1 will give us the needed derivatives.</li>
           	<li>Once inside the get_level function, we scaled by the width and height of the mipmap accordingly, and then applied the formula to find the level. This involved calculating the expressions under the square root, which is finding the norm or magnitude of those vectors, applying the square root, taking the max of it, and then finding the log base 2 of it. And finally, we would get our desired mipmap level.</li>
           </ul>
