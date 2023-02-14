@@ -1,4 +1,4 @@
-<html>
+<!-- <html>
 	<head>
 	</head>
 	<body>
@@ -30,6 +30,9 @@
 			Task 2: Antialiasing by Supersampling
 		</h2>
 			<p>
+				Supersampling is useful because it gets rid of jaggies! At least, it diminishes the really bad ones. Lines are much sharper with supersampled rasterization, and the triangles that are rendered have a cleaner look.
+			</p>
+			<p>
 				The supersampling algorithm is very similar to the original triangle rasterizer, except for two big changes: how points are sampled within a pixel, and how the color that eventually fills the pixel is determined. Due to these changes, some other functions and data structures were used to help.
 			</p>
 			<p>
@@ -38,17 +41,220 @@
 			<p>
 				Now to draw to the actual framebuffer, the work is done in the resolve_to_framebuffer function. For every pixel that needs to be drawn, we average the colors stored in the corresponding sample buffer for all the points that were sampled in that pixel. Then this averaged out color is what the pixel color is set to. With this change to how the sample_buffer is used, we also edited the fill_pixel function so that it still draws lines and points correctly even with supersampling.
 			</p>
+			<p>
+				Changes to the rasterization pipeline: We made it so that supersampling only happens when triangles are rasterized, not lines and points. When redraw is called to draw the lines for the square boundary on the picture, it won’t be fading away as the sampling rate goes up. Also, triangles are only drawn to the framebuffer once the entire triangle has been rasterized and is ready to be drawn (i.e. when resolve_to_framebuffer is called) and now directly as the triangle is being rasterized. This way background and foreground images stay cleanly separated.
+			</p>
 		<h2>
 			Task 3: Transforms
 		</h2>
+			<p>
+				I rotated cubeman’s arms so that it looks like he is holding one hand at his waist and waving with the other hand. To make the bending arms look a bit more natural, those rotated forearm rectangles were also translated up and down and to the sides.
+			</p>
 		<h2>
 			Task 4: Barycentric coordinates
 		</h2>
+			<p>
+				Barycentric coordinates are a coordinate system based on the vertices of a triangle. It provides a way to check if a point is within a triangle, and a way to linearly interpolate across the triangle. This linear interpolation isn’t just limited to position coordinates – it can be used to interpolate anything across a triangle, including color. This is what results in the lovely gradient we see in test7.svg, and also in these example triangles with three distinct colors at each corner:
+			</p>
 		<h2>
 			Task 5: &quot;Pixel sampling&quot; for texture mapping
 		</h2>
 		<h2>
 			Task 6: &quot;Level sampling&quot; with mipmaps for texture mapping
 		</h2>
-	</body>
+	</body> -->
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1.0, shrink-to-fit=no">
+<link href="assets/images/favicon.png" rel="icon" />
+<title>Documentation | Your ThemeForest item Name</title>
+<meta name="description" content="Your ThemeForest item Name and description">
+<meta name="author" content="harnishdesign.net">
+
+<!-- Stylesheet
+============================== -->
+<!-- Bootstrap -->
+<link rel="stylesheet" type="text/css" href="assets/vendor/bootstrap/css/bootstrap.min.css" />
+<!-- Font Awesome Icon -->
+<link rel="stylesheet" type="text/css" href="assets/vendor/font-awesome/css/all.min.css" />
+<!-- Magnific Popup -->
+<link rel="stylesheet" type="text/css" href="assets/vendor/magnific-popup/magnific-popup.min.css" />
+<!-- Highlight Syntax -->
+<link rel="stylesheet" type="text/css" href="assets/vendor/highlight.js/styles/github.css" />
+<!-- Custom Stylesheet -->
+<link rel="stylesheet" type="text/css" href="assets/css/stylesheet.css" />
+</head>
+
+<body data-spy="scroll" data-target=".idocs-navigation" data-offset="125">
+
+<!-- Preloader -->
+<div class="preloader">
+  <div class="lds-ellipsis">
+    <div></div>
+    <div></div>
+    <div></div>
+    <div></div>
+  </div>
+</div>
+<!-- Preloader End --> 
+
+<!-- Document Wrapper   
+=============================== -->
+<div id="main-wrapper"> 
+  
+  <!-- Header
+  ============================ -->
+  <header id="header" class="sticky-top"> 
+    <!-- Navbar -->
+    <nav class="primary-menu navbar navbar-expand-lg navbar-dropdown-dark">
+      <div class="container-fluid">
+        <!-- Sidebar Toggler -->
+		<button id="sidebarCollapse" class="navbar-toggler d-block d-md-none" type="button"><span></span><span class="w-75"></span><span class="w-50"></span></button>
+		
+		<!-- Logo --> 
+        <!-- <a class="logo ml-md-3" href="index.html" title="iDocs Template"> <img src="assets/images/logo.png" alt="iDocs Template"/> </a>  -->
+		<span class="text-2 ml-2">Jasmine Lin and Jennifer Prince</span> 
+        <!-- Logo End -->
+
+        <ul class="social-icons social-icons-sm ml-lg-2 mr-2">
+          <li class="social-icons-twitter"><a data-toggle="tooltip" href="http://www.twitter.com/harnishdesign/" target="_blank" title="" data-original-title="Twitter"><i class="fab fa-twitter"></i></a></li>
+          <li class="social-icons-facebook"><a data-toggle="tooltip" href="http://www.facebook.com/harnishdesign/" target="_blank" title="" data-original-title="Facebook"><i class="fab fa-facebook-f"></i></a></li>
+          <li class="social-icons-dribbble"><a data-toggle="tooltip" href="http://www.dribbble.com/harnishdesign/" target="_blank" title="" data-original-title="Dribbble"><i class="fab fa-dribbble"></i></a></li>
+        </ul>
+      </div>
+    </nav>
+    <!-- Navbar End --> 
+  </header>
+  <!-- Header End --> 
+  
+  <!-- Content
+  ============================ -->
+  <div id="content" role="main">
+    
+	<!-- Sidebar Navigation
+	============================ -->
+	<div class="idocs-navigation bg-light">
+      <ul class="nav flex-column ">
+        <!-- <li class="nav-item"><a class="nav-link active" href="#idocs_start">Overview</a>
+        	<ul class="nav flex-column">
+	        	<li class="nav-item"><a class="nav-link" href="index.html">Overview</a></li>
+			</ul>
+        </li> -->
+        <li class="nav-item"><a class="nav-link" href="#idocs_layout">Project 1</a>
+          <ul class="nav flex-column">
+			<li class="nav-item"><a class="nav-link" href="#idocs_header">Task 1: Drawing Single-Color Triangles</a></li>
+			<li class="nav-item"><a class="nav-link" href="#idocs_navbar">Task 2: Antialiasing by Supersampling</a></li>
+			<li class="nav-item"><a class="nav-link" href="#idocs_sidebar">Task 3: Transforms</a></li>
+			<li class="nav-item"><a class="nav-link" href="#idocs_footer">Task 4: Barycentric coordinates</a></li>
+			<li class="nav-item"><a class="nav-link" href="#idocs_box_layout">Task 5: &quot;Pixel sampling&quot; for texture mapping</a></li>
+			<li class="nav-item"><a class="nav-link" href="#idocs_box_layout">Task 6: &quot;Level sampling&quot; with mipmaps for texture mapping</a></li>
+          </ul>
+        </li>
+      </ul>
+    </div>
+    
+    <!-- Docs Content
+	============================ -->
+    <div class="idocs-content">
+      <div class="container"> 		
+        
+		<hr class="divider">
+		
+		<!-- Project 1: Overview
+		============================ -->
+        <section id="idocs_layout">
+          <h2>Project 1: Overview</h2>
+          <p><img src="images/lion.png" alt="rasterized lion" width="800px" align="middle"/></p>
+          <p class="lead mb-5">In this project, we implemented a simple rasterizer that can draw SVG components. The rasterizer implements several features, including supersampling, transforms, and texture mapping.</p>
+        </section>
+		
+		
+        <!-- Header
+		============================ -->
+        <section id="idocs_header">
+          <h2>Task 1: Drawing Single-Color Triangles</h2>
+          <p>Triangles are rasterized by sampling across the pixels of a given image. The simplest approach, which is how we implemented Task 1, is to sample the point at the center of each pixel. We check if the point is within the triangle we are rasterizing, and if so, fill in the whole corresponding pixel with its corresponding color. The process is as follows: </p>
+          	<ul>
+          		<li>We calculate the smallest bounding box of pixels around the triangle that we need to sample – in essence, we determine the four corners of the smallest rectangle that will fully enclose the triangle we want to draw. This way, our algorithm avoids checking pixels unnecessarily.</li>
+          		<li>Iterating through the pixels in the bounding box in row major order, we calculate the center point of each pixel.
+				At each point, we do the three line test calculations to check if it is within the triangle. For each pair of triangle vertices, we are determining on which half-plane the point resides in (i.e. we check if the point is above or below the line).</li>
+				<li>To account for winding order, we check whether the point is always on the negative side of the three lines, or always on the positive side. If either of these cases are true, then the point is within the triangle.</li>
+				<li>If the point is within the triangle, we fill the pixel in with it’s corresponding color.</li>
+          	</ul>
+          	<p>
+			Here are two examples of our algorithm rasterizing some triangles. This simple sampling algorithm clearly leaves jagged edges and corners that are not as sharp, as there are less points sampled in the triangle. In other words, it doesn’t significantly reduce aliasing. In addition, this algorithm is no worse than one that checks each sample within the bounding box of the triangle since we do sample within the bounding box, thereby reducing the amount of pixels that we have to sample.
+			</p>
+        </section>
+		
+		<hr class="divider">
+		
+		<!-- Navbar
+		============================ -->
+        <section id="idocs_navbar">
+          <h2>Task 2: Antialiasing by Supersampling</h2>
+		  <p>TODO</p>
+		</section>
+
+		<hr class="divider">
+		
+		<!-- Sidebar
+		============================ -->
+        <section id="idocs_sidebar">
+          <h2>Task 3</h2>
+          <p>TODO</p>
+        </section>
+		
+        <hr class="divider">
+
+        <!-- Footer
+		============================ -->
+        <section id="idocs_footer">
+          <h2>Task 4</h2>
+          <p>TODO</p>
+        </section>
+        
+		<hr class="divider">
+		
+		<!-- Box Layout Style
+		============================ -->
+        <section id="idocs_box_layout">
+          <h2>Task 5</h2>
+          <div>
+            <p>TODO</p>
+          </div>
+        </section>
+		
+		<hr class="divider">
+		
+		<!-- Content
+		============================ -->
+        <section id="idocs_content">
+          <h2>Task 6</h2>
+          <p>TODO</p>
+        </section>
+		  
+  
+</div>
+<!-- Document Wrapper end --> 
+
+<!-- Back To Top --> 
+<a id="back-to-top" data-toggle="tooltip" title="Back to Top" href="javascript:void(0)"><i class="fa fa-chevron-up"></i></a> 
+
+<!-- JavaScript
+============================ -->
+<script src="assets/vendor/jquery/jquery.min.js"></script> 
+<script src="assets/vendor/bootstrap/js/bootstrap.bundle.min.js"></script> 
+<!-- Highlight JS -->
+<script src="assets/vendor/highlight.js/highlight.min.js"></script> 
+<!-- Easing --> 
+<script src="assets/vendor/jquery.easing/jquery.easing.min.js"></script> 
+<!-- Magnific Popup --> 
+<script src="assets/vendor/magnific-popup/jquery.magnific-popup.min.js"></script> 
+<!-- Custom Script -->
+<script src="assets/js/theme.js"></script>
+</body>
 </html>
