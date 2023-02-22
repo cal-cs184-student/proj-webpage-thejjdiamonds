@@ -44,6 +44,11 @@ body {
   color: #4c4d4d;
 }
 
+/* Added this here. */
+figcaption {
+  text-align: center;
+}
+
 /*-------- Preloader --------*/
 .preloader {
   position: fixed;

@@ -78,10 +78,10 @@
 	        	<li class="nav-item"><a class="nav-link" href="index.html">Overview</a></li>
 			</ul>
         </li> -->
-        <li class="nav-item"><a class="nav-link" href="#idocs_layout">Project 1</a>
+        <li class="nav-item"><a class="nav-link" href="#idocs_layout">Project 2</a>
           <ul class="nav flex-column">
-			<li class="nav-item"><a class="nav-link" href="#idocs_header">Task 1: Drawing Single-Color Triangles</a></li>
-			<li class="nav-item"><a class="nav-link" href="#idocs_navbar">Task 2: Antialiasing by Supersampling</a></li>
+			<li class="nav-item"><a class="nav-link" href="#idocs_header">Task 1: Bezier Curves with 1D de Casteljau Subdivision</a></li>
+			<li class="nav-item"><a class="nav-link" href="#idocs_navbar">Task 2: Bezier Surfaces with Separable 1D de Casteljau</a></li>
 			<li class="nav-item"><a class="nav-link" href="#idocs_sidebar">Task 3: Transforms</a></li>
 			<li class="nav-item"><a class="nav-link" href="#idocs_footer">Task 4: Barycentric coordinates</a></li>
 			<li class="nav-item"><a class="nav-link" href="#idocs_box_layout">Task 5: &quot;Pixel sampling&quot; for texture mapping</a></li>
@@ -102,7 +102,7 @@
 		<!-- Project 1: Overview
 		============================ -->
         <section id="idocs_layout">
-          <h2>Project 1: Overview</h2>
+          <h2>Project 2: Overview</h2>
           <p><img src="images/lion.png" alt="rasterized lion" width="800px" align="middle"/></p>
           <p class="lead mb-5">In this project, we implemented a simple rasterizer that can draw SVG components. The rasterizer implements several interesting features, including pixel sampling, transforms, and texture mapping. We were also able to use those features in combination with each other, resulting in slightly different images depending on the method used. One of the most interesting things we learned was the huge difference between using different mipmap levels. For example, sampling at mipmap level 0 compared to level 1 produced signifcantly different results, more so than expected, as it was very clear how the image changed when we sampled at different resolutions. This became more apparent as we increased our level number. </p>
         </section>
@@ -111,20 +111,59 @@
         <!-- Header
 		============================ -->
         <section id="idocs_header">
-          <h2>Task 1: Drawing Single-Color Triangles</h2>
-          <p>Triangles are rasterized by sampling across the pixels of the frame and checking whether the pixel belongs in the triangle or not. The simplest approach, which is how we implemented Task 1, is to sample the point at the center of each pixel. We check if the point is within the triangle we are rasterizing, and if so, fill in the whole corresponding pixel with its corresponding color. The process is as follows: </p>
-          	<ul>
-          		<li>We calculate the smallest bounding box of pixels around the triangle that we need to sample – in essence, we determine the four corners of the smallest rectangle that will fully enclose the triangle we want to draw. This way, our algorithm avoids checking pixels unnecessarily.</li>
-          		<li>Iterating through the pixels in the bounding box in row major order, we calculate the center point of each pixel.
-				At each point, we do the three line test calculations to check if it is within the triangle. For each pair of triangle vertices, we are determining on which half-plane the point resides in (i.e. we check if the point is above or below the line).</li>
-				<li>To account for winding order, we check whether the point is always on the negative side of the three lines, or always on the positive side. If either of these cases are true, then the point is within the triangle.</li>
-				<li>If the point is within the triangle, we fill the pixel in with it’s corresponding color.</li>
-          	</ul>
-          	<p>
-			Here are two examples of our algorithm rasterizing some triangles. This simple sampling algorithm clearly leaves jagged edges and corners that are not as sharp, as there are less points sampled in the triangle. In other words, it doesn’t significantly reduce aliasing. In addition, this algorithm is no worse than one that checks each sample within the bounding box of the triangle since we do sample within the bounding box, thereby reducing the amount of pixels that we have to sample.
-			</p>
-			<p><img src="images/task1save.png" alt="test4 image 1" width="800px" align="middle"/></p>
-			<p><img src="images/task1img1.png" alt="test4 image 1" width="800px" align="middle"/></p>
+          <h2>Task 1: Bezier Curves with 1D de Casteljau Subdivision</h2>
+		  <p>De Castelijau’s algorithm is an approach to obtain Bezier curves given a set of control points. Control points are used to determine the shape of a curve, so with de Castelijau’s algorithm, we linearly interpolate between two adjacent control points based on a parameter of t that is between 0 and 1. Each time we linearly interpolate between a pair of control points, it produces a new control point for the next subdivision level. We continue this process recursively until there is only one point left, which is the point our drawn curve is tangent to.</p>
+          	<p>Below is an example of what the algorithm's process looks like and how the final resulting Bezier curve is produced: </p>
+			  <div class="row">
+				<div class="column">
+				  <img src="images/original_points_bezier.png" width="400px" style="margin: 5px 5px 5px 5px;">
+				  <figcaption>Original control points</figcaption>
+				</div>
+				<div class="column">
+				  <img src="images/level1_bezier.png" width="400px" style="margin: 5px 5px 5px 5px;">
+				  <figcaption>First level of subdivision</figcaption>
+				</div>
+			  </div>
+			  <div class="row">
+				<div class="column">
+				  <img src="images/level2_bezier.png" width="400px" style="margin: 5px 5px 5px 5px;">
+				  <figcaption>Second level of subdivision</figcaption>
+				</div>
+				<div class="column">
+				  <img src="images/level3_bezier.png" width="400px" style="margin: 5px 5px 5px 5px;">
+				  <figcaption>Third level of subdivision</figcaption>
+				</div>
+			  </div>
+			  <div class="row">
+				<div class="column">
+				  <img src="images/level4_bezier.png" width="400px" style="margin: 5px 5px 5px 5px;">
+				  <figcaption>Fourth level of subdivision</figcaption>
+				</div>
+				<div class="column">
+				  <img src="images/level5_bezier.png" width="400px" style="margin: 5px 5px 5px 5px;">
+				  <figcaption>Fifth level of subdivision (with final point)</figcaption>
+				</div>
+			  </div>
+			  <div class="row">
+				<div class="column">
+				  <img src="images/final_curve_bezier.png" width="400px" style="margin: 5px 5px 5px 5px;">
+				  <figcaption>Completed final curve</figcaption>
+				</div>
+				<div class="column">
+				  <img src="images/diff_bezier_curve.png" width="400px" style="margin: 5px 5px 5px 5px;">
+				  <figcaption>Slightly different curve (with a point moved)</figcaption>
+				</div>
+			  </div>
+			  <div class="row">
+				<div class="column">
+				  <img src="images/new_curve.png" width="400px" style="margin: 5px 5px 5px 5px;">
+				  <figcaption>Here's another curve with some points moved</figcaption>
+				</div>
+				<div class="column">
+				  <img src="images/new_curve_t.png" width="400px" style="margin: 5px 5px 5px 5px;">
+				  <figcaption>Here's the new curve with a changed parameter t</figcaption>
+				</div>
+			  </div>
         </section>
 		
 		<hr class="divider">
