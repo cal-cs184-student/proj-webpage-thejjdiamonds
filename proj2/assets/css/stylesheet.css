@@ -49,6 +49,12 @@ figcaption {
   text-align: center;
 }
 
+#centerImage
+{
+ text-align:center;
+ display:block;
+}
+
 /*-------- Preloader --------*/
 .preloader {
   position: fixed;

@@ -171,26 +171,18 @@
 		<!-- Navbar
 		============================ -->
         <section id="idocs_navbar">
-          <h2>Task 2: Antialiasing by Supersampling</h2>
-		  <p>Adding supersampling will reduce aliasing, or at least diminish the look of the jagged lines. The lines are much sharper with supersampled rasterization, and the triangles that are rendered have a cleaner look.</p>
-		  <p>The supersampling algorithm is very similar to the original triangle rasterizer, except for two big changes: how points are sampled within a pixel, and how the color that eventually fills the pixel is determined. Due to these changes, some other functions and data structures were used to help.</p>
-		  <p>For our implementation, we iterate through the pixels in the bounding box of the triangle as usual. For every pixel we are on, we take n samples within the pixel instead of just one sample at the center of the pixel (n being the sample_rate). The samples are distributed evenly over the pixel, so there is another set of for loops sampling each of those points within a certain pixel. Now that the number of samples has increased by a factor of sample_rate times, we store the colors at each sample point in the sample_buffer array. The sample_buffer size is also changed to account for supersampling, where it’s size is a result of sample_rate * width * height. This is different from how we just called fill_pixel for simple triangle rasterization.</p>
-		  <p>Now to draw to the actual framebuffer, the work is done in the resolve_to_framebuffer function. For every pixel that needs to be drawn, we average the colors stored in the corresponding sample_buffer indices for all the points that were sampled in that pixel. Then this averaged color is what the pixel color is set to. We did this by setting the corresponding color in the rgb_framebuffer_target array and accounted for the difference in dimension between the sample_buffer and the rgb_frambuffer. With this change to how the sample_buffer is used, we also edited the fill_pixel function so that it still draws lines and points correctly even with supersampling by having it modify the sample_buffer directly.</p>
-		  <p>Specifically, these were the changes made to the original rasterizing pipeline:</p>
-		  <ul>
-		  	<li>The sample_buffer is resized to be larger whenever the sample_rate is changed.</li>
-		  	<li>We made it so that supersampling will mainly affect the  triangles that are rasterized, not lines and points. When redraw is called to draw the lines for the square boundary on the picture, it won’t be fading away as the sampling rate goes up.</li>
-		  	<li>Triangles are only drawn to the framebuffer once the entire triangle has been rasterized and is ready to be drawn (i.e. when resolve_to_framebuffer is called) and not directly as the triangle is being rasterized. This way, the background and foreground images stay cleanly separated.</li>
-		  </ul>
-		  <p>As you can see in the corner of the red triangle zoomed in, supersampling allows the edges to be more clearly defined and less jagged. As we increase the sampling_rate from 1 to 4 to 9 to 16, it gets better and better.</p>
-		  <p>Supersample Rate 1:</p>
-		  <p><img src="images/task2img1.png" alt="test4 image 1" width="800px" align="middle"/></p>
-		  <p>Supersample Rate 4:</p>
-		  <p><img src="images/task2img2.png" alt="test4 image 1" width="800px" align="middle"/></p>
-		  <p>Supersample Rate 9:</p>
-		  <p><img src="images/task2img3.png" alt="test4 image 1" width="800px" align="middle"/></p>
-		  <p>Supersample Rate 16:</p>
-		  <p><img src="images/task2img4.png" alt="test4 image 1" width="800px" align="middle"/></p>
+          <h2>Task 2: Bezier Surfaces with Separable 1D de Casteljau</h2>
+		  <p>
+			In addition to Bezier Curves, de Castelijau’s algorithm can also be extended to Bezier surfaces. In this case, if we’re given a grid of n * n of original grid points (all of them also being 3D points), 
+			we can take the algorithm and find the final, single point for each for in the grid. For example, if our grid of controls points is called controlPoints, then we would want to find the final point for 
+			controlPoints[0], controlPoints[0], … and all the way to controlPoints[n-1]. This is evaluated with the parameter u. Once we have those n control points, we then apply the algorithm again, but instead, 
+			we evaluate it with the parameter v. For this implementation, we used the algorithm to primarily find the final control point, instead of only evaluating it at a single subdivision step and this ultimately 
+			resulted in a teapot model that uses de Castelijau’s algorithm for its surface. 
+			</p>
+			<div id="centerImage">
+				<img src="images/teapot_surface.png" class="centerImage" width="400px" style="margin: 5px 5px 5px 5px;">
+				<figcaption>A teapot model whose surface was evaluated with de Castelijau’s algorithm</figcaption>	
+			</div>
 		</section>
 
 		<hr class="divider">
