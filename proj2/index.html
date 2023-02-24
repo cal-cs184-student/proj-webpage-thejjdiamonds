@@ -82,7 +82,7 @@
           <ul class="nav flex-column">
 			<li class="nav-item"><a class="nav-link" href="#idocs_header">Task 1: Bezier Curves with 1D de Casteljau Subdivision</a></li>
 			<li class="nav-item"><a class="nav-link" href="#idocs_navbar">Task 2: Bezier Surfaces with Separable 1D de Casteljau</a></li>
-			<li class="nav-item"><a class="nav-link" href="#idocs_sidebar">Task 3: Transforms</a></li>
+			<li class="nav-item"><a class="nav-link" href="#idocs_sidebar">Task 3: Area-Weighted Vertex Normals </a></li>
 			<li class="nav-item"><a class="nav-link" href="#idocs_footer">Task 4: Barycentric coordinates</a></li>
 			<li class="nav-item"><a class="nav-link" href="#idocs_box_layout">Task 5: &quot;Pixel sampling&quot; for texture mapping</a></li>
 			<li class="nav-item"><a class="nav-link" href="#idocs_content">Task 6: &quot;Level sampling&quot; with mipmaps for texture mapping</a></li>
@@ -99,7 +99,7 @@
         
 		<hr class="divider">
 		
-		<!-- Project 1: Overview
+		<!-- Project 2: Overview
 		============================ -->
         <section id="idocs_layout">
           <h2>Project 2: Overview</h2>
@@ -190,11 +190,25 @@
 		<!-- Sidebar
 		============================ -->
         <section id="idocs_sidebar">
-          <h2>Task 3: Transforms</h2>
-          <p>I rotated cubeman’s arms so that it looks like he is holding one hand at his waist and waving with the other hand. To make the bending arms look a bit more natural, those rotated forearm rectangles were also translated to be closer to his body, and also translated up and down as needed.</p>
-          <p><img src="images/my_robot.png" alt="test4 image 1" width="800px" align="middle"/></p>
-          <p>These are the matrices we implemented for each transform: </p>
-          <p><img src="images/transformeq.png" alt="test4 image 1" width="800px" align="middle"/></p>
+          <h2>Task 3: Area-Weighted Vertex Normals</h2>
+		  <p>
+			Given our starting vertex, we first retrieved one of its half edges. We also created a 3D vector that would keep track of the sum of our area-weighted normals. From the half edge that we retrieved, we 
+			then traversed along the current face to get the neighboring vertices of our current vertex - with these vertices, we can compute the area of a triangle by finding the cross product of two of its edges, 
+			taking its norm, and then dividing by two. Because we were working with a half-edge data structure, we were able to find the normal of the current face by calling on the appropriate methods, specifically 
+			accessing face() from the current half-edge, and normal() from our current face. We then found the area-weighted normals (i.e. multiplied the area of the face with its normal). This result was stored in 
+			the 3D vector that would track the summation of our area-weighted normals. From here we traversed through the rest of the faces that were incident to our original starting vertex using twin() and aggregated 
+			all our results in the 3D vector. Once we reached the original halfedge that we first started on, it gave us indication that we had finished our traversal. Finally, we normalized the sum of all area-weighted 
+			normals using the in-built function unit(). 
+		   </p>
+		   <div id="centerImage">
+				<img src="images/default_teapot_shading.png" class="centerImage" width="400px" style="margin: 5px 5px 5px 5px;">
+				<figcaption>Teapot with default shading (figure is not smoothed)</figcaption>	
+			</div>
+			<div id="centerImage">
+				<img src="images/normalized_teapot_shading.png" class="centerImage" width="400px" style="margin: 5px 5px 5px 5px;">
+				<figcaption>Teapot with averaged vertex normals (producing a more smooth look)</figcaption>	
+			</div>
+		  </div>
         </section>
 		
         <hr class="divider">
