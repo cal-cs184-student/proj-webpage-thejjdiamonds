@@ -6,7 +6,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1.0, shrink-to-fit=no">
 <link href="assets/images/diamond.png" rel="icon" />
 <title>Project 2</title>
-<meta name="description" content="Your ThemeForest item Name and description">
+<meta name="description" content="184 Project 1 Writeup">
 <meta name="author" content="harnishdesign.net">
 
 <!-- Stylesheet
@@ -53,13 +53,6 @@
         <!-- <a class="logo ml-md-3" href="index.html" title="iDocs Template"> <img src="assets/images/logo.png" alt="iDocs Template"/> </a>  -->
 		<span class="text-2 ml-2">Jasmine Lin and Jennifer Prince</span> 
         <!-- Logo End -->
-
-       <!--  <ul class="social-icons social-icons-sm ml-lg-2 mr-2">
-          <li class="social-icons-twitter"><a data-toggle="tooltip" href="http://www.twitter.com/harnishdesign/" target="_blank" title="" data-original-title="Twitter"><i class="fab fa-twitter"></i></a></li>
-          <li class="social-icons-facebook"><a data-toggle="tooltip" href="http://www.facebook.com/harnishdesign/" target="_blank" title="" data-original-title="Facebook"><i class="fab fa-facebook-f"></i></a></li>
-          <li class="social-icons-dribbble"><a data-toggle="tooltip" href="http://www.dribbble.com/harnishdesign/" target="_blank" title="" data-original-title="Dribbble"><i class="fab fa-dribbble"></i></a></li>
-        </ul>
-      </div> -->
     </nav>
     <!-- Navbar End --> 
   </header>
@@ -73,44 +66,65 @@
 	============================ -->
 	<div class="idocs-navigation bg-light">
       <ul class="nav flex-column ">
-        <!-- <li class="nav-item"><a class="nav-link active" href="#idocs_start">Overview</a>
-        	<ul class="nav flex-column">
-	        	<li class="nav-item"><a class="nav-link" href="index.html">Overview</a></li>
-			</ul>
-        </li> -->
-        <li class="nav-item"><a class="nav-link" href="#idocs_layout">Project 2</a>
+      	<li class="nav-item"><a class="nav-link" href="#overview_header">Project 2: MeshEdit</a>
           <ul class="nav flex-column">
-			<li class="nav-item"><a class="nav-link" href="#idocs_header">Task 1: Bezier Curves with 1D de Casteljau Subdivision</a></li>
-			<li class="nav-item"><a class="nav-link" href="#idocs_navbar">Task 2: Bezier Surfaces with Separable 1D de Casteljau</a></li>
-			<li class="nav-item"><a class="nav-link" href="#idocs_sidebar">Task 3: Area-Weighted Vertex Normals </a></li>
-			<li class="nav-item"><a class="nav-link" href="#idocs_footer">Task 4: Barycentric coordinates</a></li>
-			<li class="nav-item"><a class="nav-link" href="#idocs_box_layout">Task 5: &quot;Pixel sampling&quot; for texture mapping</a></li>
-			<li class="nav-item"><a class="nav-link" href="#idocs_content">Task 6: &quot;Level sampling&quot; with mipmaps for texture mapping</a></li>
-			<li class="nav-item"><a class="nav-link" href="#idocs_link">Website Link</a></li>
+						<li class="nav-item"><a class="nav-link" href="#overview_content">Overview</a></li>
           </ul>
         </li>
+        <li class="nav-item"><a class="nav-link" href="#section1_header">Section I: Bezier Curves and Surfaces</a>
+          <ul class="nav flex-column">
+						<li class="nav-item"><a class="nav-link" href="#task1">Task 1: Bezier Curves with 1D de Casteljau Subdivision</a></li>
+						<li class="nav-item"><a class="nav-link" href="#task2">Task 2: Bezier Surfaces with Separable 1D de Casteljau</a></li>
+          </ul>
+        </li>
+        <li class="nav-item"><a class="nav-link" href="#section2_header">Section II: Triangle Meshes and Half-Edge Data Structure</a>
+        	<ul class="nav flex-column">
+        		<li class="nav-item"><a class="nav-link" href="#task3">Task 3: Area-Weighted Vertex Normals </a></li>
+						<li class="nav-item"><a class="nav-link" href="#task4">Task 4: Edge Flip</a></li>
+						<li class="nav-item"><a class="nav-link" href="#task5">Task 5: Edge Split</a></li>
+						<li class="nav-item"><a class="nav-link" href="#task6">Task 6: Loop Subdivision for Mesh Upsampling</a></li>
+        	</ul>
+        </li>
+        <li class="nav-item"><a class="nav-link" href="#website_link">Website Link</a>
+        </li>
       </ul>
-    </div>
-    
-    <!-- Docs Content
+  </div>		
+        
+		<!-- <hr class="divider"> -->
+		<!-- Docs Content
 	============================ -->
     <div class="idocs-content">
       <div class="container"> 		
         
 		<hr class="divider">
-		
-		<!-- Project 2: Overview
+
+		<!-- Project 2 Header
 		============================ -->
-        <section id="idocs_layout">
-          <h2>Project 2: Overview</h2>
-          <p><img src="images/lion.png" alt="rasterized lion" width="800px" align="middle"/></p>
-          <p class="lead mb-5">In this project, we implemented a simple rasterizer that can draw SVG components. The rasterizer implements several interesting features, including pixel sampling, transforms, and texture mapping. We were also able to use those features in combination with each other, resulting in slightly different images depending on the method used. One of the most interesting things we learned was the huge difference between using different mipmap levels. For example, sampling at mipmap level 0 compared to level 1 produced signifcantly different results, more so than expected, as it was very clear how the image changed when we sampled at different resolutions. This became more apparent as we increased our level number. </p>
+        <section id="overview_header">
+          <h1>Project 2: MeshEdit</h1>
+          <div id="centerImage">
+          	<p><img src="images/cow.PNG" alt="cow mesh" width="800px" align="middle"/></p>
+        	</div>
         </section>
 		
-		
-        <!-- Header
+		<!-- Overview
 		============================ -->
-        <section id="idocs_header">
+        <section id="overview_content">
+          <h2>Overview</h2>
+          <p class="lead mb-5">In this project we worked with geometric models. We constructed Bezier curves and surfaces using de Casteljau algorithm, and implemented functions to edit triangle meshes, including a function to perform loop subdivision.</p>
+        </section>
+
+    <hr class="divider">
+
+    <!-- Section 1 Header
+		============================ -->
+        <section id="section1_header">
+          <h1>Section I: Bezier Curves and Surfaces</h1>
+        </section>
+
+        <!-- Task 1 Content
+		============================ -->
+        <section id="task1">
           <h2>Task 1: Bezier Curves with 1D de Casteljau Subdivision</h2>
 		  <p>De Castelijau’s algorithm is an approach to obtain Bezier curves given a set of control points. Control points are used to determine the shape of a curve, so with de Castelijau’s algorithm, we linearly interpolate between two adjacent control points based on a parameter of t that is between 0 and 1. Each time we linearly interpolate between a pair of control points, it produces a new control point for the next subdivision level. We continue this process recursively until there is only one point left, which is the final point our drawn curve is tangent to.</p>
           	<p>Below is an example of what the algorithm's process looks like and how the final resulting Bezier curve is produced: </p>
@@ -166,11 +180,9 @@
 			  </div>
         </section>
 		
-		<hr class="divider">
-		
-		<!-- Navbar
+		<!-- Task 2 Content
 		============================ -->
-        <section id="idocs_navbar">
+        <section id="task2">
           <h2>Task 2: Bezier Surfaces with Separable 1D de Casteljau</h2>
 		  <p>
 			In addition to Bezier Curves, de Castelijau’s algorithm can also be extended to Bezier surfaces. In this case, if we’re given a grid of n * n of original grid points (all of them also being 3D points), 
@@ -186,10 +198,16 @@
 		</section>
 
 		<hr class="divider">
-		
-		<!-- Sidebar
+
+		<!-- Section 2 Header
 		============================ -->
-        <section id="idocs_sidebar">
+        <section id="section2_header">
+          <h1>Section II: Triangle Meshes and Half-Edge Data Structure</h1>
+        </section>
+		
+		<!-- Task 3 Content
+		============================ -->
+        <section id="task3">
           <h2>Task 3: Area-Weighted Vertex Normals</h2>
 		  <p>
 			Given our starting vertex, we first retrieved one of its halfedges. We also created a 3D vector that would keep track of the sum of our area-weighted normals. From the halfedge that we retrieved, we 
@@ -213,114 +231,154 @@
 		
         <hr class="divider">
 
-        <!-- Footer
+        <!-- Task 4 Content
 		============================ -->
-        <section id="idocs_footer">
-          <h2>Task 4: Barycentric coordinates</h2>
-          <p>Barycentric coordinates are a coordinate system based on the vertices of a triangle. It provides an easy way to check if a point is within a triangle, and a way to linearly interpolate across the triangle. This linear interpolation isn’t just limited to position coordinates – it can be used to interpolate anything across a triangle, including color. This is what results in the lovely gradient we see in test7.svg, and also in these example triangles with three distinct colors at each corner:</p>
-          <p><img src="images/test9.png" alt="test4 image 1" width="800px" align="middle"/></p>
-          <p>The color wheel in test7:</p>
-          <p><img src="images/test7.png" alt="test4 image 1" width="800px" align="middle"/></p>
-          <p>Barycentric coordinates are calculated from the three vertices of a triangle as follows:</p>
-          <p><img src="images/baryeq.png" alt="test4 image 1" width="800px" align="middle"/></p>
+        <section id="task4">
+          <h2>Task 4: Edge Flip</h2>
+          <p>Before implementing the edge flip operation, we made a diagram of the simplest mesh structure – two triangles – to list out all mesh elements before and after an edge flip operation for a given edge.</p>
+          <div id="centerImage">
+					<img src="images/Task4_FlipDiagram1.jpg" class="centerImage" width="400px" style="margin: 5px 5px 5px 5px;">
+					<figcaption>Two Triangle Mesh Elements Before Flip</figcaption>	
+					</div>
+					<div id="centerImage">
+						<img src="images/Task4_FlipDiagram2.jpg" class="centerImage" width="400px" style="margin: 5px 5px 5px 5px;">
+						<figcaption>Two Triangle Mesh Elements After Flip</figcaption>	
+					</div>
+					<p></p>
+					<p>As you can see in the images above, the number of mesh elements stays the same after the flip is applied – 2 faces, 4 vertices, 5 edges, and 10 halfedges.</p>
+          <p>To implement this operation in <code>HalfedgeMesh::flipEdge</code>, we followed the phases described in in this helpful guide that was linked under the HalfEdge Primer Doc: <a href="http://15462.courses.cs.cmu.edu/fall2015content/misc/HalfedgeEdgeOpImplementationGuide.pdf"> http://15462.courses.cs.cmu.edu/fall2015content/misc/HalfedgeEdgeOpImplementationGuide.pdf</a></p>
+          <ul>
+          	<li>First, we listed every mesh element and assigned it its own corresponding Iter variable to make it simpler to keep track of all of them.</li>
+          	<li>For every halfedge element, we use the setNeighbors() method to assign its next, twin, vertex, edge, and face to be what they are in the flipped mesh. We assigned every pointer even if it would have already been pointing to the right element, just so that we did not accidentally miss one.</li>
+          	<li>For every vertex, edge, and face, we set its halfedge pointer to be the right element according to the mesh with the flipped edge. Again, we used a meticulous approach to ensure everything was related correctly.</li>
+          	<li>We returned the edge that was flipped. In this case, it was e0.</li>
+          </ul>
 			<p>
-			Alpha, beta, and gamma end up being the values we want to weight the colors at each of the corresponding vertices to get the smooth gradient.
+			Because we were cautious in our listing of every mesh element and doing every pointer assignment, there was very little debugging to do for this task.
 			</p>
+			<p>Here is the teapot before and after some edge splits and flips:</p>
+			<div id="centerImage">
+					<img src="images/Task4_before.png" class="centerImage" width="400px" style="margin: 5px 5px 5px 5px;">
+					<figcaption>Teapot Before Edge Flips</figcaption>	
+					</div>
+					<div id="centerImage">
+						<img src="images/Task4_after.png" class="centerImage" width="400px" style="margin: 5px 5px 5px 5px;">
+						<figcaption>Teapot After Edge Flips</figcaption>	
+					</div>
         </section>
-        
-		<hr class="divider">
+        <p></p>
 		
-		<!-- Box Layout Style
+		<!-- Task 5 Content
 		============================ -->
-        <section id="idocs_box_layout">
-          <h2>Task 5: "Pixel sampling" for texture mapping</h2>
+        <section id="task5">
+          <h2>Task 5: Edge Split</h2>
           <div>
-            <p>Pixel sampling is a process that converts a coordinate to a texture coordinate, thereby mapping a pixel to the texture map. Breaking this down, these were the general steps that were used to find the texture map coordinate: </p>
-            <ul>
-            	<li>For each rasterized screen sample (or their subpixels if we add in supersampling), we want to evaluate their barycentric coordinates, relative to the vertices of the triangle. From a geometric perspective, this can be seen as finding the proportional distance away from the triangle vertices.</li>
-            	<li>We can then find the texture coordinate with the barycentric coordinates by multiplying alpha, beta and gamma with the vertices of the triangle on the texture map (effectively applying the equation of (x, y) = (alpha * A) + (beta * B) + (gamma * C)) and then scaling it by the size of the mipmap level (which at this stage, is just 0).</li>
-            	<li>Now that we have our corresponding texture map coordinate, we can use one of our pixel sampling methods, nearest or bilinear, to get the information we want from the texture map.</li>
-            </ul>
-            <p><strong>Nearest sampling</strong> involves finding the closest pixel on the texture map relative to our current texture coordinate. This effectively means we round to obtain that nearest pixel. For our implementation of this sampling method, we scaled the coordinates by the (width - 1) and (height - 1) of the texture map inside the function to get the texture coordinate (the main reason we decremented the height and width by 1 was to account for indexing). We then rounded it to the nearest pixel. This gets us the desired texture that we want to use.</p>
-            <p><strong>Bilinear sampling</strong>, on the other hand, can be interpreted as interpolating or “averaging” the colors between the four pixels around our texture coordinate. So instead of using one pixel in bilinear sampling, we rely on four to find the texture we want to return. For this implementation, we started out similarly to nearest sampling, where we had to scale by the width and height of the mipmap. However, by using the floor and ceil function, we then calculated the horizontal and vertical offset, specifically the horizontal and vertical difference from the four nearest points. We then grabbed the associated texture for each of the four nearest points and interpolated them (two times horizontally, and one time vertically), which resulted in the desired texture.</p>
-            <p>Images:</p>
-            <ul>
-            	<li>Top Left: Nearest Sampling, Sampling Rate 1</li>
-            	<li>Bottom Left: Nearest Sampling, Sampling Rate 16</li>
-            	<li>Top Right: Bilinear, Sampling Rate 1</li>
-            	<li>Bottom Right: Bilinear Sampling, Sampling Rate 16</li>
-            </ul>
-            <div class="row">
-			  <div class="column">
-			    <img src="images/Task5_Nearest_1.png" alt="Snow" width="400px">
-			  </div>
-			  <div class="column">
-			    <img src="images/Task5_Nearest_16.png" alt="Forest" width="400px">
-			  </div>
-			</div>
-			<div class="row">
-			  <div class="column">
-			    <img src="images/Task5_Bilinear_1.png" alt="Snow" width="400px">
-			  </div>
-			  <div class="column">
-			    <img src="images/Task5_Bilinear_16.png" alt="Forest" width="400px">
-			  </div>
-			</div>
-            <p>To compare between the different images, we zoomed in on an island. Comparing between both sampling methods and sampling rate, we first look at both methods when they’re sampled at a rate of 1 pixel. With an up close shot, we can see that with nearest sampling, there’s a bit more color variation than there is in bilinear sampling. In other words, if we were to focus on one pixel, there would be more color variation around it. The same can be said with a sampling rate of 16, so with bilinear sampling, overall, we tend to see “smoother” or more blended pixels and lines (and with the image above, it creates a more smooth map). This difference becomes more apparent when we’re working with sharp lines and especially with not as many colors - since bilinear sampling “averages” out the color, it becomes more distinct which sampling method is which based on the coloration of individual pixels. </p>
-          </div>
+            <p>Before implementing the edge split operation, we again made a diagram of a two-triangle mesh to see which elements are affected by an edge splitting.</p>
+            <div id="centerImage">
+					<img src="images/Task5_SplitDiagram1.jpg" class="centerImage" width="400px" style="margin: 5px 5px 5px 5px;">
+					<figcaption>Two Triangle Mesh Elements Before Split</figcaption>	
+					</div>
+					<div id="centerImage">
+						<img src="images/Task5_SplitDiagram2.jpg" class="centerImage" width="400px" style="margin: 5px 5px 5px 5px;">
+						<figcaption>Two Triangle Mesh Elements After Split</figcaption>	
+					</div>
+					<p></p>
+					<p>As you can see in the images above, a few more mesh elements are added after a split – 1 vertex, two faces, 3 edges, and 6 halfedges.</p>
+          <p>To implement this operation in <code>HalfedgeMesh::splitEdge</code>, we followed the same phases with one additional step of allocating new mesh elements.</a></p>
+          <ul>
+          	<li>First, we listed every mesh element and assigned it its own corresponding Iter variable to make it simpler to keep track of all of them.</li>
+          	<li>We created the new mesh elements listed above. For the newly created vertex, we set its position to be the midpoint of v0 and v1 by adding the coordinates along each axis and dividing by two.</li>
+          	<li>For every halfedge element, we use the setNeighbors() method to assign their next, twin, vertex, edge, and face to be what they are in the flipped mesh. We assigned every pointer even if it should already be pointing to the right element, just so that we did not accidentally miss one.</li>
+          	<li>For every vertex, edge, and face, we set its halfedge pointer to be the right element according to the mesh with the flipped edge. Again, we used a meticulous approach to ensure everything was related correctly.</li>
+          	<li>We returned the new vertex element v4 that was created earlier.</li>
+          </ul>
+			<p>
+			Because we were cautious  in our listing of every mesh element and doing every pointer assignment, there was very little debugging to do for this task.
+			</p>
+			<p>Here is a mesh before and after some edge splits:</p>
+			<div id="centerImage">
+					<img src="images/Task5_before_edgesplit_cow.png" class="centerImage" width="400px" style="margin: 5px 5px 5px 5px;">
+					<figcaption>Cow Before Edge Splits</figcaption>	
+					</div>
+					<div id="centerImage">
+						<img src="images/Task5_after_edgesplit_cow.png" class="centerImage" width="400px" style="margin: 5px 5px 5px 5px;">
+						<figcaption>Cow After Edge Splits</figcaption>	
+					</div>
+					<p></p>
         </section>
 		
-		<hr class="divider">
-		
-		<!-- Content
+		<!-- Task 6 Content
 		============================ -->
-        <section id="idocs_content">
-          <h2>Task 6: "Level sampling" with mipmaps for texture mapping</h2>
-          <p>Level sampling is a process that refers to sampling from mipmaps, which can be thought of as different versions of a texture map where each version has some varying resolution or detail. Generally speaking, the higher you go up in mipmap levels, the lower the resolution becomes (and vice versa). With level sampling, we’re able to pick and choose which resolution we want to show for a certain pixel.</p>
-          <p>Our implementation of level sampling was done in rasterize_textured_triangle. The overall structure of it was similar to what was done in previous methods, rasterize_triangle and rasterize_interpolated_color_triangle. The main process is as follows: </p>
+    <section id="task6">
+          <h2>Task 6: Loop Subdivision for Mesh Upsampling</h2>
+          <p>Loop subdivision is an upsampling algorithm that divides each triangle that makes up a mesh into 4 smaller triangles (4-1 subdivision), with each new triangle’s vertices weighted in 3D space appropriately. This is implemented by performing an edge split on every original edge in the mesh, and then flipping the necessary edges to create the right subdivisions.</p>
+          <p>Following the recommended implementation detailed on the spec and commented in the starter code, we did the following:</p>
           <ul>
-          	<li>For each rasterized screen sample (or their subpixels if supersampling was included), we calculated the barycentric coordinates for three points: (x, y), (x + 1), (x, y + 1). The main reason for this is because we wanted to apply the formula of  <img src="images/task6eq.png" alt="test4 image 1" width="800px" align="middle"/></li>
-          	<li>By calculating the barycentric coordinates of those three points, we could obtain the derivatives as stated in the formula. The derivative can be thought of as an instantaneous rate of change, so once we computed the barycentric coordinates and found a corresponding point on the texture map, we could subtract them to obtain the derivative. More specifically, let’s say the vector v1 represents the point on the texture map of (x, y), v2 represents it for (x + 1, y) and v3 and represents it for (x, y + 1), then v2 - v1 and v3 - v1 will give us the needed derivatives.</li>
-          	<li>Once inside the get_level function, we scaled by the width and height of the mipmap accordingly, and then applied the formula to find the level. This involved calculating the expressions under the square root, which is finding the norm or magnitude of those vectors, taking the max, and then finding the log base 2 of it. And finally, we would get our desired mipmap level.</li>
+          	<li><strong>Compute new positions for all the vertices in the input mesh</strong>: We iterated through every vertex and marked each as not new (i.e. part of the original mesh). We then iterated through every neighboring vertex to get the sum of all original positions of the neighboring vertices. With this sum, the degree of the vertex, and the original position of the vertex, we calculated the new position of the vertex (what it will be in the subdivided mesh) and stored that value in the newPosition member variable. The following rule describes how the position is updated: <code>(1 - n * u) * original_position + u * original_neighbor_position_sum</code></li>
+          	<li><strong>Compute the updated vertex positions associated with edges</strong>: We iterated through every edge and collected all the corresponding halfedges and vertices for the edge. Using the position of the four vertices around the two triangles that share this edge, we calculated the updated position for the vertex that would soon be added to the midpoint of this edge when edge splitting occurs. The following rule calculates this value: <code>3/8 * (A + B) + 1/8 * (C + D)</code> with A, B, C, and D being the vertex positions.</li>
+          	<li><strong>Split every edge in the mesh</strong>: We iterated through every original edge in the mesh and called splitEdge on each. To ensure we only went through edges from the original mesh (and not any of the newly created edges from calling splitEdge), we saved the number of edges before iterating, and only iterated that many times to perform the splitting operation. In splitEdge, we also made sure to only mark two edges as new edges, leaving the third <i>technically</i> new edge alone as it acts as part of the original edge.</li>
+          	<li><strong>Flip any new edge that connects an old and new vertex</strong>: Now iterating through every edge in the mesh, we flipped any edge that was marked as new and was connected to an old vertex and a new vertex.</li>
+          	<li><strong>Copy the new vertex positions into final <code>Vertex::position</code></strong>: Finally, we did one more iteration through every vertex in the mesh and updated its position variable to be the value stored in newPosition.</li>
           </ul>
-          <p>From here, we needed to get our desired texture point from the mipmap, and the means to get it was dependent on the type of level sampling we used:</p>
-          <ul>
-          	<li><strong>Always level 0:</strong> This means we would always sample from the lowest level, or level 0, where it was full resolution. With this choice, we would pixel sample normally, as we had done in Task 5. </li>
-          	<li><strong>Nearest D (nearest level):</strong> This involved choosing the level that was considered the closest. Since there was a certain limit on the valid choices of mipmap level, we had to clamp down on the valid choices (i.e. if the calculated level was less than 0, we set the level to 0 and vice versa if it was greater than the size of the mipmap). We would then pass in the closest level into the pixel sampling functions that were implemented in Task 5. </li>
-          	<li><strong>Linear interpolation:</strong> This choice involved “interpolation” of the levels. After we calculated the level, we wanted to find the weights that we would use to calculate the weighted average of the pixel sampling methods. In this case, the weight would be considered the difference between the level and the ones above it and below it. So depending on the type of pixel sampling method, the floor(level) and the ceil(level) would be passed into the appropriate methods and we would use the result to find the weighted average based on the weights we found earlier. And from there, it would return the desired texture we wanted.</li>
-          </ul>
-          <p>Now, there are three available methods we can use to create our image, with each method having its own tradeoffs. With level sampling, we use a significant more amount of memory, since we need to store the different levels. But in turn, it produces notable results for anti-aliasing and is faster than supersampling. Pixel sampling, on the other hand, doesn’t have as much memory overhead and tends to be faster compared to other methods, but can lead to more rendering artifacts. Depending on the pixel sampling method, bilinear can be slower than nearest pixel sampling. Finally, supersampling is the most expensive among the three, in terms of memory and speed, but it also significantly reduces aliasing. </p>
-          <p>Example:</p>
-          <ul>
-          	<li>Top Left: L_Zero and P_Nearest</li>
-          	<li>Bottom Left: L_Zero and P_Linear</li>
-          	<li>Top Right: L_Nearest and P_Nearest</li>
-          	<li>Bottom Right: L_Nearest and P_Linear</li>
-          </ul>
-          <div class="row">
-			  <div class="column">
-			    <img src="images/Task6ZeroL_PNearest.png" alt="Snow" width="400px">
-			  </div>
-			  <div class="column">
-			    <img src="images/Task6NearestL_PNearest.png" alt="Forest" width="400px">
-			  </div>
-			</div>
-			<div class="row">
-			  <div class="column">
-			    <img src="images/Task6ZeroL_PLinear.png" alt="Snow" width="400px">
-			  </div>
-			  <div class="column">
-			    <img src="images/Task6NearestL_PLinear.png" alt="Forest" width="400px">
-			  </div>
-			</div>
-          <p>Looking at the images with varying level sampling and pixel sampling, there is a notable difference between all of them. With just level zero and nearest pixel sampling, we result in an image that has more aliasing than the other images. Level zero and bilinear pixel sampling reduces the aliasing to a certain extent. With nearest level sampling, it smooths out the images too, with a combination of nearest level and bilinear pixel sampling producing the most smooth image (with the edges more “blurred” out).</p>
-        </section>
+          <p>After loop subdivision, sharp edges and corners become much less prominent. Corners and edges curve more, making the shape as a whole become rounder and smoother. However, at very sharp corners, they can become more pronounced. By making the triangle mesh around a sharp corner have more edge splits, we can minimize the effect.</p>
+          <div id="centerImage">
+						<img src="images/Task6_compare1.png" class="centerImage" width="400px" style="margin: 5px 5px 5px 5px;">
+						<figcaption>Cube vs. Icosahedron -- no subdivision</figcaption>	
+					</div>
+					<div id="centerImage">
+						<img src="images/Task6_compare2.png" class="centerImage" width="400px" style="margin: 5px 5px 5px 5px;">
+						<figcaption>Cube vs. Icosahedron -- 1 iteration of subdivision</figcaption>	
+					</div>
+					<div id="centerImage">
+						<img src="images/Task6_compare3.png" class="centerImage" width="400px" style="margin: 5px 5px 5px 5px;">
+						<figcaption>Cube vs. Icosahedron -- 2 iterations of subdivision</figcaption>	
+					</div>
+					<div id="centerImage">
+						<img src="images/Task6_compare4.png" class="centerImage" width="400px" style="margin: 5px 5px 5px 5px;">
+						<figcaption>Cube vs. Icosahedron -- 3 iterations of subdivision</figcaption>	
+					</div>
+					<div id="centerImage">
+						<img src="images/Task6_compare5.png" class="centerImage" width="400px" style="margin: 5px 5px 5px 5px;">
+						<figcaption>Cube vs. Icosahedron -- 4 iterations of subdivision</figcaption>	
+					</div>
+					<div id="centerImage">
+						<img src="images/Task6_compare6.png" class="centerImage" width="400px" style="margin: 5px 5px 5px 5px;">
+						<figcaption>Cube vs. Icosahedron -- 5 iterations of subdivision</figcaption>	
+					</div>
+					<p></p>
+          <p>Using the given cube input as an example, we can see that asymmetric meshes will remain asymmetric even after loop subdivision. Comparing the cube to the icosahedron, the cube has asymmetric corners that the icosahedron does not have. To make the cube also end up with a symmetrical result, we can preprocess the original mesh symmetric by splitting the edge that is the diagonal of each face of the cube (making each of the six faces of the cube made up of four triangles instead of two).</p>
+          <div id="centerImage">
+						<img src="images/Task6_cube.png" class="centerImage" width="400px" style="margin: 5px 5px 5px 5px;">
+						<figcaption>Cube With No Preprocessing</figcaption>	
+					</div>
+					<div id="centerImage">
+						<img src="images/Task6_preprocess_cube.png" class="centerImage" width="400px" style="margin: 5px 5px 5px 5px;">
+						<figcaption>Cube With Preprocessing</figcaption>	
+					</div>
+					<div id="centerImage">
+						<img src="images/Task6_preprocess_cube1.png" class="centerImage" width="400px" style="margin: 5px 5px 5px 5px;">
+						<figcaption>Preprocessed Cube After 1 Subdivision</figcaption>	
+					</div>
+					<div id="centerImage">
+						<img src="images/Task6_preprocess_cube2.png" class="centerImage" width="400px" style="margin: 5px 5px 5px 5px;">
+						<figcaption>Preprocessed Cube After 2 Subdivisions</figcaption>	
+					</div>
+					<div id="centerImage">
+						<img src="images/Task6_preprocess_cube4.png" class="centerImage" width="400px" style="margin: 5px 5px 5px 5px;">
+						<figcaption>Preprocessed Cube After 3 Subdivisions</figcaption>	
+					</div>
+					<p></p>
+    </section>
 
-        <hr class="divider">
 
-        <section id="idocs_link">
-        	<p>Here is the link to this website: <a href="https://cal-cs184-student.github.io/proj-webpage-thejjdiamonds/proj1/index.html" > link</a></p>
-        	<p><a href="https://cal-cs184-student.github.io/proj-webpage-thejjdiamonds/proj1/index.html"> https://cal-cs184-student.github.io/proj-webpage-thejjdiamonds/proj1/index.html</a></p>
+    <hr class="divider">
+
+    <!-- Website Link -->
+
+
+        <section id="website_link">
+        	<p>Here is the link to this website: <a href="https://cal-cs184-student.github.io/proj-webpage-thejjdiamonds/proj2/index.html" > link</a></p>
+        	<p><a href="https://cal-cs184-student.github.io/proj-webpage-thejjdiamonds/proj2/index.html"> https://cal-cs184-student.github.io/proj-webpage-thejjdiamonds/proj2/index.html</a></p>
         </section>
 		  
   
