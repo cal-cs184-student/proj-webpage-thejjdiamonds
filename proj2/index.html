@@ -112,7 +112,7 @@
 		============================ -->
         <section id="idocs_header">
           <h2>Task 1: Bezier Curves with 1D de Casteljau Subdivision</h2>
-		  <p>De Castelijau’s algorithm is an approach to obtain Bezier curves given a set of control points. Control points are used to determine the shape of a curve, so with de Castelijau’s algorithm, we linearly interpolate between two adjacent control points based on a parameter of t that is between 0 and 1. Each time we linearly interpolate between a pair of control points, it produces a new control point for the next subdivision level. We continue this process recursively until there is only one point left, which is the point our drawn curve is tangent to.</p>
+		  <p>De Castelijau’s algorithm is an approach to obtain Bezier curves given a set of control points. Control points are used to determine the shape of a curve, so with de Castelijau’s algorithm, we linearly interpolate between two adjacent control points based on a parameter of t that is between 0 and 1. Each time we linearly interpolate between a pair of control points, it produces a new control point for the next subdivision level. We continue this process recursively until there is only one point left, which is the final point our drawn curve is tangent to.</p>
           	<p>Below is an example of what the algorithm's process looks like and how the final resulting Bezier curve is produced: </p>
 			  <div class="row">
 				<div class="column">
@@ -174,10 +174,10 @@
           <h2>Task 2: Bezier Surfaces with Separable 1D de Casteljau</h2>
 		  <p>
 			In addition to Bezier Curves, de Castelijau’s algorithm can also be extended to Bezier surfaces. In this case, if we’re given a grid of n * n of original grid points (all of them also being 3D points), 
-			we can take the algorithm and find the final, single point for each for in the grid. For example, if our grid of controls points is called controlPoints, then we would want to find the final point for 
-			controlPoints[0], controlPoints[0], … and all the way to controlPoints[n-1]. This is evaluated with the parameter u. Once we have those n control points, we then apply the algorithm again, but instead, 
-			we evaluate it with the parameter v. For this implementation, we used the algorithm to primarily find the final control point, instead of only evaluating it at a single subdivision step and this ultimately 
-			resulted in a teapot model that uses de Castelijau’s algorithm for its surface. 
+			we can take the algorithm and find the final, single point for each row in the grid. For example, if our grid of control points is called controlPoints, then we would want to find the final point for 
+			controlPoints[0], controlPoints[1], … and all the way to controlPoints[n-1]. This is evaluated with the parameter u. Once we have those n control points, we then apply the algorithm again, but instead, 
+			we evaluate it with the parameter v. We do so until we are left with one final point. For this implementation, we used the algorithm to primarily find the final control point, instead of only evaluating 
+			it at a single subdivision step and this ultimately resulted in a teapot model that uses de Castelijau’s algorithm for its surface. 
 			</p>
 			<div id="centerImage">
 				<img src="images/teapot_surface.png" class="centerImage" width="400px" style="margin: 5px 5px 5px 5px;">
@@ -192,10 +192,10 @@
         <section id="idocs_sidebar">
           <h2>Task 3: Area-Weighted Vertex Normals</h2>
 		  <p>
-			Given our starting vertex, we first retrieved one of its half edges. We also created a 3D vector that would keep track of the sum of our area-weighted normals. From the half edge that we retrieved, we 
+			Given our starting vertex, we first retrieved one of its halfedges. We also created a 3D vector that would keep track of the sum of our area-weighted normals. From the halfedge that we retrieved, we 
 			then traversed along the current face to get the neighboring vertices of our current vertex - with these vertices, we can compute the area of a triangle by finding the cross product of two of its edges, 
-			taking its norm, and then dividing by two. Because we were working with a half-edge data structure, we were able to find the normal of the current face by calling on the appropriate methods, specifically 
-			accessing face() from the current half-edge, and normal() from our current face. We then found the area-weighted normals (i.e. multiplied the area of the face with its normal). This result was stored in 
+			taking its norm, and then dividing by two. Because we were working with a halfedge data structure, we were able to find the normal of the current face by calling on the appropriate methods, specifically 
+			accessing face() from the current halfedge, and normal() from our current face. We then found the area-weighted normals (i.e. multiplied the area of the face with its normal). This result was stored in 
 			the 3D vector that would track the summation of our area-weighted normals. From here we traversed through the rest of the faces that were incident to our original starting vertex using twin() and aggregated 
 			all our results in the 3D vector. Once we reached the original halfedge that we first started on, it gave us indication that we had finished our traversal. Finally, we normalized the sum of all area-weighted 
 			normals using the in-built function unit(). 
