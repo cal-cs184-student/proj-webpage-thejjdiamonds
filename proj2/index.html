@@ -79,7 +79,7 @@
         </li>
         <li class="nav-item"><a class="nav-link" href="#section2_header">Section II: Triangle Meshes and Half-Edge Data Structure</a>
         	<ul class="nav flex-column">
-        		<li class="nav-item"><a class="nav-link" href="#task3">Task 3: Area-Weighted Vertex Normals </a></li>
+        		<li class="nav-item"><a class="nav-link" href="#task3">Task 3: Area-Weighted Vertex Normals</a></li>
 						<li class="nav-item"><a class="nav-link" href="#task4">Task 4: Edge Flip</a></li>
 						<li class="nav-item"><a class="nav-link" href="#task5">Task 5: Edge Split</a></li>
 						<li class="nav-item"><a class="nav-link" href="#task6">Task 6: Loop Subdivision for Mesh Upsampling</a></li>
@@ -103,7 +103,8 @@
         <section id="overview_header">
           <h1>Project 2: MeshEdit</h1>
           <div id="centerImage">
-          	<p><img src="images/cow.PNG" alt="cow mesh" width="800px" align="middle"/></p>
+          	<!-- <p><img src="images/cow.PNG" alt="cow mesh" width="800px" align="middle"/></p> -->
+          	<p><img src="images/cow.gif" alt="cow mesh" width="800px" align="middle"/></p>
         	</div>
         </section>
 		
@@ -111,7 +112,7 @@
 		============================ -->
         <section id="overview_content">
           <h2>Overview</h2>
-          <p class="lead mb-5">In this project we worked with geometric models. We constructed Bezier curves and surfaces using de Casteljau algorithm, and implemented functions to edit triangle meshes, including a function to perform loop subdivision.</p>
+          <p class="lead mb-5">In this project we worked with geometric models. We constructed Bezier curves and surfaces using de Casteljau algorithm, and implemented functions to edit triangle meshes, including a function to perform loop subdivision. Working with the Halfedge data structure was really interesting, as it provided an easy way to iterate through elements in a mesh and thus efficiently describe the structure of a 3D geometric model.</p>
         </section>
 
     <hr class="divider">
@@ -126,8 +127,8 @@
 		============================ -->
         <section id="task1">
           <h2>Task 1: Bezier Curves with 1D de Casteljau Subdivision</h2>
-		  <p>De Castelijau’s algorithm is an approach to obtain Bezier curves given a set of control points. Control points are used to determine the shape of a curve, so with de Castelijau’s algorithm, we linearly interpolate between two adjacent control points based on a parameter of t that is between 0 and 1. Each time we linearly interpolate between a pair of control points, it produces a new control point for the next subdivision level. We continue this process recursively until there is only one point left, which is the final point our drawn curve is tangent to.</p>
-          	<p>Below is an example of what the algorithm's process looks like and how the final resulting Bezier curve is produced: </p>
+		  		<p>De Castelijau’s algorithm is an approach to obtain Bezier curves given a set of control points. Control points are used to determine the shape of a curve, so with de Castelijau’s algorithm, we linearly interpolate between two adjacent control points based on a parameter of <code>t</code> that is between 0 and 1. Each time we linearly interpolate between a pair of control points, it produces a new control point for the next subdivision level. We continue this process recursively until there is only one point left, which is the final point our drawn curve is tangent to.</p>
+          <p>Below is an example of what the algorithm's process looks like and how the final resulting Bezier curve is produced: </p>
 			  <div class="row">
 				<div class="column">
 				  <img src="images/original_points_bezier.png" width="400px" style="margin: 5px 5px 5px 5px;">
@@ -175,21 +176,21 @@
 				</div>
 				<div class="column">
 				  <img src="images/new_curve_t.png" width="400px" style="margin: 5px 5px 5px 5px;">
-				  <figcaption>Here's the new curve with a changed parameter t</figcaption>
+				  <figcaption>Here's the new curve with a changed parameter <code>t</code></figcaption>
 				</div>
 			  </div>
         </section>
+
+       <hr class="divider">
 		
 		<!-- Task 2 Content
 		============================ -->
         <section id="task2">
           <h2>Task 2: Bezier Surfaces with Separable 1D de Casteljau</h2>
 		  <p>
-			In addition to Bezier Curves, de Castelijau’s algorithm can also be extended to Bezier surfaces. In this case, if we’re given a grid of n * n of original grid points (all of them also being 3D points), 
-			we can take the algorithm and find the final, single point for each row in the grid. For example, if our grid of control points is called controlPoints, then we would want to find the final point for 
-			controlPoints[0], controlPoints[1], … and all the way to controlPoints[n-1]. This is evaluated with the parameter u. Once we have those n control points, we then apply the algorithm again, but instead, 
-			we evaluate it with the parameter v. We do so until we are left with one final point. For this implementation, we used the algorithm to primarily find the final control point, instead of only evaluating 
-			it at a single subdivision step and this ultimately resulted in a teapot model that uses de Castelijau’s algorithm for its surface. 
+			In addition to Bezier Curves, de Castelijau’s algorithm can also be extended to Bezier surfaces. In this case, if we’re given a grid of <code>n * n</code> original grid points (all of them also being 3D points), 
+			we can take the algorithm and find the final, single point for each row in the grid. For example, if our grid of control points is called <code>controlPoints</code>, then we would want to find the final point for 
+			<code>controlPoints[0], controlPoints[1],</code> etc., all the way to <code>controlPoints[n-1]</code>. This is evaluated with the parameter <code>u</code>. Once we have those <code>n</code> control points, we then apply the algorithm again, but instead, we evaluate it with the parameter <code>v</code>. We do so until we are left with one final point. For this implementation, we used the algorithm to primarily find the final control point, instead of only evaluating it at a single subdivision step. This ultimately resulted in a teapot model that uses de Castelijau’s algorithm for its surface. 
 			</p>
 			<div id="centerImage">
 				<img src="images/teapot_surface.png" class="centerImage" width="400px" style="margin: 5px 5px 5px 5px;">
@@ -213,10 +214,10 @@
 			Given our starting vertex, we first retrieved one of its halfedges. We also created a 3D vector that would keep track of the sum of our area-weighted normals. From the halfedge that we retrieved, we 
 			then traversed along the current face to get the neighboring vertices of our current vertex - with these vertices, we can compute the area of a triangle by finding the cross product of two of its edges, 
 			taking its norm, and then dividing by two. Because we were working with a halfedge data structure, we were able to find the normal of the current face by calling on the appropriate methods, specifically 
-			accessing face() from the current halfedge, and normal() from our current face. We then found the area-weighted normals (i.e. multiplied the area of the face with its normal). This result was stored in 
-			the 3D vector that would track the summation of our area-weighted normals. From here we traversed through the rest of the faces that were incident to our original starting vertex using twin() and aggregated 
+			accessing <code>face()</code> from the current halfedge, and <code>normal()</code> from our current face. We then found the area-weighted normals (i.e. multiplied the area of the face with its normal). This result was stored in 
+			the 3D vector that would track the summation of our area-weighted normals. From here we traversed through the rest of the faces that were incident to our original starting vertex using <code>twin()</code> and aggregated 
 			all our results in the 3D vector. Once we reached the original halfedge that we first started on, it gave us indication that we had finished our traversal. Finally, we normalized the sum of all area-weighted 
-			normals using the in-built function unit(). 
+			normals using the in-built function <code>unit()</code>. 
 		   </p>
 		   <div id="centerImage">
 				<img src="images/default_teapot_shading.png" class="centerImage" width="400px" style="margin: 5px 5px 5px 5px;">
@@ -249,14 +250,14 @@
           <p>To implement this operation in <code>HalfedgeMesh::flipEdge</code>, we followed the phases described in in this helpful guide that was linked under the HalfEdge Primer Doc: <a href="http://15462.courses.cs.cmu.edu/fall2015content/misc/HalfedgeEdgeOpImplementationGuide.pdf"> http://15462.courses.cs.cmu.edu/fall2015content/misc/HalfedgeEdgeOpImplementationGuide.pdf</a></p>
           <ul>
           	<li>First, we listed every mesh element and assigned it its own corresponding Iter variable to make it simpler to keep track of all of them.</li>
-          	<li>For every halfedge element, we use the setNeighbors() method to assign its next, twin, vertex, edge, and face to be what they are in the flipped mesh. We assigned every pointer even if it would have already been pointing to the right element, just so that we did not accidentally miss one.</li>
-          	<li>For every vertex, edge, and face, we set its halfedge pointer to be the right element according to the mesh with the flipped edge. Again, we used a meticulous approach to ensure everything was related correctly.</li>
-          	<li>We returned the edge that was flipped. In this case, it was e0.</li>
+          	<li>For every halfedge element, we use the <code>setNeighbors()</code> method to assign its next, twin, vertex, edge, and face to be what they are in the flipped mesh. We assigned every pointer even if it would have already been pointing to the right element, just so that we did not accidentally miss one.</li>
+          	<li>For every vertex, edge, and face, we set its halfedge pointer to be the right element according to what they are in the mesh with the flipped edge. Again, we used a meticulous approach to ensure everything was related correctly.</li>
+          	<li>We returned the edge that was flipped. In this case, it was <code>e0</code>.</li>
           </ul>
 			<p>
 			Because we were cautious in our listing of every mesh element and doing every pointer assignment, there was very little debugging to do for this task.
 			</p>
-			<p>Here is the teapot before and after some edge splits and flips:</p>
+			<p>Here is the teapot before and after some edge flips:</p>
 			<div id="centerImage">
 					<img src="images/Task4_before.png" class="centerImage" width="400px" style="margin: 5px 5px 5px 5px;">
 					<figcaption>Teapot Before Edge Flips</figcaption>	
@@ -267,6 +268,8 @@
 					</div>
         </section>
         <p></p>
+
+        <hr class="divider">
 		
 		<!-- Task 5 Content
 		============================ -->
@@ -283,14 +286,14 @@
 						<figcaption>Two Triangle Mesh Elements After Split</figcaption>	
 					</div>
 					<p></p>
-					<p>As you can see in the images above, a few more mesh elements are added after a split – 1 vertex, two faces, 3 edges, and 6 halfedges.</p>
+					<p>As you can see in the images above, a few more mesh elements are added after a split – 1 vertex, 2 faces, 3 edges, and 6 halfedges.</p>
           <p>To implement this operation in <code>HalfedgeMesh::splitEdge</code>, we followed the same phases with one additional step of allocating new mesh elements.</a></p>
           <ul>
           	<li>First, we listed every mesh element and assigned it its own corresponding Iter variable to make it simpler to keep track of all of them.</li>
-          	<li>We created the new mesh elements listed above. For the newly created vertex, we set its position to be the midpoint of v0 and v1 by adding the coordinates along each axis and dividing by two.</li>
-          	<li>For every halfedge element, we use the setNeighbors() method to assign their next, twin, vertex, edge, and face to be what they are in the flipped mesh. We assigned every pointer even if it should already be pointing to the right element, just so that we did not accidentally miss one.</li>
+          	<li>We created the new mesh elements listed above. For the newly created vertex, we set its position to be the midpoint of <code>v0</code> and <code>v1</code> by adding the coordinates along each axis and dividing by two.</li>
+          	<li>For every halfedge element, we use the <code>setNeighbors()</code> method to assign their next, twin, vertex, edge, and face to be what they are in the flipped mesh. We assigned every pointer even if it should already be pointing to the right element, just so that we did not accidentally miss one.</li>
           	<li>For every vertex, edge, and face, we set its halfedge pointer to be the right element according to the mesh with the flipped edge. Again, we used a meticulous approach to ensure everything was related correctly.</li>
-          	<li>We returned the new vertex element v4 that was created earlier.</li>
+          	<li>We returned the new vertex element <code>v4</code> that was created earlier, which represents the midpoint of the split edge.</li>
           </ul>
 			<p>
 			Because we were cautious  in our listing of every mesh element and doing every pointer assignment, there was very little debugging to do for this task.
@@ -306,6 +309,8 @@
 					</div>
 					<p></p>
         </section>
+
+        <hr class="divider">
 		
 		<!-- Task 6 Content
 		============================ -->
@@ -314,9 +319,9 @@
           <p>Loop subdivision is an upsampling algorithm that divides each triangle that makes up a mesh into 4 smaller triangles (4-1 subdivision), with each new triangle’s vertices weighted in 3D space appropriately. This is implemented by performing an edge split on every original edge in the mesh, and then flipping the necessary edges to create the right subdivisions.</p>
           <p>Following the recommended implementation detailed on the spec and commented in the starter code, we did the following:</p>
           <ul>
-          	<li><strong>Compute new positions for all the vertices in the input mesh</strong>: We iterated through every vertex and marked each as not new (i.e. part of the original mesh). We then iterated through every neighboring vertex to get the sum of all original positions of the neighboring vertices. With this sum, the degree of the vertex, and the original position of the vertex, we calculated the new position of the vertex (what it will be in the subdivided mesh) and stored that value in the newPosition member variable. The following rule describes how the position is updated: <code>(1 - n * u) * original_position + u * original_neighbor_position_sum</code></li>
-          	<li><strong>Compute the updated vertex positions associated with edges</strong>: We iterated through every edge and collected all the corresponding halfedges and vertices for the edge. Using the position of the four vertices around the two triangles that share this edge, we calculated the updated position for the vertex that would soon be added to the midpoint of this edge when edge splitting occurs. The following rule calculates this value: <code>3/8 * (A + B) + 1/8 * (C + D)</code> with A, B, C, and D being the vertex positions.</li>
-          	<li><strong>Split every edge in the mesh</strong>: We iterated through every original edge in the mesh and called splitEdge on each. To ensure we only went through edges from the original mesh (and not any of the newly created edges from calling splitEdge), we saved the number of edges before iterating, and only iterated that many times to perform the splitting operation. In splitEdge, we also made sure to only mark two edges as new edges, leaving the third <i>technically</i> new edge alone as it acts as part of the original edge.</li>
+          	<li><p><strong>Compute new positions for all the vertices in the input mesh</strong>: We iterated through every vertex and marked each as not new (i.e. part of the original mesh). We then iterated through every neighboring vertex to get the sum of all original positions of the neighboring vertices. With this sum, the degree of the vertex, and the original position of the vertex, we calculated the new position of the vertex (what it will be in the subdivided mesh) and stored that value in the <code>newPosition</code> member variable. The following rule describes how the position of an existing vertex is updated:</p><p> <code>(1 - n * u) * original_position + u * original_neighbor_position_sum</code></li></p>
+          	<li><p><strong>Compute the updated vertex positions associated with edges</strong>: We iterated through every edge and collected all the corresponding halfedges and vertices for the edge. Using the position of the four vertices around the two triangles that share this edge, we calculated the updated position for the vertex that would soon be added to the midpoint of this edge when edge splitting occurs. The following rule calculates this value (with A, B, C, and D being the vertex positions):</p><p><code>3/8 * (A + B) + 1/8 * (C + D)</code></p></li>
+          	<li><strong>Split every edge in the mesh</strong>: We iterated through every original edge in the mesh and called <code>splitEdge()</code> on each. To ensure we only went through edges from the original mesh (and not any of the newly created edges from calling <code>splitEdge()</code>), we saved the number of edges in the original mesh before iterating, and only iterated that many times to perform the splitting operation. In <code>splitEdge</code>, we also made sure to only mark two edges as new edges, leaving the third <i>technically</i> new edge alone as it acts as part of the original edge.</li>
           	<li><strong>Flip any new edge that connects an old and new vertex</strong>: Now iterating through every edge in the mesh, we flipped any edge that was marked as new and was connected to an old vertex and a new vertex.</li>
           	<li><strong>Copy the new vertex positions into final <code>Vertex::position</code></strong>: Finally, we did one more iteration through every vertex in the mesh and updated its position variable to be the value stored in newPosition.</li>
           </ul>
