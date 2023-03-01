@@ -309,6 +309,18 @@
 					</div>
 					<p></p>
         </section>
+        <p></p>
+			<p>Here is a mesh before and after some edge splits and flips:</p>
+			<div id="centerImage">
+					<img src="images/Task5_before_flipandsplit_quadball.png" class="centerImage" width="400px" style="margin: 5px 5px 5px 5px;">
+					<figcaption>Quadball Before Edge Splits and Flips</figcaption>	
+					</div>
+					<div id="centerImage">
+						<img src="images/Task5_after_flipandsplit_quadball.png" class="centerImage" width="400px" style="margin: 5px 5px 5px 5px;">
+						<figcaption>Quadball After Edge Splits and Flips</figcaption>	
+					</div>
+					<p></p>
+        </section>
 
         <hr class="divider">
 		
@@ -325,7 +337,28 @@
           	<li><strong>Flip any new edge that connects an old and new vertex</strong>: Now iterating through every edge in the mesh, we flipped any edge that was marked as new and was connected to an old vertex and a new vertex.</li>
           	<li><strong>Copy the new vertex positions into final <code>Vertex::position</code></strong>: Finally, we did one more iteration through every vertex in the mesh and updated its position variable to be the value stored in newPosition.</li>
           </ul>
-          <p>After loop subdivision, sharp edges and corners become much less prominent. Corners and edges curve more, making the shape as a whole become rounder and smoother. However, at very sharp corners, they can become more pronounced. By making the triangle mesh around a sharp corner have more edge splits, we can minimize the effect.</p>
+          <p>After loop subdivision, sharp edges and corners become much less prominent. Corners and edges curve more, making the shape as a whole become rounder and smoother. If we want to preserve these corners and edges more during loop subdivision iterations, we can preprocess the mesh by adding more edge splits around those areas to minimize the smoothing effect.</p>
+          <p>For example, doing loop subdivision on the torus with no preprocessing causes the sharp edges and corners to round out dramatically. However, if we add more edge splits around a particular corner before performing loop subdivision, the corner remains more prominent afterwards.</p>
+          <div id="centerImage">
+						<img src="images/Task6_Torus1.png" class="centerImage" width="400px" style="margin: 5px 5px 5px 5px;">
+						<figcaption>Torus With No Preprocessing</figcaption>	
+					</div>
+					<div id="centerImage">
+						<img src="images/Task6_Torus2.png" class="centerImage" width="400px" style="margin: 5px 5px 5px 5px;">
+						<figcaption>Torus After 3 Iterations of Loop Subdivision</figcaption>	
+					</div>
+					<div id="centerImage">
+						<img src="images/Task6_Torus3.png" class="centerImage" width="400px" style="margin: 5px 5px 5px 5px;">
+						<figcaption>Torus With Preprocessing on One Corner</figcaption>	
+					</div>
+					<div id="centerImage">
+						<img src="images/Task6_Torus4.png" class="centerImage" width="400px" style="margin: 5px 5px 5px 5px;">
+						<figcaption>Preprocessed Torus After 3 Iterations of Loop Subdivision</figcaption>	
+					</div>
+					<p></p>
+					<p>
+						Asymmetric meshes will remain asymmetric even after loop subdivision. An example of this is the cube mesh, which is made up of asymmetric edges.
+					</p>
           <div id="centerImage">
 						<img src="images/Task6_compare1.png" class="centerImage" width="400px" style="margin: 5px 5px 5px 5px;">
 						<figcaption>Cube vs. Icosahedron -- no subdivision</figcaption>	
@@ -351,7 +384,7 @@
 						<figcaption>Cube vs. Icosahedron -- 5 iterations of subdivision</figcaption>	
 					</div>
 					<p></p>
-          <p>Using the given cube input as an example, we can see that asymmetric meshes will remain asymmetric even after loop subdivision. Comparing the cube to the icosahedron, the cube has asymmetric corners that the icosahedron does not have. To make the cube also end up with a symmetrical result, we can preprocess the original mesh symmetric by splitting the edge that is the diagonal of each face of the cube (making each of the six faces of the cube made up of four triangles instead of two).</p>
+          <p>Comparing the cube to the icosahedron, the cube has asymmetric corners that the icosahedron does not have. To make the cube also end up with a symmetrical result, we can preprocess the original mesh symmetric by splitting the edge that is the diagonal of each face of the cube (making each of the six faces of the cube made up of four triangles instead of two).</p>
           <div id="centerImage">
 						<img src="images/Task6_cube.png" class="centerImage" width="400px" style="margin: 5px 5px 5px 5px;">
 						<figcaption>Cube With No Preprocessing</figcaption>	
