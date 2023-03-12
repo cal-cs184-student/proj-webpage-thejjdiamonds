@@ -66,14 +66,19 @@
 	============================ -->
 	<div class="idocs-navigation bg-light">
       <ul class="nav flex-column ">
-      	<li class="nav-item"><a class="nav-link" href="#overview_header">Project 2: MeshEdit</a>
+      	<li class="nav-item"><a class="nav-link" href="#overview_header">Project 3-1: Pathtracer 1 </a>
           <ul class="nav flex-column">
 						<li class="nav-item"><a class="nav-link" href="#overview_content">Overview</a></li>
+						<li class="nav-item"><a class="nav-link" href="#task1">Part 1: Ray Generation and Scene Intersection</a></li>
+						<li class="nav-item"><a class="nav-link" href="#task2">Part 2: Bounding Volume Hierarchy</a></li>
+						<li class="nav-item"><a class="nav-link" href="#task4">Part 3: Direct Illumination</a></li>
+						<li class="nav-item"><a class="nav-link" href="#task5">Part 4: Global Illumination</a></li>
+						<li class="nav-item"><a class="nav-link" href="#task6">Part 5: Adaptive Sampling</a></li>
           </ul>
         </li>
-        <li class="nav-item"><a class="nav-link" href="#section1_header">Section I: Bezier Curves and Surfaces</a>
+        <!-- <li class="nav-item"><a class="nav-link" href="#section1_header">Section I: Bezier Curves and Surfaces</a>
           <ul class="nav flex-column">
-						<li class="nav-item"><a class="nav-link" href="#task1">Task 1: Bezier Curves with 1D de Casteljau Subdivision</a></li>
+						<li class="nav-item"><a class="nav-link" href="#task1">Part 1: Ray Generation and Scene Intersection</a></li>
 						<li class="nav-item"><a class="nav-link" href="#task2">Task 2: Bezier Surfaces with Separable 1D de Casteljau</a></li>
           </ul>
         </li>
@@ -84,7 +89,7 @@
 						<li class="nav-item"><a class="nav-link" href="#task5">Task 5: Edge Split</a></li>
 						<li class="nav-item"><a class="nav-link" href="#task6">Task 6: Loop Subdivision for Mesh Upsampling</a></li>
         	</ul>
-        </li>
+        </li> -->
         <li class="nav-item"><a class="nav-link" href="#website_link">Website Link</a>
         </li>
       </ul>
@@ -101,7 +106,7 @@
 		<!-- Project 2 Header
 		============================ -->
         <section id="overview_header">
-          <h1>Project 2: MeshEdit</h1>
+          <h1>Project 3-1: Pathtracer 1</h1>
           <div id="centerImage">
           	<!-- <p><img src="images/cow.PNG" alt="cow mesh" width="800px" align="middle"/></p> -->
           	<p><img src="images/cow.gif" alt="cow mesh" width="800px" align="middle"/></p>
@@ -126,57 +131,41 @@
         <!-- Task 1 Content
 		============================ -->
         <section id="task1">
-          <h2>Task 1: Bezier Curves with 1D de Casteljau Subdivision</h2>
-		  		<p>De Castelijau’s algorithm is an approach to obtain Bezier curves given a set of control points. Control points are used to determine the shape of a curve, so with de Castelijau’s algorithm, we linearly interpolate between two adjacent control points based on a parameter of <code>t</code> that is between 0 and 1. Each time we linearly interpolate between a pair of control points, it produces a new control point for the next subdivision level. We continue this process recursively until there is only one point left, which is the final point our drawn curve is tangent to.</p>
-          <p>Below is an example of what the algorithm's process looks like and how the final resulting Bezier curve is produced: </p>
+          <h2>Part 1: Ray Generation and Scene Intersection</h2>
+		  <p> 
+			To implement ray generation, we would need to transform coordinates into the world space. Given the normalized image coordinates, inputted as <code>(x, y)</code>, we wanted to output a ray in the world space. This involved transforming the image coordinates first to camera space: 
+			since we’re able to calculate the bottom left corner and the top right corner of the sensor, we’re able to find the width and height of the sensor and transform our image coordinates accordingly. To then transform it into world space, we then applied the camera-to-world 
+			rotation matrix on our new found camera coordinates. Since we needed to create a new ray and return it, we found the ray direction with our new world coordinates, normalized it and passed it into the Ray’s constructor along with the camera’s position in the world.
+		  </p>
+		  <p>
+			Once we were able to generate the ray, we then implemented <code>raytrace_pixel(...)</code>, which took in a pixel coordinate in the unnormalized image space and updated the corresponding pixel in<code>sampleBuffer</code> with the integral of radiance of the pixel. To do so, we needed to average 
+			<code>ns_aa</code> samples. Each sample was generated with the method <code>get_sample()</code> - this would produce a 2D vector which we would then add to the input coordinates and normalize based on the sampleBuffer height and width. We would then pass in the normalized sample into <code>generate_ray(...)</code> 
+			and then finally <code>est_radiance_global_illumination(ray)</code>. That output would be computed as part of the average and we then finally updated the pixel with <code>sampleBufer.updatepixel(...)</code>. 
+			</p>
+		  <p>
+			To check for primitive intersection, we implemented methods to see if our ray intersected with a sphere or triangle. Generally speaking, for both implementations, we first created a function that only checked for the intersection itself and then another function that would “record” information 
+			about the intersection if there was one. Both functions were done with a respective algorithm/formula, with the ray-sphere intersection implemented with a derivation of the quadratic formula and the ray-triangle intersection implemented with the Moller Trumbore Algorithm (as shown below): 
+		  </p>
+
+		  <div id="centerImage">
+			<img src="images/Moller_Trumbore.jpeg" class="centerImage" width="400px" style="margin: 5px 5px 5px 5px;">
+			<figcaption>The Moller Trumbore Algorithm</figcaption>	
+		  </div>
+
+		  <p>
+			More specifically, for our triangle intersection algorithm, using the Moller Trumbore Algorithm, we were able to derive the barycentric coordinates of our point of intersection. With those barycentric coordinates, we would then check if the point of intersection was inside of the triangle on the plane - if it was, 
+			we would update the maximum value of the parameter t along with the information about our intersection (the intersection’s t parameter, its surface normal, the primitive, and the surface material). 
+		  </p>
+
+		  <p>Below is an example of what the algorithm's process looks like and how the final resulting Bezier curve is produced: </p>
 			  <div class="row">
 				<div class="column">
-				  <img src="images/original_points_bezier.png" width="400px" style="margin: 5px 5px 5px 5px;">
-				  <figcaption>Original control points</figcaption>
+				  <img src="images/CBspheres.png" width="400px" style="margin: 5px 5px 5px 5px;">
+				  <figcaption>../dae/sky/CBspheres_lambertian.dae</figcaption>
 				</div>
 				<div class="column">
-				  <img src="images/level1_bezier.png" width="400px" style="margin: 5px 5px 5px 5px;">
-				  <figcaption>First level of subdivision</figcaption>
-				</div>
-			  </div>
-			  <div class="row">
-				<div class="column">
-				  <img src="images/level2_bezier.png" width="400px" style="margin: 5px 5px 5px 5px;">
-				  <figcaption>Second level of subdivision</figcaption>
-				</div>
-				<div class="column">
-				  <img src="images/level3_bezier.png" width="400px" style="margin: 5px 5px 5px 5px;">
-				  <figcaption>Third level of subdivision</figcaption>
-				</div>
-			  </div>
-			  <div class="row">
-				<div class="column">
-				  <img src="images/level4_bezier.png" width="400px" style="margin: 5px 5px 5px 5px;">
-				  <figcaption>Fourth level of subdivision</figcaption>
-				</div>
-				<div class="column">
-				  <img src="images/level5_bezier.png" width="400px" style="margin: 5px 5px 5px 5px;">
-				  <figcaption>Fifth level of subdivision (with final point)</figcaption>
-				</div>
-			  </div>
-			  <div class="row">
-				<div class="column">
-				  <img src="images/final_curve_bezier.png" width="400px" style="margin: 5px 5px 5px 5px;">
-				  <figcaption>Completed final curve</figcaption>
-				</div>
-				<div class="column">
-				  <img src="images/diff_bezier_curve.png" width="400px" style="margin: 5px 5px 5px 5px;">
-				  <figcaption>Slightly different curve (with a point moved)</figcaption>
-				</div>
-			  </div>
-			  <div class="row">
-				<div class="column">
-				  <img src="images/new_curve.png" width="400px" style="margin: 5px 5px 5px 5px;">
-				  <figcaption>Here's another curve with some points moved</figcaption>
-				</div>
-				<div class="column">
-				  <img src="images/new_curve_t.png" width="400px" style="margin: 5px 5px 5px 5px;">
-				  <figcaption>Here's the new curve with a changed parameter <code>t</code></figcaption>
+				  <img src="images/CBgems.png" width="400px" style="margin: 5px 5px 5px 5px;">
+				  <figcaption>../dae/sky/CBgems.dae </figcaption>
 				</div>
 			  </div>
         </section>

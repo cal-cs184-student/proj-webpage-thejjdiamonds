@@ -47,6 +47,7 @@ body {
 /* Added this here. */
 figcaption {
   text-align: center;
+  padding-bottom: 20px; 
 }
 
 #centerImage
