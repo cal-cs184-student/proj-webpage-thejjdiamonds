@@ -66,7 +66,7 @@
 	============================ -->
 	<div class="idocs-navigation bg-light">
       <ul class="nav flex-column ">
-      	<li class="nav-item"><a class="nav-link" href="#overview_header">Project 3-1: Pathtracer 1 </a>
+      	<li class="nav-item"><a class="nav-link" href="#overview_header">Project 3-1: Pathtracer 1</a>
           <ul class="nav flex-column">
 						<li class="nav-item"><a class="nav-link" href="#overview_content">Overview</a></li>
 						<li class="nav-item"><a class="nav-link" href="#task1">Part 1: Ray Generation and Scene Intersection</a></li>
@@ -117,16 +117,16 @@
 		============================ -->
         <section id="overview_content">
           <h2>Overview</h2>
-          <p class="lead mb-5">In this project we worked with geometric models. We constructed Bezier curves and surfaces using de Casteljau algorithm, and implemented functions to edit triangle meshes, including a function to perform loop subdivision. Working with the Halfedge data structure was really interesting, as it provided an easy way to iterate through elements in a mesh and thus efficiently describe the structure of a 3D geometric model.</p>
+          <p class="lead mb-5">TODO</p>
         </section>
 
     <hr class="divider">
 
     <!-- Section 1 Header
 		============================ -->
-        <section id="section1_header">
+       <!--  <section id="section1_header">
           <h1>Section I: Bezier Curves and Surfaces</h1>
-        </section>
+        </section> -->
 
         <!-- Task 1 Content
 		============================ -->
@@ -175,25 +175,67 @@
 		<!-- Task 2 Content
 		============================ -->
         <section id="task2">
-          <h2>Task 2: Bezier Surfaces with Separable 1D de Casteljau</h2>
+          <h2>Part 2: Bounding Volume Hierarchy</h2>
 		  <p>
-			In addition to Bezier Curves, de Castelijau’s algorithm can also be extended to Bezier surfaces. In this case, if we’re given a grid of <code>n * n</code> original grid points (all of them also being 3D points), 
-			we can take the algorithm and find the final, single point for each row in the grid. For example, if our grid of control points is called <code>controlPoints</code>, then we would want to find the final point for 
-			<code>controlPoints[0], controlPoints[1],</code> etc., all the way to <code>controlPoints[n-1]</code>. This is evaluated with the parameter <code>u</code>. Once we have those <code>n</code> control points, we then apply the algorithm again, but instead, we evaluate it with the parameter <code>v</code>. We do so until we are left with one final point. For this implementation, we used the algorithm to primarily find the final control point, instead of only evaluating it at a single subdivision step. This ultimately resulted in a teapot model that uses de Castelijau’s algorithm for its surface. 
+			Our BVH construction algorithm recursively creates each node in the BVH according to the <code>max_leaf_size</code> passed in and our splitting point heuristic. The process is as follows:
 			</p>
-			<div id="centerImage">
-				<img src="images/teapot_surface.png" class="centerImage" width="400px" style="margin: 5px 5px 5px 5px;">
-				<figcaption>A teapot model whose surface was evaluated with de Castelijau’s algorithm</figcaption>	
-			</div>
+			<p>
+			<ul>
+				<li>First, we compute the bounding box of the entire list of primitives passed in (from the iterators <code>start</code> to <code>end</code>) and initialize a new BVHNode <code>node</code> with that bounding box.</li>
+				<li>If the number of primitives in this bounding box is less than or equal to <code>max_leaf_size</code>, we simply set this new node’s <code>start</code> and <code>end</code> iterators to be the same as the ones passed in, and return node. This is our base case.</li>
+				<li>Otherwise, we must start the process of splitting the primitives into two parts and creating a BVHNode for the left and right children recursively.</li>
+				<ul>
+					<li>Our splitting heuristic was to choose the longest axis of the current bounding box that all the primitives lie in, then split the primitives based on which half of this axis they lie on.</li>
+					<li>We made a lambda function that would take in a primitive and return true if its centroid lay to the left of the midpoint of the longest bounding box axis, and false otherwise.</li>
+					<li>We passed this lambda function into <code>std::partition</code>, which would sort the list in-place based on this function. It returns an iterator which we called <code>mid</code> that points to the part of the list where the primitives stop landing on one side of the axis and belong to the other.</li>
+					<li>Finally, we simply made the two recursive calls to <code>BVHAccel::construct_bvh</code> on the left and right members of node, passing in the iterators <code>start</code> and <code>mid</code> for the left child, and the iterators <code>mid</code> and <code>end</code> for the right child.</li>
+				</ul>
+				<li>Our splitting scheme has a chance of choosing a split point such that all primitives lie on only one side of the split point. To avoid the infinite recursion of this case, we made an extra check through the iterators after <code>std::partition</code> is called to see if any part of the list has zero primitives. If we found that this was the case, we simply divided the remaining list of primitives in half, set the <code>mid</code> iterator to the middle of this list, and proceeded to the recursive calls.</li>
+			</ul>
+			</p>
+			<p>
+				After completing <code>BVHAccel::has_intersection</code> and <code>BVHAccel::intersect</code>, the following large .dae files can render in a fraction of a second:
+			</p>
+			<div class="row">
+				<div class="column">
+				  <img src="images/bunny.png" width="480px" style="margin: 5px 5px 5px 5px;">
+				  <figcaption>dae/sky/CBbunny.dae</figcaption>
+				</div>
+				<div class="column">
+				  <img src="images/lucy.png" width="480px" style="margin: 5px 5px 5px 5px;">
+				  <figcaption>dae/sky/CBlucy.dae</figcaption>
+				</div>
+				<div class="column">
+				  <img src="images/planck.png" width="800px" style="margin: 5px 5px 5px 5px;">
+				  <figcaption>dae/meshedit/maxplanck.dae</figcaption>
+				</div>
+			  </div>
+			<p>
+				Let us take a look at <code>dae/meshedit/cow.dae</code>, <code>dae/sky/bench.dae</code>, and <code>dae/sky/CBcoil.dae</code> to see how BVH acceleration helps render times increase. The cow took 0.1789s, the bench took 0.0539s, and the coil took 0.0680s to render with BVH. Without the BVH acceleration implemented, the cow took 40.1128s, the bench took 277.2048s, and the coil took 39.2773s! As you can see with these rendering times, Bounding Volume Hierarchies greatly enhanced the speed at which we can calculate ray-object intersections using recursion and good heuristics for partitioning objects into bounded boxes.
+			</p>
+			<div class="row">
+				<div class="column">
+				  <img src="images/cow.png" width="360px" style="margin: 5px 5px 5px 5px;">
+				  <figcaption>cow</figcaption>
+				</div>
+				<div class="column">
+				  <img src="images/bench.png" width="360px" style="margin: 5px 5px 5px 5px;">
+				  <figcaption>bench</figcaption>
+				</div>
+				<div class="column">
+				  <img src="images/coil.png" width="360px" style="margin: 5px 5px 5px 5px;">
+				  <figcaption>coil</figcaption>
+				</div>
+			  </div>
 		</section>
 
 		<hr class="divider">
 
 		<!-- Section 2 Header
 		============================ -->
-        <section id="section2_header">
+       <!--  <section id="section2_header">
           <h1>Section II: Triangle Meshes and Half-Edge Data Structure</h1>
-        </section>
+        </section> -->
 		
 		<!-- Task 3 Content
 		============================ -->
