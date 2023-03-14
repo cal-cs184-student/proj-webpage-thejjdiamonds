@@ -247,15 +247,25 @@
           <div>
             <p>Adaptive sampling improves the efficiency of rendering. Before, we would take a fixed number of samples from each pixel for our Monte Carlo integration algorithm, regardless of how much detail is present in the scene. This can result in images that are noisy or blurry, particularly in areas with high contrast or fine details. Adaptive sampling works by dynamically adjusting the number of samples taken in each pixel based on the complexity of the scene. In areas with high detail or contrast, more samples are taken to capture the fine details and reduce noise. In areas with less detail or lower contrast, fewer samples are taken to reduce rendering time without sacrificing image quality. The algorithm gradually increases the number of samples until a desired level of image quality is achieved. This approach significantly minimized rendering time and improved the overall quality of the image.</p>
             <p>In our implementation of adaptive sampling, we followed the specifications and computed the illuminance of estimated radiance using the <code>Vector3D::illum()</code> function. We also stored two running sums, <code>s1</code> and <code>s2</code>, where <code>s1</code> holds the illuminances and <code>s2</code> holds the squares of the illuminances. After every <code>samplesPerBatch</code> iterations, we perform a convergence check by calculating the mean and variance using <code>s1</code> and <code>s2</code> to determine if the condition <code>I <= maxTolerance * 𝜇</code> has been satisfied. If it has, we break out of the loop and update the <code>sampleBuffer</code> and <code>sampleCountBuffer</code> accordingly.</p>
-            <p><strong>TODO REPLACE IMAGES</strong></p>
+            <p>Here are two scenes rendered with 2048 samples per pixel, 1 sample per light, and max ray depth of 5 along with a heatmap of their respective sampling rates.</p>
             <div class="row">
 						<div class="column">
 						  <img src="images/adaptive_bunny.png" width="480px" style="margin: 5px 5px 5px 5px;">
-						  <figcaption>bunny</figcaption>
+						  <figcaption>noise-free bunny render</figcaption>
 						</div>
 						<div class="column">
-						  <img src="images/bunny_rate.png" width="480px" style="margin: 5px 5px 5px 5px;">
-						  <figcaption>bunny rate</figcaption>
+						  <img src="images/adaptive_bunny_rate.png" width="480px" style="margin: 5px 5px 5px 5px;">
+						  <figcaption>sampling rate heatmap of bunny</figcaption>
+						</div>
+					  </div>
+					  <div class="row">
+						<div class="column">
+						  <img src="images/adaptive_banana.png" width="480px" style="margin: 5px 5px 5px 5px;">
+						  <figcaption>noise-free banana render</figcaption>
+						</div>
+						<div class="column">
+						  <img src="images/adaptive_banana_rate.png" width="480px" style="margin: 5px 5px 5px 5px;">
+						  <figcaption>sampling rate heatmap of banana</figcaption>
 						</div>
 					  </div>
 
