@@ -76,20 +76,6 @@
 						<li class="nav-item"><a class="nav-link" href="#task6">Part 5: Adaptive Sampling</a></li>
           </ul>
         </li>
-        <!-- <li class="nav-item"><a class="nav-link" href="#section1_header">Section I: Bezier Curves and Surfaces</a>
-          <ul class="nav flex-column">
-						<li class="nav-item"><a class="nav-link" href="#task1">Part 1: Ray Generation and Scene Intersection</a></li>
-						<li class="nav-item"><a class="nav-link" href="#task2">Task 2: Bezier Surfaces with Separable 1D de Casteljau</a></li>
-          </ul>
-        </li>
-        <li class="nav-item"><a class="nav-link" href="#section2_header">Section II: Triangle Meshes and Half-Edge Data Structure</a>
-        	<ul class="nav flex-column">
-        		<li class="nav-item"><a class="nav-link" href="#task3">Task 3: Area-Weighted Vertex Normals</a></li>
-						<li class="nav-item"><a class="nav-link" href="#task4">Task 4: Edge Flip</a></li>
-						<li class="nav-item"><a class="nav-link" href="#task5">Task 5: Edge Split</a></li>
-						<li class="nav-item"><a class="nav-link" href="#task6">Task 6: Loop Subdivision for Mesh Upsampling</a></li>
-        	</ul>
-        </li> -->
         <li class="nav-item"><a class="nav-link" href="#website_link">Website Link</a>
         </li>
       </ul>
@@ -109,7 +95,7 @@
           <h1>Project 3-1: Pathtracer 1</h1>
           <div id="centerImage">
           	<!-- <p><img src="images/cow.PNG" alt="cow mesh" width="800px" align="middle"/></p> -->
-          	<p><img src="images/cow.gif" alt="cow mesh" width="800px" align="middle"/></p>
+          	<p><img src="images/spec.jpg" alt="bunnies" width="800px" align="middle"/></p>
         	</div>
         </section>
 		
@@ -117,7 +103,7 @@
 		============================ -->
         <section id="overview_content">
           <h2>Overview</h2>
-          <p class="lead mb-5">TODO</p>
+          <p class="lead mb-5">Throughout this project, we implemented key components of a renderer using path tracing algorithms. We started with ray generation and pixel sampling. From there, we developed algorithms to detect ray-scene intersections on both triangles and spheres. Then we further optimized our rendering algorithms by creating an efficient bounding volume hierarchy acceleration structure. With this structure in place, we were able to test ray intersections on various scenes and objects at a much faster rate. We then shifted our focus to the lighting of the scene, and implemented techniques such as Bidirectional Scattering Distribution Function (BSDF), zero-bounce lighting, direct lighting and sampling, and global illumination. These methods allowed us to achieve realistic lighting effects, bringing our renders to life. To further improve our results, we implemented adaptive sampling techniques. By increasing the sampling rate of certain pixels, we were able to reduce noise in our final renders and produce even higher quality images. While it was challenging to debug infinite loops along the way and double check all the math that went into these algorithms, these tasks allowed us to gain a deeper understanding of the complex world of rendering.</p>
         </section>
 
     <hr class="divider">
@@ -176,6 +162,7 @@
 		============================ -->
         <section id="task2">
           <h2>Part 2: Bounding Volume Hierarchy</h2>
+      <p>A Bounding Volume Hierarchy (BVH) acceleration structure is used to organize objects in a scene for the purpose of speeding up ray-object intersection tests. It starts by dividing the scene into a hierarchy bounding boxes, and subdivides them recursively until each leaf node contains only a small number of objects. When a ray is cast into the scene, it is tested against the bounding volumes at each level of the hierarchy, which enables the renderer to quickly eliminate large groups of objects that the ray does not intersect. This leads to a significant reduction in the number of intersection tests that need to be performed, resulting in faster rendering times.</p>
 		  <p>
 			Our BVH construction algorithm recursively creates each node in the BVH according to the <code>max_leaf_size</code> passed in and our splitting point heuristic. The process is as follows:
 			</p>
@@ -240,205 +227,37 @@
 		<!-- Task 3 Content
 		============================ -->
         <section id="task3">
-          <h2>Task 3: Area-Weighted Vertex Normals</h2>
-		  <p>
-			Given our starting vertex, we first retrieved one of its halfedges. We also created a 3D vector that would keep track of the sum of our area-weighted normals. From the halfedge that we retrieved, we 
-			then traversed along the current face to get the neighboring vertices of our current vertex - with these vertices, we can compute the area of a triangle by finding the cross product of two of its edges, 
-			taking its norm, and then dividing by two. Because we were working with a halfedge data structure, we were able to find the normal of the current face by calling on the appropriate methods, specifically 
-			accessing <code>face()</code> from the current halfedge, and <code>normal()</code> from our current face. We then found the area-weighted normals (i.e. multiplied the area of the face with its normal). This result was stored in 
-			the 3D vector that would track the summation of our area-weighted normals. From here we traversed through the rest of the faces that were incident to our original starting vertex using <code>twin()</code> and aggregated 
-			all our results in the 3D vector. Once we reached the original halfedge that we first started on, it gave us indication that we had finished our traversal. Finally, we normalized the sum of all area-weighted 
-			normals using the in-built function <code>unit()</code>. 
-		   </p>
-		   <div id="centerImage">
-				<img src="images/default_teapot_shading.png" class="centerImage" width="400px" style="margin: 5px 5px 5px 5px;">
-				<figcaption>Teapot with default shading (figure is not smoothed)</figcaption>	
-			</div>
-			<div id="centerImage">
-				<img src="images/normalized_teapot_shading.png" class="centerImage" width="400px" style="margin: 5px 5px 5px 5px;">
-				<figcaption>Teapot with averaged vertex normals (producing a more smooth look)</figcaption>	
-			</div>
-		  </div>
-        </section>
+        <h2>Part 3: Direct Illumination</h2>
+		  	<p>...............</p>
 		
         <hr class="divider">
 
         <!-- Task 4 Content
 		============================ -->
         <section id="task4">
-          <h2>Task 4: Edge Flip</h2>
-          <p>Before implementing the edge flip operation, we made a diagram of the simplest mesh structure – two triangles – to list out all mesh elements before and after an edge flip operation for a given edge.</p>
-          <div id="centerImage">
-					<img src="images/Task4_FlipDiagram1.jpg" class="centerImage" width="400px" style="margin: 5px 5px 5px 5px;">
-					<figcaption>Two Triangle Mesh Elements Before Flip</figcaption>	
-					</div>
-					<div id="centerImage">
-						<img src="images/Task4_FlipDiagram2.jpg" class="centerImage" width="400px" style="margin: 5px 5px 5px 5px;">
-						<figcaption>Two Triangle Mesh Elements After Flip</figcaption>	
-					</div>
-					<p></p>
-					<p>As you can see in the images above, the number of mesh elements stays the same after the flip is applied – 2 faces, 4 vertices, 5 edges, and 10 halfedges.</p>
-          <p>To implement this operation in <code>HalfedgeMesh::flipEdge</code>, we followed the phases described in in this helpful guide that was linked under the HalfEdge Primer Doc: <a href="http://15462.courses.cs.cmu.edu/fall2015content/misc/HalfedgeEdgeOpImplementationGuide.pdf"> http://15462.courses.cs.cmu.edu/fall2015content/misc/HalfedgeEdgeOpImplementationGuide.pdf</a></p>
-          <ul>
-          	<li>First, we listed every mesh element and assigned it its own corresponding Iter variable to make it simpler to keep track of all of them.</li>
-          	<li>For every halfedge element, we use the <code>setNeighbors()</code> method to assign its next, twin, vertex, edge, and face to be what they are in the flipped mesh. We assigned every pointer even if it would have already been pointing to the right element, just so that we did not accidentally miss one.</li>
-          	<li>For every vertex, edge, and face, we set its halfedge pointer to be the right element according to what they are in the mesh with the flipped edge. Again, we used a meticulous approach to ensure everything was related correctly.</li>
-          	<li>We returned the edge that was flipped. In this case, it was <code>e0</code>.</li>
-          </ul>
-			<p>
-			Because we were cautious in our listing of every mesh element and doing every pointer assignment, there was very little debugging to do for this task.
-			</p>
-			<p>Here is the teapot before and after some edge flips:</p>
-			<div id="centerImage">
-					<img src="images/Task4_before.png" class="centerImage" width="400px" style="margin: 5px 5px 5px 5px;">
-					<figcaption>Teapot Before Edge Flips</figcaption>	
-					</div>
-					<div id="centerImage">
-						<img src="images/Task4_after.png" class="centerImage" width="400px" style="margin: 5px 5px 5px 5px;">
-						<figcaption>Teapot After Edge Flips</figcaption>	
-					</div>
-        </section>
-        <p></p>
+          <h2>Part 4: Global Illumination</h2>
+          <p>...............</p>
 
         <hr class="divider">
 		
 		<!-- Task 5 Content
 		============================ -->
         <section id="task5">
-          <h2>Task 5: Edge Split</h2>
+          <h2>Part 5: Adaptive Sampling</h2>
           <div>
-            <p>Before implementing the edge split operation, we again made a diagram of a two-triangle mesh to see which elements are affected by an edge splitting.</p>
-            <div id="centerImage">
-					<img src="images/Task5_SplitDiagram1.jpg" class="centerImage" width="400px" style="margin: 5px 5px 5px 5px;">
-					<figcaption>Two Triangle Mesh Elements Before Split</figcaption>	
-					</div>
-					<div id="centerImage">
-						<img src="images/Task5_SplitDiagram2.jpg" class="centerImage" width="400px" style="margin: 5px 5px 5px 5px;">
-						<figcaption>Two Triangle Mesh Elements After Split</figcaption>	
-					</div>
-					<p></p>
-					<p>As you can see in the images above, a few more mesh elements are added after a split – 1 vertex, 2 faces, 3 edges, and 6 halfedges.</p>
-          <p>To implement this operation in <code>HalfedgeMesh::splitEdge</code>, we followed the same phases with one additional step of allocating new mesh elements.</a></p>
-          <ul>
-          	<li>First, we listed every mesh element and assigned it its own corresponding Iter variable to make it simpler to keep track of all of them.</li>
-          	<li>We created the new mesh elements listed above. For the newly created vertex, we set its position to be the midpoint of <code>v0</code> and <code>v1</code> by adding the coordinates along each axis and dividing by two.</li>
-          	<li>For every halfedge element, we use the <code>setNeighbors()</code> method to assign their next, twin, vertex, edge, and face to be what they are in the flipped mesh. We assigned every pointer even if it should already be pointing to the right element, just so that we did not accidentally miss one.</li>
-          	<li>For every vertex, edge, and face, we set its halfedge pointer to be the right element according to the mesh with the flipped edge. Again, we used a meticulous approach to ensure everything was related correctly.</li>
-          	<li>We returned the new vertex element <code>v4</code> that was created earlier, which represents the midpoint of the split edge.</li>
-          </ul>
-			<p>
-			Because we were cautious  in our listing of every mesh element and doing every pointer assignment, there was very little debugging to do for this task.
-			</p>
-			<p>Here is a mesh before and after some edge splits:</p>
-			<div id="centerImage">
-					<img src="images/Task5_before_edgesplit_cow.png" class="centerImage" width="400px" style="margin: 5px 5px 5px 5px;">
-					<figcaption>Cow Before Edge Splits</figcaption>	
-					</div>
-					<div id="centerImage">
-						<img src="images/Task5_after_edgesplit_cow.png" class="centerImage" width="400px" style="margin: 5px 5px 5px 5px;">
-						<figcaption>Cow After Edge Splits</figcaption>	
-					</div>
-					<p></p>
-        </section>
-        <p></p>
-			<p>Here is a mesh before and after some edge splits and flips:</p>
-			<div id="centerImage">
-					<img src="images/Task5_before_flipandsplit_quadball.png" class="centerImage" width="400px" style="margin: 5px 5px 5px 5px;">
-					<figcaption>Quadball Before Edge Splits and Flips</figcaption>	
-					</div>
-					<div id="centerImage">
-						<img src="images/Task5_after_flipandsplit_quadball.png" class="centerImage" width="400px" style="margin: 5px 5px 5px 5px;">
-						<figcaption>Quadball After Edge Splits and Flips</figcaption>	
-					</div>
-					<p></p>
-        </section>
-
-        <hr class="divider">
-		
-		<!-- Task 6 Content
-		============================ -->
-    <section id="task6">
-          <h2>Task 6: Loop Subdivision for Mesh Upsampling</h2>
-          <p>Loop subdivision is an upsampling algorithm that divides each triangle that makes up a mesh into 4 smaller triangles (4-1 subdivision), with each new triangle’s vertices weighted in 3D space appropriately. This is implemented by performing an edge split on every original edge in the mesh, and then flipping the necessary edges to create the right subdivisions.</p>
-          <p>Following the recommended implementation detailed on the spec and commented in the starter code, we did the following:</p>
-          <ul>
-          	<li><p><strong>Compute new positions for all the vertices in the input mesh</strong>: We iterated through every vertex and marked each as not new (i.e. part of the original mesh). We then iterated through every neighboring vertex to get the sum of all original positions of the neighboring vertices. With this sum, the degree of the vertex, and the original position of the vertex, we calculated the new position of the vertex (what it will be in the subdivided mesh) and stored that value in the <code>newPosition</code> member variable. The following rule describes how the position of an existing vertex is updated:</p><p> <code>(1 - n * u) * original_position + u * original_neighbor_position_sum</code></li></p>
-          	<li><p><strong>Compute the updated vertex positions associated with edges</strong>: We iterated through every edge and collected all the corresponding halfedges and vertices for the edge. Using the position of the four vertices around the two triangles that share this edge, we calculated the updated position for the vertex that would soon be added to the midpoint of this edge when edge splitting occurs. The following rule calculates this value (with A, B, C, and D being the vertex positions):</p><p><code>3/8 * (A + B) + 1/8 * (C + D)</code></p></li>
-          	<li><strong>Split every edge in the mesh</strong>: We iterated through every original edge in the mesh and called <code>splitEdge()</code> on each. To ensure we only went through edges from the original mesh (and not any of the newly created edges from calling <code>splitEdge()</code>), we saved the number of edges in the original mesh before iterating, and only iterated that many times to perform the splitting operation. In <code>splitEdge</code>, we also made sure to only mark two edges as new edges, leaving the third <i>technically</i> new edge alone as it acts as part of the original edge.</li>
-          	<li><strong>Flip any new edge that connects an old and new vertex</strong>: Now iterating through every edge in the mesh, we flipped any edge that was marked as new and was connected to an old vertex and a new vertex.</li>
-          	<li><strong>Copy the new vertex positions into final <code>Vertex::position</code></strong>: Finally, we did one more iteration through every vertex in the mesh and updated its position variable to be the value stored in newPosition.</li>
-          </ul>
-          <p>After loop subdivision, sharp edges and corners become much less prominent. Corners and edges curve more, making the shape as a whole become rounder and smoother. If we want to preserve these corners and edges more during loop subdivision iterations, we can preprocess the mesh by adding more edge splits around those areas to minimize the smoothing effect.</p>
-          <p>For example, doing loop subdivision on the torus with no preprocessing causes the sharp edges and corners to round out dramatically. However, if we add more edge splits around a particular corner before performing loop subdivision, the corner remains more prominent afterwards.</p>
-          <div id="centerImage">
-						<img src="images/Task6_Torus1.png" class="centerImage" width="400px" style="margin: 5px 5px 5px 5px;">
-						<figcaption>Torus With No Preprocessing</figcaption>	
-					</div>
-					<div id="centerImage">
-						<img src="images/Task6_Torus2.png" class="centerImage" width="400px" style="margin: 5px 5px 5px 5px;">
-						<figcaption>Torus After 3 Iterations of Loop Subdivision</figcaption>	
-					</div>
-					<div id="centerImage">
-						<img src="images/Task6_Torus3.png" class="centerImage" width="400px" style="margin: 5px 5px 5px 5px;">
-						<figcaption>Torus With Preprocessing on One Corner</figcaption>	
-					</div>
-					<div id="centerImage">
-						<img src="images/Task6_Torus4.png" class="centerImage" width="400px" style="margin: 5px 5px 5px 5px;">
-						<figcaption>Preprocessed Torus After 3 Iterations of Loop Subdivision</figcaption>	
-					</div>
-					<p></p>
-					<p>
-						Asymmetric meshes will remain asymmetric even after loop subdivision. An example of this is the cube mesh, which is made up of asymmetric edges.
-					</p>
-          <div id="centerImage">
-						<img src="images/Task6_compare1.png" class="centerImage" width="400px" style="margin: 5px 5px 5px 5px;">
-						<figcaption>Cube vs. Icosahedron -- no subdivision</figcaption>	
-					</div>
-					<div id="centerImage">
-						<img src="images/Task6_compare2.png" class="centerImage" width="400px" style="margin: 5px 5px 5px 5px;">
-						<figcaption>Cube vs. Icosahedron -- 1 iteration of subdivision</figcaption>	
-					</div>
-					<div id="centerImage">
-						<img src="images/Task6_compare3.png" class="centerImage" width="400px" style="margin: 5px 5px 5px 5px;">
-						<figcaption>Cube vs. Icosahedron -- 2 iterations of subdivision</figcaption>	
-					</div>
-					<div id="centerImage">
-						<img src="images/Task6_compare4.png" class="centerImage" width="400px" style="margin: 5px 5px 5px 5px;">
-						<figcaption>Cube vs. Icosahedron -- 3 iterations of subdivision</figcaption>	
-					</div>
-					<div id="centerImage">
-						<img src="images/Task6_compare5.png" class="centerImage" width="400px" style="margin: 5px 5px 5px 5px;">
-						<figcaption>Cube vs. Icosahedron -- 4 iterations of subdivision</figcaption>	
-					</div>
-					<div id="centerImage">
-						<img src="images/Task6_compare6.png" class="centerImage" width="400px" style="margin: 5px 5px 5px 5px;">
-						<figcaption>Cube vs. Icosahedron -- 5 iterations of subdivision</figcaption>	
-					</div>
-					<p></p>
-          <p>Comparing the cube to the icosahedron, the cube has asymmetric corners that the icosahedron does not have. To make the cube also end up with a symmetrical result, we can preprocess the original mesh symmetric by splitting the edge that is the diagonal of each face of the cube (making each of the six faces of the cube made up of four triangles instead of two).</p>
-          <div id="centerImage">
-						<img src="images/Task6_cube.png" class="centerImage" width="400px" style="margin: 5px 5px 5px 5px;">
-						<figcaption>Cube With No Preprocessing</figcaption>	
-					</div>
-					<div id="centerImage">
-						<img src="images/Task6_preprocess_cube.png" class="centerImage" width="400px" style="margin: 5px 5px 5px 5px;">
-						<figcaption>Cube With Preprocessing</figcaption>	
-					</div>
-					<div id="centerImage">
-						<img src="images/Task6_preprocess_cube1.png" class="centerImage" width="400px" style="margin: 5px 5px 5px 5px;">
-						<figcaption>Preprocessed Cube After 1 Subdivision</figcaption>	
-					</div>
-					<div id="centerImage">
-						<img src="images/Task6_preprocess_cube2.png" class="centerImage" width="400px" style="margin: 5px 5px 5px 5px;">
-						<figcaption>Preprocessed Cube After 2 Subdivisions</figcaption>	
-					</div>
-					<div id="centerImage">
-						<img src="images/Task6_preprocess_cube4.png" class="centerImage" width="400px" style="margin: 5px 5px 5px 5px;">
-						<figcaption>Preprocessed Cube After 3 Subdivisions</figcaption>	
-					</div>
-					<p></p>
-    </section>
-
+            <p>Adaptive sampling improves the efficiency of rendering. Before, we would take a fixed number of samples from each pixel for our Monte Carlo integration algorithm, regardless of how much detail is present in the scene. This can result in images that are noisy or blurry, particularly in areas with high contrast or fine details. Adaptive sampling works by dynamically adjusting the number of samples taken in each pixel based on the complexity of the scene. In areas with high detail or contrast, more samples are taken to capture the fine details and reduce noise. In areas with less detail or lower contrast, fewer samples are taken to reduce rendering time without sacrificing image quality. The algorithm gradually increases the number of samples until a desired level of image quality is achieved. This approach significantly minimized rendering time and improved the overall quality of the image.</p>
+            <p>In our implementation of adaptive sampling, we followed the specifications and computed the illuminance of estimated radiance using the <code>Vector3D::illum()</code> function. We also stored two running sums, <code>s1</code> and <code>s2</code>, where <code>s1</code> holds the illuminances and <code>s2</code> holds the squares of the illuminances. After every <code>samplesPerBatch</code> iterations, we perform a convergence check by calculating the mean and variance using <code>s1</code> and <code>s2</code> to determine if the condition <code>I <= maxTolerance * 𝜇</code> has been satisfied. If it has, we break out of the loop and update the <code>sampleBuffer</code> and <code>sampleCountBuffer</code> accordingly.</p>
+            <p><strong>TODO REPLACE IMAGES</strong></p>
+            <div class="row">
+						<div class="column">
+						  <img src="images/adaptive_bunny.png" width="480px" style="margin: 5px 5px 5px 5px;">
+						  <figcaption>bunny</figcaption>
+						</div>
+						<div class="column">
+						  <img src="images/bunny_rate.png" width="480px" style="margin: 5px 5px 5px 5px;">
+						  <figcaption>bunny rate</figcaption>
+						</div>
+					  </div>
 
     <hr class="divider">
 
@@ -446,8 +265,8 @@
 
 
         <section id="website_link">
-        	<p>Here is the link to this website: <a href="https://cal-cs184-student.github.io/proj-webpage-thejjdiamonds/proj2/index.html" > link</a></p>
-        	<p><a href="https://cal-cs184-student.github.io/proj-webpage-thejjdiamonds/proj2/index.html"> https://cal-cs184-student.github.io/proj-webpage-thejjdiamonds/proj2/index.html</a></p>
+        	<p>Here is the link to this website: <a href="https://cal-cs184-student.github.io/proj-webpage-thejjdiamonds/proj3-1/index.html" > link</a></p>
+        	<p><a href="https://cal-cs184-student.github.io/proj-webpage-thejjdiamonds/proj3-1/index.html"> https://cal-cs184-student.github.io/proj-webpage-thejjdiamonds/proj2/index.html</a></p>
         </section>
 		  
   
