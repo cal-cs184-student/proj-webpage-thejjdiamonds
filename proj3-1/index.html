@@ -246,11 +246,11 @@
 		<p>Using CBbunny.dae, we rendered with <code>estimate_direct_lighting_hemisphere</code> and <code>estimate_direct_lighting_importance</code> respectively, as shown in the below images. </p>
 		<div class="row">
 			<div class="column">
-			  <img src="images/bunny_hemisphere_sampling.png" width="400px" style="margin: 5px 5px 5px 5px;">
+			  <img src="images/bunny_hemisphere_sampling.png" width="480px" style="margin: 5px 5px 5px 5px;">
 			  <figcaption> Uniform Hemisphere Sampling </figcaption>
 			</div>
 			<div class="column">
-			  <img src="images/bunny_importance_sampling.png" width="400px" style="margin: 5px 5px 5px 5px;">
+			  <img src="images/bunny_importance_sampling.png" width="480px" style="margin: 5px 5px 5px 5px;">
 			  <figcaption> Importance Sampling </figcaption>
 			</div>
 		  </div>
@@ -265,21 +265,21 @@
 		  </p>
 		  <div class="row">
 			<div class="column">
-			  <img src="images/task3_importance/walle_light_test_1_1.png" width="400px" style="margin: 5px 5px 5px 5px;">
+			  <img src="images/task3_importance/walle_light_test_1_1.png" width="480px" style="margin: 5px 5px 5px 5px;">
 			  <figcaption> 1 light rays with wall-e.dae </figcaption>
 			</div>
 			<div class="column">
-			  <img src="images/task3_importance/walle_light_test_4_1.png" width="400px" style="margin: 5px 5px 5px 5px;">
+			  <img src="images/task3_importance/walle_light_test_4_1.png" width="480px" style="margin: 5px 5px 5px 5px;">
 			  <figcaption> 4 light rays with wall-e.dae </figcaption>
 			</div>
 		  </div>
 		  <div class="row">
 			<div class="column">
-			  <img src="images/task3_importance/walle_light_test_16_1.png" width="400px" style="margin: 5px 5px 5px 5px;">
+			  <img src="images/task3_importance/walle_light_test_16_1.png" width="480px" style="margin: 5px 5px 5px 5px;">
 			  <figcaption> 16 light rays with wall-e.dae </figcaption>
 			</div>
 			<div class="column">
-			  <img src="images/task3_importance/walle_light_test_64_1.png" width="400px" style="margin: 5px 5px 5px 5px;">
+			  <img src="images/task3_importance/walle_light_test_64_1.png" width="480px" style="margin: 5px 5px 5px 5px;">
 			  <figcaption> 64 light rays with wall-e.dae </figcaption>
 			</div>
 		  </div>
@@ -294,8 +294,84 @@
 		============================ -->
         <section id="task4">
           <h2>Part 4: Global Illumination</h2>
-          <p>...............</p>
-          <p>Scenes rendered with various sample-per-pixel rates (using 4 light rays):</p>
+          <p>In our implementation of indirect lighting function, we first implemented the function <code>sample_f</code> that would help us take a sample for the function <code>at_least_one_bounce_radiance</code>. In this function, we considered the case of when <code>max_ray_depth = 0</code> and when <code>max_ray_depth = 1</code>. In the former situation, 
+			we would return zero bounce illumination; in the latter case, we would return one bounce illumination. This was to account for the cases where we would only have direct illumination. So, specifically for indirect illumination, when <code>max_ray_depth</code> was greater than 1, we wanted to ensure that we always did at least 1 indirect bounce and 
+			that once that bounce was done, Russian Roulette would account for whether we would terminate on a certain bounce. To account for both cases, we had two checks in our code. For our first check: if the current ray’s depth was equal to the max ray depth, that implied that we haven’t had 1 indirect bounce yet (and this is assuming that <code>max_ray_depth</code> 
+			is greater than 1). For our second check, we set our termination probability to 0.35 (so the probability of the algorithm continuing would be 0.65), and we used the <code>coin_flip</code> function to determine if Russian Roulette would terminate the process. Assuming that the process wasn’t terminated, we casted our ray and decremented the ray’s depth and then 
+			checked its intersection with our bvh. If it intersected, then we recursively called on <code>at_least_one_bounce_radiance</code> and the recursive result was factored into <code>L_out</code>. More specifically, the recursive result was multiplied by our sample from <code>sample_f</code> and the derived cosine factor and then divided by the pdf and the probability 
+			of continuation. 
+		</p>
+		<p>
+			To show what it looks like, we rendered two images as shown below using our implementation of global illumination: 
+		</p>
+
+		<div class="row">
+			<div class="column">
+			  <img src="images/bunny_global.png" width="480px" style="margin: 5px 5px 5px 5px;">
+			  <figcaption> CBbunny.dae with Global Illumination </figcaption>
+			</div>
+			<div class="column">
+			  <img src="images/dragon_global.png" width="480px" style="margin: 5px 5px 5px 5px;">
+			  <figcaption> dragon.dae with Global Illumination </figcaption>
+			</div>
+		  </div>
+
+		  <p>
+			To see what direct and indirect lighting look like, we rendered CBbunny.dae with both types of lighting. 
+		  </p>
+
+		  <div class="row">
+			<div class="column">
+			  <img src="images/bunny_direct.png" width="480px" style="margin: 5px 5px 5px 5px;">
+			  <figcaption> CBbunny.dae with Direct Lighting </figcaption>
+			</div>
+			<div class="column">
+			  <img src="images/bunny_indirect.png" width="480px" style="margin: 5px 5px 5px 5px;">
+			  <figcaption> CBbunny.dae with Indirect Lighting </figcaption>
+			</div>
+		  </div>
+
+		  <p>Between the two, rendering with direct lighting creates a harsher contrast with lighting - more specifically, the shadows are more harsh and more apparent on the bunny's body. In addition, the ceiling is mostly dark, with only the ceiling lighting lit up. 
+			In comparison, indirect lighting creates a softer look, where the shadows aren't as apparent and the ceiling is completely lit up (the shadows are much less distinguishable than they are with just direct lighting). If comparing both images though with the one 
+			above it, specifically with global illumination, both images are "darker" or "dimmer" than their global illumination counterpart. 
+		  </p>
+
+		  <p>
+			We then rendered some sceens with varying levels of max ray depth. 
+		  </p>
+			<div class="row">
+				<div class="column">
+				<img src="images/task4_max_ray_depth/bunny_ray_0.png" width="480px" style="margin: 5px 5px 5px 5px;">
+				<figcaption> Max Ray Depth of 0 </figcaption>
+				</div>
+				<div class="column">
+				<img src="images/task4_max_ray_depth/bunny_ray_1.png" width="480px" style="margin: 5px 5px 5px 5px;">
+				<figcaption> Max Ray Depth of 1</figcaption>
+				</div>
+			</div>
+			<div class="row">
+				<div class="column">
+				<img src="images/task4_max_ray_depth/bunny_ray_2.png" width="480px" style="margin: 5px 5px 5px 5px;">
+				<figcaption> Max Ray Depth of 2 </figcaption>
+				</div>
+				<div class="column">
+				<img src="images/task4_max_ray_depth/bunny_ray_3.png" width="480px" style="margin: 5px 5px 5px 5px;">
+				<figcaption> Max Ray Depth of 3 </figcaption>
+				</div>
+			</div>
+			<div class="row">
+				<div class="column">
+				<img src="images/bunny_global.png" width="480px" style="margin: 5px 5px 5px 5px;">
+				<figcaption> Max Ray Depth of 100 </figcaption>
+				</div>
+			</div>
+			<p>
+				Comparing the CBbunny.dae renders at different settings of max ray depth, the most noticeable difference comes from the jump between 1 and 2. At max ray depth of 0, it is only a black screen with the light on top; at max ray depth of 1, the bunny starts to show up 
+				but it is still relatively dark, with some harsh shadows on the bottom portion of the bunny and with the ceiling still mostly dark with the exception of the ceiling light. At max ray depth of 2, the ceiling is completely lit up and the bunny's shadow becomes softer. 
+				As we increase the max ray depth, the changes becomes less discernable, and it doesn't appear that the image changes too much in regards to lighting and shadows. 
+			</p>
+			
+          <p>Now, below are the scenes rendered with various sample-per-pixel rates (using 4 light rays):</p>
           <div class="row">
 					<div class="column">
 					  <img src="images/bunny_1.png" width="480px" style="margin: 5px 5px 5px 5px;">
@@ -336,6 +412,9 @@
 					  <figcaption>1024 samples per pixel</figcaption>
 					</div>
 				  </div>
+				  <p> Most noticeably from all these scenes is that the more the sampling per pixel rate increases, the more clear the image becomes. In other words, sampling at a lower rate means there is much more noise in the image; the more that we increase the sampling
+					rate, the less noisy the images becomes and it starts to appear more smooth. 
+				 </p>
 
         <hr class="divider">
 		
