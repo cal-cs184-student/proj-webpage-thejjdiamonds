@@ -228,7 +228,65 @@
 		============================ -->
         <section id="task3">
         <h2>Part 3: Direct Illumination</h2>
-		  	<p>...............</p>
+		<p> Below, we describe both implementations of the direct lighting function: </p>
+		<ul>
+			<li><code>estimate_direct_lighting_hemisphere</code>: To implement direct lighting with uniform hemisphere sampling, we started out with <code>num_samples</code> (<code>scene->lights.size() * ns_area_light</code>), 
+				which indicates the number of samples that we wanted to take. Using the <code>hemisphereSampler</code> variable, we grabbed an object-space vector that was uniformly randomly sampled on the hemisphere. We then 
+				transformed the vector into world space and created our ray based on the hit point of the ray (<code>hit_p</code>) and our world-space vector. We then checked for an intersection with our ray, specifically if 
+				if it intersected with our <code>bvh</code>, and we would then calculate the amount of light that was reflected back/outgoing light (this was also estimated with the Monte Carlo Estimator). Note that the sampling process 
+				was done num_samples of time. 
+			</li>
+			<li><code>estimate_direct_lighting_importance</code>: For this implementation, it was similar to uniform hemisphere sampling, with the main difference that it would be sampling the light source directly. For each light 
+				in the scene, we wanted to sample the directions between the light source and the hit point. For each light source, we checked if it was a point source - if it wasn’t, we would sample from that light source (<code>scene->lights[i]->sample_L</code>) 
+				only once and casted the ray. We would then use the ray to check for an intersection with our <code>bvh</code>, we would then calculate the amount of outgoing light. In the case that the light source was not a point source, we would do a similar process, 
+				but would perform sampling <code>ns_area_light</code> amount of times - the result would be averaged by the number of samples we took. Additionally, we checked first if the light was behind the surface at the hit point for each light source - if 
+				it was behind, we wouldn’t cast the ray. 
+			</li>
+		</ul>
+		<p>Using CBbunny.dae, we rendered with <code>estimate_direct_lighting_hemisphere</code> and <code>estimate_direct_lighting_importance</code> respectively, as shown in the below images. </p>
+		<div class="row">
+			<div class="column">
+			  <img src="images/bunny_hemisphere_sampling.png" width="400px" style="margin: 5px 5px 5px 5px;">
+			  <figcaption> Uniform Hemisphere Sampling </figcaption>
+			</div>
+			<div class="column">
+			  <img src="images/bunny_importance_sampling.png" width="400px" style="margin: 5px 5px 5px 5px;">
+			  <figcaption> Importance Sampling </figcaption>
+			</div>
+		  </div>
+		  <p>
+			The two images above, both were rendered with 8 threads, 64 samples per pixel and 32 light rays. Comparing both images below, uniform hemisphere sampling and importance sampling show significant differences on the CBbunny.dae. Looking at uniform hemisphere sampling, 
+			the image produced is much more noisier and more grainy - this is partly because it doesn’t distinguish between what ray is pointing to a light source. On the other hand, importance sampling produces a more smooth and clean image, because it considers whether a ray 
+			points to a light source and focuses on specific samples that would contribute  more to the result. 
+		  </p>
+		  <p>
+			To showcase how noise levels in soft shadows differ with varying amount of light rays, we rendered wall-e.dae with the -l flag changed and with -s set to 1 (or 1 sample per pixel). This was done 
+			with light sampling.  
+		  </p>
+		  <div class="row">
+			<div class="column">
+			  <img src="images/task3_importance/walle_light_test_1_1.png" width="400px" style="margin: 5px 5px 5px 5px;">
+			  <figcaption> 1 light rays with wall-e.dae </figcaption>
+			</div>
+			<div class="column">
+			  <img src="images/task3_importance/walle_light_test_4_1.png" width="400px" style="margin: 5px 5px 5px 5px;">
+			  <figcaption> 4 light rays with wall-e.dae </figcaption>
+			</div>
+		  </div>
+		  <div class="row">
+			<div class="column">
+			  <img src="images/task3_importance/walle_light_test_16_1.png" width="400px" style="margin: 5px 5px 5px 5px;">
+			  <figcaption> 16 light rays with wall-e.dae </figcaption>
+			</div>
+			<div class="column">
+			  <img src="images/task3_importance/walle_light_test_64_1.png" width="400px" style="margin: 5px 5px 5px 5px;">
+			  <figcaption> 64 light rays with wall-e.dae </figcaption>
+			</div>
+		  </div>
+		  <p>
+			For each light sampling done, we changed the number of light rays between 1, 4, 16 and 64. As we increase the number of light rays in each image, the picture becomes less “grainy” and less dark spots appear on the figure. More specifically, it becomes more distinguishable where the shadow is 
+			(i.e. a little bit below wall-e’s figure). With less light rays, there is more noise and it’s harder to tell where the soft shadow is relative to the figure. And with more light rays, it's easier to tell where the soft shadows are with less noise being produced. 
+		  </p>
 		
         <hr class="divider">
 
@@ -272,11 +330,9 @@
     <hr class="divider">
 
     <!-- Website Link -->
-
-
         <section id="website_link">
         	<p>Here is the link to this website: <a href="https://cal-cs184-student.github.io/proj-webpage-thejjdiamonds/proj3-1/index.html" > link</a></p>
-        	<p><a href="https://cal-cs184-student.github.io/proj-webpage-thejjdiamonds/proj3-1/index.html"> https://cal-cs184-student.github.io/proj-webpage-thejjdiamonds/proj2/index.html</a></p>
+        	<p><a href="https://cal-cs184-student.github.io/proj-webpage-thejjdiamonds/proj3-1/index.html">https://cal-cs184-student.github.io/proj-webpage-thejjdiamonds/proj3-1/index.html</a></p>
         </section>
 		  
   
