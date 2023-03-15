@@ -143,7 +143,7 @@
 			we would update the maximum value of the parameter t along with the information about our intersection (the intersection’s t parameter, its surface normal, the primitive, and the surface material). 
 		  </p>
 
-		  <p>Below is an example of what the algorithm's process looks like and how the final resulting Bezier curve is produced: </p>
+		  <p>Below are two simple scenes rendered with these ray-scene intersection algorithms: </p>
 			  <div class="row">
 				<div class="column">
 				  <img src="images/CBspheres.png" width="400px" style="margin: 5px 5px 5px 5px;">
@@ -162,7 +162,7 @@
 		============================ -->
         <section id="task2">
           <h2>Part 2: Bounding Volume Hierarchy</h2>
-      <p>A Bounding Volume Hierarchy (BVH) acceleration structure is used to organize objects in a scene for the purpose of speeding up ray-object intersection tests. It starts by dividing the scene into a hierarchy bounding boxes, and subdivides them recursively until each leaf node contains only a small number of objects. When a ray is cast into the scene, it is tested against the bounding volumes at each level of the hierarchy, which enables the renderer to quickly eliminate large groups of objects that the ray does not intersect. This leads to a significant reduction in the number of intersection tests that need to be performed, resulting in faster rendering times.</p>
+      <p>A Bounding Volume Hierarchy (BVH) acceleration structure is used to organize objects in a scene for the purpose of speeding up ray-object intersection tests. It starts by dividing the scene into a hierarchy of bounding boxes, and subdivides them recursively until each leaf node contains only a small number of primitives. When a ray is cast into the scene, it is tested against the bounding volumes at each level of the hierarchy, which enables the renderer to quickly eliminate large groups of objects that the ray does not intersect. This leads to a significant reduction in the number of intersection tests that need to be performed, resulting in faster rendering times.</p>
 		  <p>
 			Our BVH construction algorithm recursively creates each node in the BVH according to the <code>max_leaf_size</code> passed in and our splitting point heuristic. The process is as follows:
 			</p>
@@ -234,7 +234,7 @@
 				which indicates the number of samples that we wanted to take. Using the <code>hemisphereSampler</code> variable, we grabbed an object-space vector that was uniformly randomly sampled on the hemisphere. We then 
 				transformed the vector into world space and created our ray based on the hit point of the ray (<code>hit_p</code>) and our world-space vector. We then checked for an intersection with our ray, specifically if 
 				if it intersected with our <code>bvh</code>, and we would then calculate the amount of light that was reflected back/outgoing light (this was also estimated with the Monte Carlo Estimator). Note that the sampling process 
-				was done num_samples of time. 
+				was done <code>num_samples</code> of time. 
 			</li>
 			<li><code>estimate_direct_lighting_importance</code>: For this implementation, it was similar to uniform hemisphere sampling, with the main difference that it would be sampling the light source directly. For each light 
 				in the scene, we wanted to sample the directions between the light source and the hit point. For each light source, we checked if it was a point source - if it wasn’t, we would sample from that light source (<code>scene->lights[i]->sample_L</code>) 
@@ -377,6 +377,7 @@
 						  <figcaption>sampling rate heatmap of banana</figcaption>
 						</div>
 					  </div>
+					  <p>Red represents high sampling rates (the ratio between the actual number of samples and the maximum number of samples), and blue represents low sampling rates.</p>
 					  
     <hr class="divider">
 
