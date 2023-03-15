@@ -71,9 +71,9 @@
 						<li class="nav-item"><a class="nav-link" href="#overview_content">Overview</a></li>
 						<li class="nav-item"><a class="nav-link" href="#task1">Part 1: Ray Generation and Scene Intersection</a></li>
 						<li class="nav-item"><a class="nav-link" href="#task2">Part 2: Bounding Volume Hierarchy</a></li>
-						<li class="nav-item"><a class="nav-link" href="#task4">Part 3: Direct Illumination</a></li>
-						<li class="nav-item"><a class="nav-link" href="#task5">Part 4: Global Illumination</a></li>
-						<li class="nav-item"><a class="nav-link" href="#task6">Part 5: Adaptive Sampling</a></li>
+						<li class="nav-item"><a class="nav-link" href="#task3">Part 3: Direct Illumination</a></li>
+						<li class="nav-item"><a class="nav-link" href="#task4">Part 4: Global Illumination</a></li>
+						<li class="nav-item"><a class="nav-link" href="#task5">Part 5: Adaptive Sampling</a></li>
           </ul>
         </li>
         <li class="nav-item"><a class="nav-link" href="#website_link">Website Link</a>
@@ -95,7 +95,7 @@
           <h1>Project 3-1: Pathtracer 1</h1>
           <div id="centerImage">
           	<!-- <p><img src="images/cow.PNG" alt="cow mesh" width="800px" align="middle"/></p> -->
-          	<p><img src="images/spec.jpg" alt="bunnies" width="800px" align="middle"/></p>
+          	<p><img src="images/spec.jpg" alt="bunnies" width="1100px" align="middle"/></p>
         	</div>
         </section>
 		
@@ -295,6 +295,47 @@
         <section id="task4">
           <h2>Part 4: Global Illumination</h2>
           <p>...............</p>
+          <p>Scenes rendered with various sample-per-pixel rates (using 4 light rays):</p>
+          <div class="row">
+					<div class="column">
+					  <img src="images/bunny_1.png" width="480px" style="margin: 5px 5px 5px 5px;">
+					  <figcaption>1 sample per pixel</figcaption>
+					</div>
+					<div class="column">
+					  <img src="images/bunny_2.png" width="480px" style="margin: 5px 5px 5px 5px;">
+					  <figcaption>2 samples per pixel</figcaption>
+					</div>
+				  </div>
+				  <div class="row">
+					<div class="column">
+					  <img src="images/bunny_4.png" width="480px" style="margin: 5px 5px 5px 5px;">
+					  <figcaption>4 samples per pixel</figcaption>
+					</div>
+					<div class="column">
+					  <img src="images/bunny_8.png" width="480px" style="margin: 5px 5px 5px 5px;">
+					  <figcaption>8 samples per pixel</figcaption>
+					</div>
+				  </div>
+				  <div class="row">
+					<div class="column">
+					  <img src="images/bunny_16.png" width="480px" style="margin: 5px 5px 5px 5px;">
+					  <figcaption>16 samples per pixel</figcaption>
+					</div>
+					<div class="column">
+					  <img src="images/bunny_32.png" width="480px" style="margin: 5px 5px 5px 5px;">
+					  <figcaption>32 samples per pixel</figcaption>
+					</div>
+				  </div>
+				  <div class="row">
+					<div class="column">
+					  <img src="images/bunny_64.png" width="480px" style="margin: 5px 5px 5px 5px;">
+					  <figcaption>64 samples per pixel</figcaption>
+					</div>
+					<div class="column">
+					  <img src="images/bunny_1024.png" width="480px" style="margin: 5px 5px 5px 5px;">
+					  <figcaption>1024 samples per pixel</figcaption>
+					</div>
+				  </div>
 
         <hr class="divider">
 		
@@ -305,7 +346,7 @@
           <div>
             <p>Adaptive sampling improves the efficiency of rendering. Before, we would take a fixed number of samples from each pixel for our Monte Carlo integration algorithm, regardless of how much detail is present in the scene. This can result in images that are noisy or blurry, particularly in areas with high contrast or fine details. Adaptive sampling works by dynamically adjusting the number of samples taken in each pixel based on the complexity of the scene. In areas with high detail or contrast, more samples are taken to capture the fine details and reduce noise. In areas with less detail or lower contrast, fewer samples are taken to reduce rendering time without sacrificing image quality. The algorithm gradually increases the number of samples until a desired level of image quality is achieved. This approach significantly minimized rendering time and improved the overall quality of the image.</p>
             <p>In our implementation of adaptive sampling, we followed the specifications and computed the illuminance of estimated radiance using the <code>Vector3D::illum()</code> function. We also stored two running sums, <code>s1</code> and <code>s2</code>, where <code>s1</code> holds the illuminances and <code>s2</code> holds the squares of the illuminances. After every <code>samplesPerBatch</code> iterations, we perform a convergence check by calculating the mean and variance using <code>s1</code> and <code>s2</code> to determine if the condition <code>I <= maxTolerance * 𝜇</code> has been satisfied. If it has, we break out of the loop and update the <code>sampleBuffer</code> and <code>sampleCountBuffer</code> accordingly.</p>
-            <p>Here are two scenes rendered with 2048 samples per pixel, 1 sample per light, and max ray depth of 5 along with a heatmap of their respective sampling rates.</p>
+            <p>Here are some scenes rendered with 2048 samples per pixel, 1 sample per light, and max ray depth of 5 along with a heatmap of their respective sampling rates.</p>
             <div class="row">
 						<div class="column">
 						  <img src="images/adaptive_bunny.png" width="480px" style="margin: 5px 5px 5px 5px;">
