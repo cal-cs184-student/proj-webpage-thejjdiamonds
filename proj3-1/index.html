@@ -121,7 +121,7 @@
 		  <p> 
 			To implement ray generation, we would need to transform coordinates into the world space. Given the normalized image coordinates, inputted as <code>(x, y)</code>, we wanted to output a ray in the world space. This involved transforming the image coordinates first to camera space: 
 			since we’re able to calculate the bottom left corner and the top right corner of the sensor, we’re able to find the width and height of the sensor and transform our image coordinates accordingly. To then transform it into world space, we then applied the camera-to-world 
-			rotation matrix on our new found camera coordinates. Since we needed to create a new ray and return it, we found the ray direction with our new world coordinates, normalized it and passed it into the Ray’s constructor along with the camera’s position in the world.
+			rotation matrix on our new found camera coordinates. Since we needed to create a new ray and return it, we found the ray direction with our new world coordinates, normalized it, and passed it into the Ray’s constructor along with the camera’s position in the world.
 		  </p>
 		  <p>
 			Once we were able to generate the ray, we then implemented <code>raytrace_pixel(...)</code>, which took in a pixel coordinate in the unnormalized image space and updated the corresponding pixel in<code>sampleBuffer</code> with the integral of radiance of the pixel. To do so, we needed to average 
@@ -139,20 +139,24 @@
 		  </div>
 
 		  <p>
-			More specifically, for our triangle intersection algorithm, using the Moller Trumbore Algorithm, we were able to derive the barycentric coordinates of our point of intersection. With those barycentric coordinates, we would then check if the point of intersection was inside of the triangle on the plane - if it was, 
-			we would update the maximum value of the parameter t along with the information about our intersection (the intersection’s t parameter, its surface normal, the primitive, and the surface material). 
+			More specifically, for our ray-triangle intersection, by using the Moller Trumbore algorithm, we were able to derive the barycentric coordinates of our point of intersection with formula depicted in the figure above. We were able to derive those barycentric coordinates by applying the appropriate formula on the points of the triangle, origin of the ray and the direction of the ray.
+			With those barycentric coordinates, we would then check if the point of intersection was inside of the triangle on the plane - if it was, we would update the maximum value of the parameter t along with the information about our intersection (the intersection’s t parameter, its surface normal, the primitive, and the surface material). 
 		  </p>
 
 		  <p>Below are two simple scenes rendered with these ray-scene intersection algorithms: </p>
 			  <div class="row">
 				<div class="column">
-				  <img src="images/CBspheres.png" width="480px" style="margin: 5px 5px 5px 5px;">
+				  <img src="images/CBspheres.png" width="320px" style="margin: 5px 5px 5px 5px;">
 				  <figcaption>../dae/sky/CBspheres_lambertian.dae</figcaption>
 				</div>
 				<div class="column">
-				  <img src="images/CBgems.png" width="480px" style="margin: 5px 5px 5px 5px;">
+				  <img src="images/CBgems.png" width="320px" style="margin: 5px 5px 5px 5px;">
 				  <figcaption>../dae/sky/CBgems.dae </figcaption>
 				</div>
+				<div class="column">
+					<img src="images/CBcoil.png" width="320px" style="margin: 5px 5px 5px 5px;">
+					<figcaption>../dae/sky/CBcoil.daee </figcaption>
+				  </div>
 			  </div>
         </section>
 
@@ -243,21 +247,31 @@
 				it was behind, we wouldn’t cast the ray. 
 			</li>
 		</ul>
-		<p>Using CBbunny.dae, we rendered with <code>estimate_direct_lighting_hemisphere</code> and <code>estimate_direct_lighting_importance</code> respectively, as shown in the below images. </p>
+		<p>Using CBbunny.dae and CBspheres_lambertian.dae, we rendered with <code>estimate_direct_lighting_hemisphere</code> and <code>estimate_direct_lighting_importance</code> respectively, as shown in the below images. </p>
 		<div class="row">
 			<div class="column">
-			  <img src="images/bunny_hemisphere_sampling.png" width="480px" style="margin: 5px 5px 5px 5px;">
-			  <figcaption> Uniform Hemisphere Sampling </figcaption>
+			  <img src="images/CBbunny_H.png" width="480px" style="margin: 5px 5px 5px 5px;">
+			  <figcaption> CBbunny.dae Uniform Hemisphere Sampling </figcaption>
 			</div>
 			<div class="column">
-			  <img src="images/bunny_importance_sampling.png" width="480px" style="margin: 5px 5px 5px 5px;">
-			  <figcaption> Importance Sampling </figcaption>
+			  <img src="images/CBbunny_importance.png" width="480px" style="margin: 5px 5px 5px 5px;">
+			  <figcaption> CBbunny.dae Importance Sampling </figcaption>
+			</div>
+		  </div>
+		  <div class="row">
+			<div class="column">
+			  <img src="images/CBsphere_uniform.png" width="480px" style="margin: 5px 5px 5px 5px;">
+			  <figcaption> CBspheres_lambertian.dae Uniform Hemisphere Sampling </figcaption>
+			</div>
+			<div class="column">
+			  <img src="images/CBsphere_importance.png" width="480px" style="margin: 5px 5px 5px 5px;">
+			  <figcaption> CBspheres_lambertian.dae Importance Sampling </figcaption>
 			</div>
 		  </div>
 		  <p>
-			The two images above, both were rendered with 8 threads, 64 samples per pixel and 32 light rays. Comparing both images below, uniform hemisphere sampling and importance sampling show significant differences on the CBbunny.dae. Looking at uniform hemisphere sampling, 
-			the image produced is much more noisier and more grainy - this is partly because it doesn’t distinguish between what ray is pointing to a light source. On the other hand, importance sampling produces a more smooth and clean image, because it considers whether a ray 
-			points to a light source and focuses on specific samples that would contribute  more to the result. 
+			The images above were rendered with unfirom hemisphere sampling and importance sampling respectively. Comparing the images side by side with their counterparts, the ones that were rendered with uniform hemisphere sampling
+			appear more granier, with more noise rendered in the image - this is partly because it doesn’t distinguish between what ray is pointing to a light source. On the other hand, importance sampling produces a more smooth and clean image, 
+			because it considers whether a ray points to a light source and focuses on specific samples that would contribute more to the result. Both were rendered at a sampling rate of 16 pixels. 
 		  </p>
 		  <p>
 			To showcase how noise levels in soft shadows differ with varying amount of light rays, we rendered wall-e.dae with the -l flag changed and with -s set to 1 (or 1 sample per pixel). This was done 
@@ -266,7 +280,7 @@
 		  <div class="row">
 			<div class="column">
 			  <img src="images/task3_importance/walle_light_test_1_1.png" width="480px" style="margin: 5px 5px 5px 5px;">
-			  <figcaption> 1 light rays with wall-e.dae </figcaption>
+			  <figcaption> 1 light ray with wall-e.dae </figcaption>
 			</div>
 			<div class="column">
 			  <img src="images/task3_importance/walle_light_test_4_1.png" width="480px" style="margin: 5px 5px 5px 5px;">
