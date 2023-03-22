@@ -70,10 +70,7 @@
           <ul class="nav flex-column">
 						<li class="nav-item"><a class="nav-link" href="#overview_content">Overview</a></li>
 						<li class="nav-item"><a class="nav-link" href="#task1">Part 1: Mirror and Glass Materials</a></li>
-						<li class="nav-item"><a class="nav-link" href="#task2">Part 2: Bounding Volume Hierarchy</a></li>
-						<li class="nav-item"><a class="nav-link" href="#task3">Part 3: Direct Illumination</a></li>
-						<li class="nav-item"><a class="nav-link" href="#task4">Part 4: Global Illumination</a></li>
-						<li class="nav-item"><a class="nav-link" href="#task5">Part 5: Adaptive Sampling</a></li>
+						<li class="nav-item"><a class="nav-link" href="#task4">Part 4: Depth of Field</a></li>
           </ul>
         </li>
         <li class="nav-item"><a class="nav-link" href="#website_link">Website Link</a>
@@ -93,10 +90,19 @@
 		============================ -->
         <section id="overview_header">
           <h1>Project 3-2: Pathtracer 2</h1>
-          <div id="centerImage">
-          	<!-- <p><img src="images/cow.PNG" alt="cow mesh" width="800px" align="middle"/></p> -->
-          	<p><img src="images/spec.jpg" alt="bunnies" width="900px" align="middle"/></p>
-        	</div>
+		  <div class="row">
+			<div class="column">
+			  <img src="images/Task1/glass_spheres_100.png" width="500px" style="margin: 5px 5px 5px 5px;">
+			</div>
+			<!--Insert Image from Part 4 here.-->
+			<div class="column">
+			  <img src="images/Task1/glass_spheres_1.png" width="500px" style="margin: 5px 5px 5px 5px;">
+			</div>
+		  </div>
+
+          <!-- <div id="centerImage">
+          	<p><img src="images/Task1/glass_spheres_100.png" alt="glass_and_mirror_spheres" width="500px" align="middle"/></p>
+        	</div> -->
         </section>
 		
 		<!-- Overview
@@ -183,166 +189,15 @@
 				  <figcaption>../dae/sky/CBspheres.dae at max ray depth 100</figcaption>
 				</div>
 			  <p>With 100, there isn’t a large difference between the image that was rendered at max ray depth of 5 (in a sense, our rays have “converged” so there aren't any new changes for the image rendered). </p>
-
-
-
         </section>
 
        <hr class="divider">
-		
-		<!-- Task 2 Content
-		============================ -->
-        <section id="task2">
-          <h2>Part 2: Bounding Volume Hierarchy</h2>
-      <p>A Bounding Volume Hierarchy (BVH) acceleration structure is used to organize objects in a scene for the purpose of speeding up ray-object intersection tests. It starts by dividing the scene into a hierarchy of bounding boxes, and subdivides them recursively until each leaf node contains only a small number of primitives. When a ray is cast into the scene, it is tested against the bounding volumes at each level of the hierarchy, which enables the renderer to quickly eliminate large groups of objects that the ray does not intersect. This leads to a significant reduction in the number of intersection tests that need to be performed, resulting in faster rendering times.</p>
-		  <p>
-			Our BVH construction algorithm recursively creates each node in the BVH according to the <code>max_leaf_size</code> passed in and our splitting point heuristic. The process is as follows:
-			</p>
-			<p>
-			<ul>
-				<li>First, we compute the bounding box of the entire list of primitives passed in (from the iterators <code>start</code> to <code>end</code>) and initialize a new BVHNode <code>node</code> with that bounding box.</li>
-				<li>If the number of primitives in this bounding box is less than or equal to <code>max_leaf_size</code>, we simply set this new node’s <code>start</code> and <code>end</code> iterators to be the same as the ones passed in, and return node. This is our base case.</li>
-				<li>Otherwise, we must start the process of splitting the primitives into two parts and creating a BVHNode for the left and right children recursively.</li>
-				<ul>
-					<li>Our splitting heuristic was to choose the longest axis of the current bounding box that all the primitives lie in, then split the primitives based on which half of this axis they lie on.</li>
-					<li>We made a lambda function that would take in a primitive and return true if its centroid lay to the left of the midpoint of the longest bounding box axis, and false otherwise.</li>
-					<li>We passed this lambda function into <code>std::partition</code>, which would sort the list in-place based on this function. It returns an iterator which we called <code>mid</code> that points to the part of the list where the primitives stop landing on one side of the axis and belong to the other.</li>
-					<li>Finally, we simply made the two recursive calls to <code>BVHAccel::construct_bvh</code> on the left and right members of node, passing in the iterators <code>start</code> and <code>mid</code> for the left child, and the iterators <code>mid</code> and <code>end</code> for the right child.</li>
-				</ul>
-				<li>Our splitting scheme has a chance of choosing a split point such that all primitives lie on only one side of the split point. To avoid the infinite recursion of this case, we made an extra check through the iterators after <code>std::partition</code> is called to see if any part of the list has zero primitives. If we found that this was the case, we simply divided the remaining list of primitives in half, set the <code>mid</code> iterator to the middle of this list, and proceeded to the recursive calls.</li>
-			</ul>
-			</p>
-			<p>
-				After completing <code>BVHAccel::has_intersection</code> and <code>BVHAccel::intersect</code>, the following large .dae files can render in a fraction of a second:
-			</p>
-			<div class="row">
-				<div class="column">
-				  <img src="images/bunny.png" width="480px" style="margin: 5px 5px 5px 5px;">
-				  <figcaption>dae/sky/CBbunny.dae</figcaption>
-				</div>
-				<div class="column">
-				  <img src="images/lucy.png" width="480px" style="margin: 5px 5px 5px 5px;">
-				  <figcaption>dae/sky/CBlucy.dae</figcaption>
-				</div>
-				<div class="column">
-				  <img src="images/planck.png" width="800px" style="margin: 5px 5px 5px 5px;">
-				  <figcaption>dae/meshedit/maxplanck.dae</figcaption>
-				</div>
-			  </div>
-			<p>
-				Let us take a look at <code>dae/meshedit/cow.dae</code>, <code>dae/sky/bench.dae</code>, and <code>dae/sky/CBcoil.dae</code> to see how BVH acceleration helps render times increase. The cow took 0.1789s, the bench took 0.0539s, and the coil took 0.0680s to render with BVH. Without the BVH acceleration implemented, the cow took 40.1128s, the bench took 277.2048s, and the coil took 39.2773s! As you can see with these rendering times, Bounding Volume Hierarchies greatly enhanced the speed at which we can calculate ray-object intersections using recursion and good heuristics for partitioning objects into bounded boxes.
-			</p>
-			<div class="row">
-				<div class="column">
-				  <img src="images/cow.png" width="360px" style="margin: 5px 5px 5px 5px;">
-				  <figcaption>cow</figcaption>
-				</div>
-				<div class="column">
-				  <img src="images/bench.png" width="360px" style="margin: 5px 5px 5px 5px;">
-				  <figcaption>bench</figcaption>
-				</div>
-				<div class="column">
-				  <img src="images/coil.png" width="360px" style="margin: 5px 5px 5px 5px;">
-				  <figcaption>coil</figcaption>
-				</div>
-			  </div>
-		</section>
-
-		<hr class="divider">
-
-		<!-- Section 2 Header
-		============================ -->
-       <!--  <section id="section2_header">
-          <h1>Section II: Triangle Meshes and Half-Edge Data Structure</h1>
-        </section> -->
-		
-		<!-- Task 3 Content
-		============================ -->
-        <section id="task3">
-        <h2>Part 3: Direct Illumination</h2>
-		<p> Below, we describe both implementations of the direct lighting function: </p>
-		<ul>
-			<li><code>estimate_direct_lighting_hemisphere</code>: To implement direct lighting with uniform hemisphere sampling, we started out with <code>num_samples</code> (<code>scene->lights.size() * ns_area_light</code>), 
-				which indicates the number of samples that we wanted to take. Using the <code>hemisphereSampler</code> variable, we grabbed an object-space vector that was uniformly randomly sampled on the hemisphere. We then 
-				transformed the vector into world space and created our ray based on the hit point of the ray (<code>hit_p</code>) and our world-space vector. We then checked for an intersection with our ray, specifically if 
-				if it intersected with our <code>bvh</code>, and we would then calculate the amount of light that was reflected back/outgoing light (this was also estimated with the Monte Carlo Estimator). Note that the sampling process 
-				was done <code>num_samples</code> of time. 
-			</li>
-			<li><code>estimate_direct_lighting_importance</code>: For this implementation, it was similar to uniform hemisphere sampling, with the main difference that it would be sampling the light source directly. For each light 
-				in the scene, we wanted to sample the directions between the light source and the hit point. For each light source, we checked if it was a point source - if it wasn’t, we would sample from that light source (<code>scene->lights[i]->sample_L</code>) 
-				only once and casted the ray. We would then use the ray to check for an intersection with our <code>bvh</code>, we would then calculate the amount of outgoing light. In the case that the light source was not a point source, we would do a similar process, 
-				but would perform sampling <code>ns_area_light</code> amount of times - the result would be averaged by the number of samples we took. Additionally, we checked first if the light was behind the surface at the hit point for each light source - if 
-				it was behind, we wouldn’t cast the ray. 
-			</li>
-		</ul>
-		<p>Using CBbunny.dae and CBspheres_lambertian.dae, we rendered with <code>estimate_direct_lighting_hemisphere</code> and <code>estimate_direct_lighting_importance</code> respectively, as shown in the below images. </p>
-		<div class="row">
-			<div class="column">
-			  <img src="images/CBbunny_H.png" width="480px" style="margin: 5px 5px 5px 5px;">
-			  <figcaption> CBbunny.dae Uniform Hemisphere Sampling </figcaption>
-			</div>
-			<div class="column">
-			  <img src="images/CBbunny_importance.png" width="480px" style="margin: 5px 5px 5px 5px;">
-			  <figcaption> CBbunny.dae Importance Sampling </figcaption>
-			</div>
-		  </div>
-		  <div class="row">
-			<div class="column">
-			  <img src="images/CBsphere_uniform.png" width="480px" style="margin: 5px 5px 5px 5px;">
-			  <figcaption> CBspheres_lambertian.dae Uniform Hemisphere Sampling </figcaption>
-			</div>
-			<div class="column">
-			  <img src="images/CBsphere_importance.png" width="480px" style="margin: 5px 5px 5px 5px;">
-			  <figcaption> CBspheres_lambertian.dae Importance Sampling </figcaption>
-			</div>
-		  </div>
-		  <p>
-			The images above were rendered with unfirom hemisphere sampling and importance sampling respectively. Comparing the images side by side with their counterparts, the ones that were rendered with uniform hemisphere sampling
-			appear more granier, with more noise rendered in the image - this is partly because it doesn’t distinguish between what ray is pointing to a light source. On the other hand, importance sampling produces a more smooth and clean image, 
-			because it considers whether a ray points to a light source and focuses on specific samples that would contribute more to the result. Both were rendered at a sampling rate of 16 pixels. 
-		  </p>
-		  <p>
-			To showcase how noise levels in soft shadows differ with varying amount of light rays, we rendered wall-e.dae with the -l flag changed and with -s set to 1 (or 1 sample per pixel). This was done 
-			with light sampling.  
-		  </p>
-		  <div class="row">
-			<div class="column">
-			  <img src="images/task3_importance/walle_light_test_1_1.png" width="480px" style="margin: 5px 5px 5px 5px;">
-			  <figcaption> 1 light ray with wall-e.dae </figcaption>
-			</div>
-			<div class="column">
-			  <img src="images/task3_importance/walle_light_test_4_1.png" width="480px" style="margin: 5px 5px 5px 5px;">
-			  <figcaption> 4 light rays with wall-e.dae </figcaption>
-			</div>
-		  </div>
-		  <div class="row">
-			<div class="column">
-			  <img src="images/task3_importance/walle_light_test_16_1.png" width="480px" style="margin: 5px 5px 5px 5px;">
-			  <figcaption> 16 light rays with wall-e.dae </figcaption>
-			</div>
-			<div class="column">
-			  <img src="images/task3_importance/walle_light_test_64_1.png" width="480px" style="margin: 5px 5px 5px 5px;">
-			  <figcaption> 64 light rays with wall-e.dae </figcaption>
-			</div>
-		  </div>
-		  <p>
-			For each light sampling done, we changed the number of light rays between 1, 4, 16 and 64. As we increase the number of light rays in each image, the picture becomes less “grainy” and less dark spots appear on the figure. More specifically, it becomes more distinguishable where the shadow is 
-			(i.e. a little bit below wall-e’s figure). With less light rays, there is more noise and it’s harder to tell where the soft shadow is relative to the figure. And with more light rays, it's easier to tell where the soft shadows are with less noise being produced. 
-		  </p>
-		
-        <hr class="divider">
 
         <!-- Task 4 Content
 		============================ -->
         <section id="task4">
-          <h2>Part 4: Global Illumination</h2>
-          <p>In our implementation of indirect lighting function, we first implemented the function <code>sample_f</code> that would help us take a sample for the function <code>at_least_one_bounce_radiance</code>. In this function, we considered the case of when <code>max_ray_depth = 0</code> and when <code>max_ray_depth = 1</code>. In the former situation, 
-			we would return zero bounce illumination; in the latter case, we would return one bounce illumination. This was to account for the cases where we would only have direct illumination. So, specifically for indirect illumination, when <code>max_ray_depth</code> was greater than 1, we wanted to ensure that we always did at least 1 indirect bounce and 
-			that once that bounce was done, Russian Roulette would account for whether we would terminate on a certain bounce. To account for both cases, we had two checks in our code. For our first check: if the current ray’s depth was equal to the max ray depth, that implied that we haven’t had 1 indirect bounce yet (and this is assuming that <code>max_ray_depth</code> 
-			is greater than 1). For our second check, we set our termination probability to 0.35 (so the probability of the algorithm continuing would be 0.65), and we used the <code>coin_flip</code> function to determine if Russian Roulette would terminate the process. Assuming that the process wasn’t terminated, we casted our ray and decremented the ray’s depth and then 
-			checked its intersection with our bvh. If it intersected, then we recursively called on <code>at_least_one_bounce_radiance</code> and the recursive result was factored into <code>L_out</code>. More specifically, the recursive result was multiplied by our sample from <code>sample_f</code> and the derived cosine factor and then divided by the pdf and the probability 
-			of continuation. 
-		</p>
+          <h2>Part 4: Depth of Field</h2>
+          <p>REPLACE PART 4 CONTENT HERE</p>
 		<p>
 			To show what it looks like, we rendered two images as shown below using our implementation of global illumination: 
 		</p>
@@ -454,53 +309,8 @@
 					  <figcaption>1024 samples per pixel</figcaption>
 					</div>
 				  </div>
-				  <p> Most noticeably from all these scenes is that the more the sampling per pixel rate increases, the more clear the image becomes. In other words, sampling at a lower rate means there is much more noise in the image; the more that we increase the sampling
-					rate, the less noisy the images becomes and it starts to appear more smooth. 
-				 </p>
 
         <hr class="divider">
-		
-		<!-- Task 5 Content
-		============================ -->
-        <section id="task5">
-          <h2>Part 5: Adaptive Sampling</h2>
-          <div>
-            <p>Adaptive sampling improves the efficiency of rendering. Before, we would take a fixed number of samples from each pixel for our Monte Carlo integration algorithm, regardless of how much detail is present in the scene. This can result in images that are noisy or blurry, particularly in areas with high contrast or fine details. Adaptive sampling works by dynamically adjusting the number of samples taken in each pixel based on the complexity of the scene. In areas with high detail or contrast, more samples are taken to capture the fine details and reduce noise. In areas with less detail or lower contrast, fewer samples are taken to reduce rendering time without sacrificing image quality. The algorithm gradually increases the number of samples until a desired level of image quality is achieved. This approach significantly minimized rendering time and improved the overall quality of the image.</p>
-            <p>In our implementation of adaptive sampling, we followed the specifications and computed the illuminance of estimated radiance using the <code>Vector3D::illum()</code> function. We also stored two running sums, <code>s1</code> and <code>s2</code>, where <code>s1</code> holds the illuminances and <code>s2</code> holds the squares of the illuminances. After every <code>samplesPerBatch</code> iterations, we perform a convergence check by calculating the mean and variance using <code>s1</code> and <code>s2</code> to determine if the condition <code>I <= maxTolerance * 𝜇</code> has been satisfied. If it has, we break out of the loop and update the <code>sampleBuffer</code> and <code>sampleCountBuffer</code> accordingly.</p>
-            <p>Here are some scenes rendered with 2048 samples per pixel, 1 sample per light, and max ray depth of 5 along with a heatmap of their respective sampling rates.</p>
-            <div class="row">
-						<div class="column">
-						  <img src="images/adaptive_walle.png" width="480px" style="margin: 5px 5px 5px 5px;">
-						  <figcaption>noise-free wall-e render</figcaption>
-						</div>
-						<div class="column">
-						  <img src="images/adaptive_walle_rate.png" width="480px" style="margin: 5px 5px 5px 5px;">
-						  <figcaption>sampling rate heatmap of wall-e</figcaption>
-						</div>
-					  </div>
-            <div class="row">
-						<div class="column">
-						  <img src="images/adaptive_bunny.png" width="480px" style="margin: 5px 5px 5px 5px;">
-						  <figcaption>noise-free bunny render</figcaption>
-						</div>
-						<div class="column">
-						  <img src="images/adaptive_bunny_rate.png" width="480px" style="margin: 5px 5px 5px 5px;">
-						  <figcaption>sampling rate heatmap of bunny</figcaption>
-						</div>
-					  </div>
-					  <div class="row">
-						<div class="column">
-						  <img src="images/adaptive_banana.png" width="480px" style="margin: 5px 5px 5px 5px;">
-						  <figcaption>noise-free banana render</figcaption>
-						</div>
-						<div class="column">
-						  <img src="images/adaptive_banana_rate.png" width="480px" style="margin: 5px 5px 5px 5px;">
-						  <figcaption>sampling rate heatmap of banana</figcaption>
-						</div>
-					  </div>
-					  <p>Red represents high sampling rates (the ratio between the actual number of samples and the maximum number of samples), and blue represents low sampling rates.</p>
-					  
-    <hr class="divider">
 
     <!-- Website Link -->
         <section id="website_link">
