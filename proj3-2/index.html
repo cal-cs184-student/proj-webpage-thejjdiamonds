@@ -1,7 +1,531 @@
-<html>
-	<head>
-	</head>
-	<body>
-		Project 3-2 here
-	</body>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1.0, shrink-to-fit=no">
+<link href="assets/images/diamond.png" rel="icon" />
+<title>Project 2</title>
+<meta name="description" content="184 Project 1 Writeup">
+<meta name="author" content="harnishdesign.net">
+
+<!-- Stylesheet
+============================== -->
+<!-- Bootstrap -->
+<link rel="stylesheet" type="text/css" href="assets/vendor/bootstrap/css/bootstrap.min.css" />
+<!-- Font Awesome Icon -->
+<link rel="stylesheet" type="text/css" href="assets/vendor/font-awesome/css/all.min.css" />
+<!-- Magnific Popup -->
+<link rel="stylesheet" type="text/css" href="assets/vendor/magnific-popup/magnific-popup.min.css" />
+<!-- Highlight Syntax -->
+<link rel="stylesheet" type="text/css" href="assets/vendor/highlight.js/styles/github.css" />
+<!-- Custom Stylesheet -->
+<link rel="stylesheet" type="text/css" href="assets/css/stylesheet.css" />
+</head>
+
+<body data-spy="scroll" data-target=".idocs-navigation" data-offset="125">
+
+<!-- Preloader -->
+<div class="preloader">
+  <div class="lds-ellipsis">
+    <div></div>
+    <div></div>
+    <div></div>
+    <div></div>
+  </div>
+</div>
+<!-- Preloader End --> 
+
+<!-- Document Wrapper   
+=============================== -->
+<div id="main-wrapper"> 
+  
+  <!-- Header
+  ============================ -->
+  <header id="header" class="sticky-top"> 
+    <!-- Navbar -->
+    <nav class="primary-menu navbar navbar-expand-lg navbar-dropdown-dark">
+      <div class="container-fluid">
+        <!-- Sidebar Toggler -->
+		<button id="sidebarCollapse" class="navbar-toggler d-block d-md-none" type="button"><span></span><span class="w-75"></span><span class="w-50"></span></button>
+		
+		<!-- Logo --> 
+        <!-- <a class="logo ml-md-3" href="index.html" title="iDocs Template"> <img src="assets/images/logo.png" alt="iDocs Template"/> </a>  -->
+		<span class="text-2 ml-2">Jasmine Lin and Jennifer Prince</span> 
+        <!-- Logo End -->
+    </nav>
+    <!-- Navbar End --> 
+  </header>
+  <!-- Header End --> 
+  
+  <!-- Content
+  ============================ -->
+  <div id="content" role="main">
+    
+	<!-- Sidebar Navigation
+	============================ -->
+	<div class="idocs-navigation bg-light">
+      <ul class="nav flex-column ">
+      	<li class="nav-item"><a class="nav-link" href="#overview_header">Project 3-2: Pathtracer 2</a>
+          <ul class="nav flex-column">
+						<li class="nav-item"><a class="nav-link" href="#overview_content">Overview</a></li>
+						<li class="nav-item"><a class="nav-link" href="#task1">Part 1: Mirror and Glass Materials</a></li>
+						<li class="nav-item"><a class="nav-link" href="#task2">Part 2: Bounding Volume Hierarchy</a></li>
+						<li class="nav-item"><a class="nav-link" href="#task3">Part 3: Direct Illumination</a></li>
+						<li class="nav-item"><a class="nav-link" href="#task4">Part 4: Global Illumination</a></li>
+						<li class="nav-item"><a class="nav-link" href="#task5">Part 5: Adaptive Sampling</a></li>
+          </ul>
+        </li>
+        <li class="nav-item"><a class="nav-link" href="#website_link">Website Link</a>
+        </li>
+      </ul>
+  </div>		
+        
+		<!-- <hr class="divider"> -->
+		<!-- Docs Content
+	============================ -->
+    <div class="idocs-content">
+      <div class="container"> 		
+        
+		<hr class="divider">
+
+		<!-- Project 2 Header
+		============================ -->
+        <section id="overview_header">
+          <h1>Project 3-2: Pathtracer 2</h1>
+          <div id="centerImage">
+          	<!-- <p><img src="images/cow.PNG" alt="cow mesh" width="800px" align="middle"/></p> -->
+          	<p><img src="images/spec.jpg" alt="bunnies" width="900px" align="middle"/></p>
+        	</div>
+        </section>
+		
+		<!-- Overview
+		============================ -->
+        <section id="overview_content">
+          <h2>Overview</h2>
+          <p class="lead mb-5">INSERT ENTIRE OVERVIEW</p>
+        </section>
+
+    <hr class="divider">
+
+    <!-- Section 1 Header
+		============================ -->
+       <!--  <section id="section1_header">
+          <h1>Section I: Bezier Curves and Surfaces</h1>
+        </section> -->
+
+        <!-- Task 1 Content
+		============================ -->
+        <section id="task1">
+          <h2>Part 1: Mirror and Glass Materials</h2>
+		  <p> 
+			For this portion of the project, we rendered mirror and glass materials. For our mirror material, we implemented two functions: <code>reflect</code> and <code>MirrorBSDF::sample_f</code>: 
+		  <ul>
+			<li><code>reflect</code>: Given an incoming ray/vector, we reflected it about the normal (0, 0, 1) and stored the result in the variable <code>wi</code>.</li>
+			<li><code>MirrorBSDF::sample_f</code>: Relying on our <code>reflect</code> implementation, we first reflected the incoming ray/vector and then found the resulting vector’s angle with the normal (with<code>abs_cos_theta</code>). We then returned the reflectance divided by the angle.</li>
+		  </ul>
+		  For our glass material, we implemented three functions to help us render: <code>refract</code>, <code>RefractionBSDF::sample_f</code> and <code>GlassBSDF::sample_f</code>: 
+		  <ul>
+			<li><code>refract</code>: For refraction, we wanted to first determine if the incoming ray was entering the non-air material, or exiting. If it was entering, the index of refraction would <code>1/ior</code>; if it was exiting, then it would just be the variable <code>ior</code>. From there, we would determine if there was total internal reflection, based on if <code>1 - η2(1 - cos2θ) < 0</code>. 
+				If there was total internal reflection, we would return false. Otherwise, we would appropriately assign the refraction to<code>wi</code> and return true (where refraction did occur).</li>
+			<li><code>MirrorBSDF::sample_f</code>:Relying on our <code>refract</code> implementation, we first determined if there was refraction. If there was, then we would calculate the resulting vector’s angle with the normal (using <code>abs_cos_theta</code>) and return the transmittance divided by the angle and <code>pow(eta, 2)</code> (or the index of refraction squared). </li>
+			<li><code>GlassBSDF::sample_f</code>: For sampling glass, when refraction does occur, both reflection and refraction occur at this point, so we wanted to model this by determining if we should reflect or refract based on Schlick’s reflection coefficient. If there was total internal reflection, then we would reflect normally. Otherwise, we would determine if we wanted to reflect or refract using Shclick’s 
+				reflection coefficient (and using the function <code>coin_flip</code>). If we reflected, then we would multiply Schlick's coefficient with the reflectance divided by the cosine term; otherwise, we would multiply the transmittance divided by the cosine term and <code>eta</code> with 1 - Schlick’s reflection coefficient. 
+			</li>
+		  </ul>
+		  </p>
+
+		  <p>Below we rendered a sequence of images of the scene CBspheres.dae, each rendered with 1024 samples per pixel, 4 samples per light, and different max_ray_depth (0, 1, 2, 3, 4, 5, 100):			
+		</p>
+			  <div class="row">
+				<div class="column">
+				  <img src="images/Task1/glass_spheres_0.png" width="480px" style="margin: 5px 5px 5px 5px;">
+				  <figcaption>../dae/sky/CBspheres.dae at max ray depth 0</figcaption>
+				</div>
+				<div class="column">
+				  <img src="images/Task1/glass_spheres_1.png" width="480px" style="margin: 5px 5px 5px 5px;">
+				  <figcaption>../dae/sky/CBspheres.dae at max ray depth 1</figcaption>
+				</div>
+			  </div>
+			  <p> Starting at max ray depth of 0, no light bounces are done before the light enters the camera - this is shown by the fact that we don’t see any of the spheres in the image and the only thing that renders in the image is the light source coming from the ceiling. At max ray depth of 1, we start to see spheres forming and the room light up, but the spheres are still mostly black. 
+				At this point, the spheres are now reflective, so after once bounce, we observe that only the ceiling light is reflected on the surface of the spheres (since there would only be one bounce when the light hits the surface of the sphere and then enters the camera). 
+			 </p>
+			  <div class="row">
+				<div class="column">
+				  <img src="images/Task1/glass_spheres_2.png" width="480px" style="margin: 5px 5px 5px 5px;">
+				  <figcaption>../dae/sky/CBspheres.dae at max ray depth 2</figcaption>
+				</div>
+				<div class="column">
+				  <img src="images/Task1/glass_spheres_3.png" width="480px" style="margin: 5px 5px 5px 5px;">
+				  <figcaption>../dae/sky/CBspheres.dae at max ray depth 3</figcaption>
+				</div>
+			  </div>
+			  <p> When we increase it to 2 for the max ray depth, we note that the surface of the spheres become more “clear”, such that the reflection on the left sphere becomes more apparent and we start to also see more on the right sphere. However, we still don’t have enough bounces, or more specifically, the glass material is still slightly dark since we need one more additional bounce of 
+				light (the refracted light is still within the sphere). At max ray depth of 3 though, we start to see the highlight under the sphere. This results from the light going to the surface of the sphere at top, then going towards the surface at the bottom, then the floor and then entering the camera (i.e. the light hits 3 different surfaces/points before entering the camera). This results 
+				in the glass material being able to more “fully refract.” However, the sphere reflected in the left sphere is still slightly dark. 
+			</p>
+			  <div class="row">
+				<div class="column">
+				  <img src="images/Task1/glass_spheres_4.png" width="480px" style="margin: 5px 5px 5px 5px;">
+				  <figcaption>../dae/sky/CBspheres.dae at max ray depth 4</figcaption>
+				</div>
+				<div class="column">
+				  <img src="images/Task1/glass_spheres_5.png" width="480px" style="margin: 5px 5px 5px 5px;">
+				  <figcaption>../dae/sky/CBspheres.dae at max ray depth 5</figcaption>
+				</div>
+			  </div>
+			  <p>Between max ray depths of 4 and 5, we don’t see any huge noticeable change between the two, but we do notice that the right sphere has refracted some light to the wall. At 4 and 5, the light ends up bouncing the same way that it did with max ray depth of 3, but hitting some additional surfaces, leading to the light being refracted onto the wall. In addition, the reflection of the sphere 
+				in the left sphere appears to be brighter. 
+			</p>
+
+				<div class="column centerImage">
+				  <img src="images/Task1/glass_spheres_100.png" width="480px" style="margin: 5px 5px 5px 5px;">
+				  <figcaption>../dae/sky/CBspheres.dae at max ray depth 100</figcaption>
+				</div>
+			  <p>With 100, there isn’t a large difference between the image that was rendered at max ray depth of 5 (in a sense, our rays have “converged” so there aren't any new changes for the image rendered). </p>
+
+
+
+        </section>
+
+       <hr class="divider">
+		
+		<!-- Task 2 Content
+		============================ -->
+        <section id="task2">
+          <h2>Part 2: Bounding Volume Hierarchy</h2>
+      <p>A Bounding Volume Hierarchy (BVH) acceleration structure is used to organize objects in a scene for the purpose of speeding up ray-object intersection tests. It starts by dividing the scene into a hierarchy of bounding boxes, and subdivides them recursively until each leaf node contains only a small number of primitives. When a ray is cast into the scene, it is tested against the bounding volumes at each level of the hierarchy, which enables the renderer to quickly eliminate large groups of objects that the ray does not intersect. This leads to a significant reduction in the number of intersection tests that need to be performed, resulting in faster rendering times.</p>
+		  <p>
+			Our BVH construction algorithm recursively creates each node in the BVH according to the <code>max_leaf_size</code> passed in and our splitting point heuristic. The process is as follows:
+			</p>
+			<p>
+			<ul>
+				<li>First, we compute the bounding box of the entire list of primitives passed in (from the iterators <code>start</code> to <code>end</code>) and initialize a new BVHNode <code>node</code> with that bounding box.</li>
+				<li>If the number of primitives in this bounding box is less than or equal to <code>max_leaf_size</code>, we simply set this new node’s <code>start</code> and <code>end</code> iterators to be the same as the ones passed in, and return node. This is our base case.</li>
+				<li>Otherwise, we must start the process of splitting the primitives into two parts and creating a BVHNode for the left and right children recursively.</li>
+				<ul>
+					<li>Our splitting heuristic was to choose the longest axis of the current bounding box that all the primitives lie in, then split the primitives based on which half of this axis they lie on.</li>
+					<li>We made a lambda function that would take in a primitive and return true if its centroid lay to the left of the midpoint of the longest bounding box axis, and false otherwise.</li>
+					<li>We passed this lambda function into <code>std::partition</code>, which would sort the list in-place based on this function. It returns an iterator which we called <code>mid</code> that points to the part of the list where the primitives stop landing on one side of the axis and belong to the other.</li>
+					<li>Finally, we simply made the two recursive calls to <code>BVHAccel::construct_bvh</code> on the left and right members of node, passing in the iterators <code>start</code> and <code>mid</code> for the left child, and the iterators <code>mid</code> and <code>end</code> for the right child.</li>
+				</ul>
+				<li>Our splitting scheme has a chance of choosing a split point such that all primitives lie on only one side of the split point. To avoid the infinite recursion of this case, we made an extra check through the iterators after <code>std::partition</code> is called to see if any part of the list has zero primitives. If we found that this was the case, we simply divided the remaining list of primitives in half, set the <code>mid</code> iterator to the middle of this list, and proceeded to the recursive calls.</li>
+			</ul>
+			</p>
+			<p>
+				After completing <code>BVHAccel::has_intersection</code> and <code>BVHAccel::intersect</code>, the following large .dae files can render in a fraction of a second:
+			</p>
+			<div class="row">
+				<div class="column">
+				  <img src="images/bunny.png" width="480px" style="margin: 5px 5px 5px 5px;">
+				  <figcaption>dae/sky/CBbunny.dae</figcaption>
+				</div>
+				<div class="column">
+				  <img src="images/lucy.png" width="480px" style="margin: 5px 5px 5px 5px;">
+				  <figcaption>dae/sky/CBlucy.dae</figcaption>
+				</div>
+				<div class="column">
+				  <img src="images/planck.png" width="800px" style="margin: 5px 5px 5px 5px;">
+				  <figcaption>dae/meshedit/maxplanck.dae</figcaption>
+				</div>
+			  </div>
+			<p>
+				Let us take a look at <code>dae/meshedit/cow.dae</code>, <code>dae/sky/bench.dae</code>, and <code>dae/sky/CBcoil.dae</code> to see how BVH acceleration helps render times increase. The cow took 0.1789s, the bench took 0.0539s, and the coil took 0.0680s to render with BVH. Without the BVH acceleration implemented, the cow took 40.1128s, the bench took 277.2048s, and the coil took 39.2773s! As you can see with these rendering times, Bounding Volume Hierarchies greatly enhanced the speed at which we can calculate ray-object intersections using recursion and good heuristics for partitioning objects into bounded boxes.
+			</p>
+			<div class="row">
+				<div class="column">
+				  <img src="images/cow.png" width="360px" style="margin: 5px 5px 5px 5px;">
+				  <figcaption>cow</figcaption>
+				</div>
+				<div class="column">
+				  <img src="images/bench.png" width="360px" style="margin: 5px 5px 5px 5px;">
+				  <figcaption>bench</figcaption>
+				</div>
+				<div class="column">
+				  <img src="images/coil.png" width="360px" style="margin: 5px 5px 5px 5px;">
+				  <figcaption>coil</figcaption>
+				</div>
+			  </div>
+		</section>
+
+		<hr class="divider">
+
+		<!-- Section 2 Header
+		============================ -->
+       <!--  <section id="section2_header">
+          <h1>Section II: Triangle Meshes and Half-Edge Data Structure</h1>
+        </section> -->
+		
+		<!-- Task 3 Content
+		============================ -->
+        <section id="task3">
+        <h2>Part 3: Direct Illumination</h2>
+		<p> Below, we describe both implementations of the direct lighting function: </p>
+		<ul>
+			<li><code>estimate_direct_lighting_hemisphere</code>: To implement direct lighting with uniform hemisphere sampling, we started out with <code>num_samples</code> (<code>scene->lights.size() * ns_area_light</code>), 
+				which indicates the number of samples that we wanted to take. Using the <code>hemisphereSampler</code> variable, we grabbed an object-space vector that was uniformly randomly sampled on the hemisphere. We then 
+				transformed the vector into world space and created our ray based on the hit point of the ray (<code>hit_p</code>) and our world-space vector. We then checked for an intersection with our ray, specifically if 
+				if it intersected with our <code>bvh</code>, and we would then calculate the amount of light that was reflected back/outgoing light (this was also estimated with the Monte Carlo Estimator). Note that the sampling process 
+				was done <code>num_samples</code> of time. 
+			</li>
+			<li><code>estimate_direct_lighting_importance</code>: For this implementation, it was similar to uniform hemisphere sampling, with the main difference that it would be sampling the light source directly. For each light 
+				in the scene, we wanted to sample the directions between the light source and the hit point. For each light source, we checked if it was a point source - if it wasn’t, we would sample from that light source (<code>scene->lights[i]->sample_L</code>) 
+				only once and casted the ray. We would then use the ray to check for an intersection with our <code>bvh</code>, we would then calculate the amount of outgoing light. In the case that the light source was not a point source, we would do a similar process, 
+				but would perform sampling <code>ns_area_light</code> amount of times - the result would be averaged by the number of samples we took. Additionally, we checked first if the light was behind the surface at the hit point for each light source - if 
+				it was behind, we wouldn’t cast the ray. 
+			</li>
+		</ul>
+		<p>Using CBbunny.dae and CBspheres_lambertian.dae, we rendered with <code>estimate_direct_lighting_hemisphere</code> and <code>estimate_direct_lighting_importance</code> respectively, as shown in the below images. </p>
+		<div class="row">
+			<div class="column">
+			  <img src="images/CBbunny_H.png" width="480px" style="margin: 5px 5px 5px 5px;">
+			  <figcaption> CBbunny.dae Uniform Hemisphere Sampling </figcaption>
+			</div>
+			<div class="column">
+			  <img src="images/CBbunny_importance.png" width="480px" style="margin: 5px 5px 5px 5px;">
+			  <figcaption> CBbunny.dae Importance Sampling </figcaption>
+			</div>
+		  </div>
+		  <div class="row">
+			<div class="column">
+			  <img src="images/CBsphere_uniform.png" width="480px" style="margin: 5px 5px 5px 5px;">
+			  <figcaption> CBspheres_lambertian.dae Uniform Hemisphere Sampling </figcaption>
+			</div>
+			<div class="column">
+			  <img src="images/CBsphere_importance.png" width="480px" style="margin: 5px 5px 5px 5px;">
+			  <figcaption> CBspheres_lambertian.dae Importance Sampling </figcaption>
+			</div>
+		  </div>
+		  <p>
+			The images above were rendered with unfirom hemisphere sampling and importance sampling respectively. Comparing the images side by side with their counterparts, the ones that were rendered with uniform hemisphere sampling
+			appear more granier, with more noise rendered in the image - this is partly because it doesn’t distinguish between what ray is pointing to a light source. On the other hand, importance sampling produces a more smooth and clean image, 
+			because it considers whether a ray points to a light source and focuses on specific samples that would contribute more to the result. Both were rendered at a sampling rate of 16 pixels. 
+		  </p>
+		  <p>
+			To showcase how noise levels in soft shadows differ with varying amount of light rays, we rendered wall-e.dae with the -l flag changed and with -s set to 1 (or 1 sample per pixel). This was done 
+			with light sampling.  
+		  </p>
+		  <div class="row">
+			<div class="column">
+			  <img src="images/task3_importance/walle_light_test_1_1.png" width="480px" style="margin: 5px 5px 5px 5px;">
+			  <figcaption> 1 light ray with wall-e.dae </figcaption>
+			</div>
+			<div class="column">
+			  <img src="images/task3_importance/walle_light_test_4_1.png" width="480px" style="margin: 5px 5px 5px 5px;">
+			  <figcaption> 4 light rays with wall-e.dae </figcaption>
+			</div>
+		  </div>
+		  <div class="row">
+			<div class="column">
+			  <img src="images/task3_importance/walle_light_test_16_1.png" width="480px" style="margin: 5px 5px 5px 5px;">
+			  <figcaption> 16 light rays with wall-e.dae </figcaption>
+			</div>
+			<div class="column">
+			  <img src="images/task3_importance/walle_light_test_64_1.png" width="480px" style="margin: 5px 5px 5px 5px;">
+			  <figcaption> 64 light rays with wall-e.dae </figcaption>
+			</div>
+		  </div>
+		  <p>
+			For each light sampling done, we changed the number of light rays between 1, 4, 16 and 64. As we increase the number of light rays in each image, the picture becomes less “grainy” and less dark spots appear on the figure. More specifically, it becomes more distinguishable where the shadow is 
+			(i.e. a little bit below wall-e’s figure). With less light rays, there is more noise and it’s harder to tell where the soft shadow is relative to the figure. And with more light rays, it's easier to tell where the soft shadows are with less noise being produced. 
+		  </p>
+		
+        <hr class="divider">
+
+        <!-- Task 4 Content
+		============================ -->
+        <section id="task4">
+          <h2>Part 4: Global Illumination</h2>
+          <p>In our implementation of indirect lighting function, we first implemented the function <code>sample_f</code> that would help us take a sample for the function <code>at_least_one_bounce_radiance</code>. In this function, we considered the case of when <code>max_ray_depth = 0</code> and when <code>max_ray_depth = 1</code>. In the former situation, 
+			we would return zero bounce illumination; in the latter case, we would return one bounce illumination. This was to account for the cases where we would only have direct illumination. So, specifically for indirect illumination, when <code>max_ray_depth</code> was greater than 1, we wanted to ensure that we always did at least 1 indirect bounce and 
+			that once that bounce was done, Russian Roulette would account for whether we would terminate on a certain bounce. To account for both cases, we had two checks in our code. For our first check: if the current ray’s depth was equal to the max ray depth, that implied that we haven’t had 1 indirect bounce yet (and this is assuming that <code>max_ray_depth</code> 
+			is greater than 1). For our second check, we set our termination probability to 0.35 (so the probability of the algorithm continuing would be 0.65), and we used the <code>coin_flip</code> function to determine if Russian Roulette would terminate the process. Assuming that the process wasn’t terminated, we casted our ray and decremented the ray’s depth and then 
+			checked its intersection with our bvh. If it intersected, then we recursively called on <code>at_least_one_bounce_radiance</code> and the recursive result was factored into <code>L_out</code>. More specifically, the recursive result was multiplied by our sample from <code>sample_f</code> and the derived cosine factor and then divided by the pdf and the probability 
+			of continuation. 
+		</p>
+		<p>
+			To show what it looks like, we rendered two images as shown below using our implementation of global illumination: 
+		</p>
+
+		<div class="row">
+			<div class="column">
+			  <img src="images/bunny_global.png" width="480px" style="margin: 5px 5px 5px 5px;">
+			  <figcaption> CBbunny.dae with Global Illumination </figcaption>
+			</div>
+			<div class="column">
+			  <img src="images/dragon_global.png" width="480px" style="margin: 5px 5px 5px 5px;">
+			  <figcaption> dragon.dae with Global Illumination </figcaption>
+			</div>
+		  </div>
+
+		  <p>
+			To see what direct and indirect lighting look like, we rendered CBbunny.dae with both types of lighting. 
+		  </p>
+
+		  <div class="row">
+			<div class="column">
+			  <img src="images/bunny_direct.png" width="480px" style="margin: 5px 5px 5px 5px;">
+			  <figcaption> CBbunny.dae with Direct Lighting </figcaption>
+			</div>
+			<div class="column">
+			  <img src="images/bunny_indirect.png" width="480px" style="margin: 5px 5px 5px 5px;">
+			  <figcaption> CBbunny.dae with Indirect Lighting </figcaption>
+			</div>
+		  </div>
+
+		  <p>Between the two, rendering with direct lighting creates a harsher contrast with lighting - more specifically, the shadows are more harsh and more apparent on the bunny's body. In addition, the ceiling is mostly dark, with only the ceiling lighting lit up. 
+			In comparison, indirect lighting creates a softer look, where the shadows aren't as apparent and the ceiling is completely lit up (the shadows are much less distinguishable than they are with just direct lighting). If comparing both images though with the one 
+			above it, specifically with global illumination, both images are "darker" or "dimmer" than their global illumination counterpart. 
+		  </p>
+
+		  <p>
+			We then rendered some sceens with varying levels of max ray depth. 
+		  </p>
+			<div class="row">
+				<div class="column">
+				<img src="images/task4_max_ray_depth/bunny_ray_0.png" width="480px" style="margin: 5px 5px 5px 5px;">
+				<figcaption> Max Ray Depth of 0 </figcaption>
+				</div>
+				<div class="column">
+				<img src="images/task4_max_ray_depth/bunny_ray_1.png" width="480px" style="margin: 5px 5px 5px 5px;">
+				<figcaption> Max Ray Depth of 1</figcaption>
+				</div>
+			</div>
+			<div class="row">
+				<div class="column">
+				<img src="images/task4_max_ray_depth/bunny_ray_2.png" width="480px" style="margin: 5px 5px 5px 5px;">
+				<figcaption> Max Ray Depth of 2 </figcaption>
+				</div>
+				<div class="column">
+				<img src="images/task4_max_ray_depth/bunny_ray_3.png" width="480px" style="margin: 5px 5px 5px 5px;">
+				<figcaption> Max Ray Depth of 3 </figcaption>
+				</div>
+			</div>
+			<div class="row">
+				<div class="column">
+				<img src="images/task4_max_ray_depth/bunny_ray_depth100.png" width="480px" style="margin: 5px 5px 5px 5px;">
+				<figcaption> Max Ray Depth of 100 </figcaption>
+				</div>
+			</div>
+			<p>
+				Comparing the CBbunny.dae renders at different settings of max ray depth, the most noticeable difference comes from the jump between 1 and 2. At max ray depth of 0, it is only a black screen with the light on top; at max ray depth of 1, the bunny starts to show up 
+				but it is still relatively dark, with some harsh shadows on the bottom portion of the bunny and with the ceiling still mostly dark with the exception of the ceiling light. At max ray depth of 2, the ceiling is completely lit up and the bunny's shadow becomes softer. 
+				As we increase the max ray depth, the changes becomes less discernable, and it doesn't appear that the image changes too much in regards to lighting and shadows. 
+			</p>
+			
+          <p>Now, below are the scenes rendered with various sample-per-pixel rates (using 4 light rays):</p>
+          <div class="row">
+					<div class="column">
+					  <img src="images/bunny_1.png" width="480px" style="margin: 5px 5px 5px 5px;">
+					  <figcaption>1 sample per pixel</figcaption>
+					</div>
+					<div class="column">
+					  <img src="images/bunny_2.png" width="480px" style="margin: 5px 5px 5px 5px;">
+					  <figcaption>2 samples per pixel</figcaption>
+					</div>
+				  </div>
+				  <div class="row">
+					<div class="column">
+					  <img src="images/bunny_4.png" width="480px" style="margin: 5px 5px 5px 5px;">
+					  <figcaption>4 samples per pixel</figcaption>
+					</div>
+					<div class="column">
+					  <img src="images/bunny_8.png" width="480px" style="margin: 5px 5px 5px 5px;">
+					  <figcaption>8 samples per pixel</figcaption>
+					</div>
+				  </div>
+				  <div class="row">
+					<div class="column">
+					  <img src="images/bunny_16.png" width="480px" style="margin: 5px 5px 5px 5px;">
+					  <figcaption>16 samples per pixel</figcaption>
+					</div>
+					<div class="column">
+					  <img src="images/bunny_32.png" width="480px" style="margin: 5px 5px 5px 5px;">
+					  <figcaption>32 samples per pixel</figcaption>
+					</div>
+				  </div>
+				  <div class="row">
+					<div class="column">
+					  <img src="images/bunny_64.png" width="480px" style="margin: 5px 5px 5px 5px;">
+					  <figcaption>64 samples per pixel</figcaption>
+					</div>
+					<div class="column">
+					  <img src="images/bunny_1024.png" width="480px" style="margin: 5px 5px 5px 5px;">
+					  <figcaption>1024 samples per pixel</figcaption>
+					</div>
+				  </div>
+				  <p> Most noticeably from all these scenes is that the more the sampling per pixel rate increases, the more clear the image becomes. In other words, sampling at a lower rate means there is much more noise in the image; the more that we increase the sampling
+					rate, the less noisy the images becomes and it starts to appear more smooth. 
+				 </p>
+
+        <hr class="divider">
+		
+		<!-- Task 5 Content
+		============================ -->
+        <section id="task5">
+          <h2>Part 5: Adaptive Sampling</h2>
+          <div>
+            <p>Adaptive sampling improves the efficiency of rendering. Before, we would take a fixed number of samples from each pixel for our Monte Carlo integration algorithm, regardless of how much detail is present in the scene. This can result in images that are noisy or blurry, particularly in areas with high contrast or fine details. Adaptive sampling works by dynamically adjusting the number of samples taken in each pixel based on the complexity of the scene. In areas with high detail or contrast, more samples are taken to capture the fine details and reduce noise. In areas with less detail or lower contrast, fewer samples are taken to reduce rendering time without sacrificing image quality. The algorithm gradually increases the number of samples until a desired level of image quality is achieved. This approach significantly minimized rendering time and improved the overall quality of the image.</p>
+            <p>In our implementation of adaptive sampling, we followed the specifications and computed the illuminance of estimated radiance using the <code>Vector3D::illum()</code> function. We also stored two running sums, <code>s1</code> and <code>s2</code>, where <code>s1</code> holds the illuminances and <code>s2</code> holds the squares of the illuminances. After every <code>samplesPerBatch</code> iterations, we perform a convergence check by calculating the mean and variance using <code>s1</code> and <code>s2</code> to determine if the condition <code>I <= maxTolerance * 𝜇</code> has been satisfied. If it has, we break out of the loop and update the <code>sampleBuffer</code> and <code>sampleCountBuffer</code> accordingly.</p>
+            <p>Here are some scenes rendered with 2048 samples per pixel, 1 sample per light, and max ray depth of 5 along with a heatmap of their respective sampling rates.</p>
+            <div class="row">
+						<div class="column">
+						  <img src="images/adaptive_walle.png" width="480px" style="margin: 5px 5px 5px 5px;">
+						  <figcaption>noise-free wall-e render</figcaption>
+						</div>
+						<div class="column">
+						  <img src="images/adaptive_walle_rate.png" width="480px" style="margin: 5px 5px 5px 5px;">
+						  <figcaption>sampling rate heatmap of wall-e</figcaption>
+						</div>
+					  </div>
+            <div class="row">
+						<div class="column">
+						  <img src="images/adaptive_bunny.png" width="480px" style="margin: 5px 5px 5px 5px;">
+						  <figcaption>noise-free bunny render</figcaption>
+						</div>
+						<div class="column">
+						  <img src="images/adaptive_bunny_rate.png" width="480px" style="margin: 5px 5px 5px 5px;">
+						  <figcaption>sampling rate heatmap of bunny</figcaption>
+						</div>
+					  </div>
+					  <div class="row">
+						<div class="column">
+						  <img src="images/adaptive_banana.png" width="480px" style="margin: 5px 5px 5px 5px;">
+						  <figcaption>noise-free banana render</figcaption>
+						</div>
+						<div class="column">
+						  <img src="images/adaptive_banana_rate.png" width="480px" style="margin: 5px 5px 5px 5px;">
+						  <figcaption>sampling rate heatmap of banana</figcaption>
+						</div>
+					  </div>
+					  <p>Red represents high sampling rates (the ratio between the actual number of samples and the maximum number of samples), and blue represents low sampling rates.</p>
+					  
+    <hr class="divider">
+
+    <!-- Website Link -->
+        <section id="website_link">
+        	<p>Here is the link to this website: <a href="https://cal-cs184-student.github.io/proj-webpage-thejjdiamonds/proj3-1/index.html" > link</a></p>
+        	<p><a href="https://cal-cs184-student.github.io/proj-webpage-thejjdiamonds/proj3-1/index.html">https://cal-cs184-student.github.io/proj-webpage-thejjdiamonds/proj3-1/index.html</a></p>
+        </section>
+		  
+  
+</div>
+<!-- Document Wrapper end --> 
+
+<!-- Back To Top --> 
+<a id="back-to-top" data-toggle="tooltip" title="Back to Top" href="javascript:void(0)"><i class="fa fa-chevron-up"></i></a> 
+
+<!-- JavaScript
+============================ -->
+<script src="assets/vendor/jquery/jquery.min.js"></script> 
+<script src="assets/vendor/bootstrap/js/bootstrap.bundle.min.js"></script> 
+<!-- Highlight JS -->
+<script src="assets/vendor/highlight.js/highlight.min.js"></script> 
+<!-- Easing --> 
+<script src="assets/vendor/jquery.easing/jquery.easing.min.js"></script> 
+<!-- Magnific Popup --> 
+<script src="assets/vendor/magnific-popup/jquery.magnific-popup.min.js"></script> 
+<!-- Custom Script -->
+<script src="assets/js/theme.js"></script>
+</body>
 </html>
