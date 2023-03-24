@@ -71,6 +71,7 @@
 						<li class="nav-item"><a class="nav-link" href="#overview_content">Overview</a></li>
 						<li class="nav-item"><a class="nav-link" href="#task1">Part 1: Mirror and Glass Materials</a></li>
 						<li class="nav-item"><a class="nav-link" href="#task4">Part 4: Depth of Field</a></li>
+						<li class="nav-item"><a class="nav-link" href="#collab"> Reflection on Collaboration</a><li>
           </ul>
         </li>
         <li class="nav-item"><a class="nav-link" href="#website_link">Website Link</a>
@@ -109,7 +110,7 @@
 		============================ -->
         <section id="overview_content">
           <h2>Overview</h2>
-          <p class="lead mb-5">INSERT ENTIRE OVERVIEW</p>
+          <p class="lead mb-5">For this project, we created additional features to add to what was already done in the previous part of the project. More specifically, we added in mirror and glass materials that could be used to render some images and depth of field effects. To create the mirror and glass materials, we implemented a reflect and refract method for each material respectively; when it came to the glass material, we used Schlick’s coefficient to determine if we reflected or refracted. There weren’t any large issues for this part of the project, with the exception of calculating the incorrect angle to the normal (the incoming ray was switched accidently with the outgoing ray). For more depth of field effects, we used a thin-lens model as opposed to the pinhole model. This allows us to focus on certain objects when rendering, instead of the entire image being in focus. To do this, we implemented a thin lens model for ray generation that takes into account the aperture of the lens and the focal distance of the part of the object we are rendering. The trickiest part was calculating the correct point of intersection between the plane of focus and the ray as it refracts through the lens, but once that calculation was done, the rest of the ray generation was similar to the previous project.</p>
         </section>
 
     <hr class="divider">
@@ -197,120 +198,126 @@
 		============================ -->
         <section id="task4">
           <h2>Part 4: Depth of Field</h2>
-          <p>REPLACE PART 4 CONTENT HERE</p>
-		<p>
-			To show what it looks like, we rendered two images as shown below using our implementation of global illumination: 
-		</p>
+          <p>A pinhole camera model assumes light rays from a scene pass through one point (the center of the camera) to land on the image produced by the camera. A thin-lens camera model, on the other hand, takes into account the refraction of a ray of light as it passes through a clear circular lens from the scene to the image. The size of the lens (the aperture) and the distance the ray has to travel from a particular plane on the scene (the focal distance) can be changed while using a thin-lens model, allowing for us to create depth of field effects. A pinhole camera model cannot create depth of field effects, as it models rays of light traveling through the camera with no distortion and distance taken into account, and so the entire scene will always be in focus.</p>
 
-		<div class="row">
-			<div class="column">
-			  <img src="images/bunny_global.png" width="480px" style="margin: 5px 5px 5px 5px;">
-			  <figcaption> CBbunny.dae with Global Illumination </figcaption>
-			</div>
-			<div class="column">
-			  <img src="images/dragon_global.png" width="480px" style="margin: 5px 5px 5px 5px;">
-			  <figcaption> dragon.dae with Global Illumination </figcaption>
-			</div>
-		  </div>
+          <p>Our implementation of the <code>Camera::generate_ray_for_thin_lens()</code> function followed the five steps outlined in the spec:
+          	<ul>
+          		<li>Figure out the generated ray direction in camera space using the inputted image coordinates and the width and height of the sensor.</li>
+          		<li>Use <code>rndR</code> and <code>rndTheta</code> to uniformly sample a point on the lens, <code>pLens</code>.</li>
+          		<li>Calculate <code>pFocus</code> by intersecting the plane of focus with the red segment (image in spec). This involved solving a linear equation for the intersection of a line with a plane. In this case, the line is one that passes through point <code>(-X, -Y, 1)</code> and travels in the direction calculated in the first step. The plane is represented by the equation <code>z = -focalDistance</code>. Using the definition of this line and this plane, we calculated the intersection point <code>pFocus</code>.</li>
+          		<li>Calculate the direction from <code>pLens</code> to <code>pFocus</code>. Normalize this direction and convert both this and <code>pLens</code> to world coordinates using the <code>c2w</code> matrix.</li>
+          		<li>Return a ray starting from <code>pLens</code> offset by <code>pos</code>, in the direction calculated above, with all other parameters set to be the same as in Project 3-1, Part 1.</li>
+          	</ul>
+          </p>
 
-		  <p>
-			To see what direct and indirect lighting look like, we rendered CBbunny.dae with both types of lighting. 
-		  </p>
-
-		  <div class="row">
-			<div class="column">
-			  <img src="images/bunny_direct.png" width="480px" style="margin: 5px 5px 5px 5px;">
-			  <figcaption> CBbunny.dae with Direct Lighting </figcaption>
-			</div>
-			<div class="column">
-			  <img src="images/bunny_indirect.png" width="480px" style="margin: 5px 5px 5px 5px;">
-			  <figcaption> CBbunny.dae with Indirect Lighting </figcaption>
-			</div>
-		  </div>
-
-		  <p>Between the two, rendering with direct lighting creates a harsher contrast with lighting - more specifically, the shadows are more harsh and more apparent on the bunny's body. In addition, the ceiling is mostly dark, with only the ceiling lighting lit up. 
-			In comparison, indirect lighting creates a softer look, where the shadows aren't as apparent and the ceiling is completely lit up (the shadows are much less distinguishable than they are with just direct lighting). If comparing both images though with the one 
-			above it, specifically with global illumination, both images are "darker" or "dimmer" than their global illumination counterpart. 
-		  </p>
-
-		  <p>
-			We then rendered some sceens with varying levels of max ray depth. 
-		  </p>
-			<div class="row">
-				<div class="column">
-				<img src="images/task4_max_ray_depth/bunny_ray_0.png" width="480px" style="margin: 5px 5px 5px 5px;">
-				<figcaption> Max Ray Depth of 0 </figcaption>
-				</div>
-				<div class="column">
-				<img src="images/task4_max_ray_depth/bunny_ray_1.png" width="480px" style="margin: 5px 5px 5px 5px;">
-				<figcaption> Max Ray Depth of 1</figcaption>
-				</div>
-			</div>
-			<div class="row">
-				<div class="column">
-				<img src="images/task4_max_ray_depth/bunny_ray_2.png" width="480px" style="margin: 5px 5px 5px 5px;">
-				<figcaption> Max Ray Depth of 2 </figcaption>
-				</div>
-				<div class="column">
-				<img src="images/task4_max_ray_depth/bunny_ray_3.png" width="480px" style="margin: 5px 5px 5px 5px;">
-				<figcaption> Max Ray Depth of 3 </figcaption>
-				</div>
-			</div>
-			<div class="row">
-				<div class="column">
-				<img src="images/task4_max_ray_depth/bunny_ray_depth100.png" width="480px" style="margin: 5px 5px 5px 5px;">
-				<figcaption> Max Ray Depth of 100 </figcaption>
-				</div>
-			</div>
-			<p>
-				Comparing the CBbunny.dae renders at different settings of max ray depth, the most noticeable difference comes from the jump between 1 and 2. At max ray depth of 0, it is only a black screen with the light on top; at max ray depth of 1, the bunny starts to show up 
-				but it is still relatively dark, with some harsh shadows on the bottom portion of the bunny and with the ceiling still mostly dark with the exception of the ceiling light. At max ray depth of 2, the ceiling is completely lit up and the bunny's shadow becomes softer. 
-				As we increase the max ray depth, the changes becomes less discernable, and it doesn't appear that the image changes too much in regards to lighting and shadows. 
-			</p>
-			
-          <p>Now, below are the scenes rendered with various sample-per-pixel rates (using 4 light rays):</p>
+          <p><strong>Focus Stack</strong>: Here is a sequence of images with the focal distances changing from 4 to 6, all with aperture size 0.23.</p>
           <div class="row">
 					<div class="column">
-					  <img src="images/bunny_1.png" width="480px" style="margin: 5px 5px 5px 5px;">
-					  <figcaption>1 sample per pixel</figcaption>
+					  <img src="images/focal/dragon4.png" width="480px" style="margin: 5px 5px 5px 5px;">
+					  <figcaption>focal distance 4</figcaption>
 					</div>
 					<div class="column">
-					  <img src="images/bunny_2.png" width="480px" style="margin: 5px 5px 5px 5px;">
-					  <figcaption>2 samples per pixel</figcaption>
-					</div>
-				  </div>
-				  <div class="row">
-					<div class="column">
-					  <img src="images/bunny_4.png" width="480px" style="margin: 5px 5px 5px 5px;">
-					  <figcaption>4 samples per pixel</figcaption>
-					</div>
-					<div class="column">
-					  <img src="images/bunny_8.png" width="480px" style="margin: 5px 5px 5px 5px;">
-					  <figcaption>8 samples per pixel</figcaption>
+					  <img src="images/focal/dragon4p5.png" width="480px" style="margin: 5px 5px 5px 5px;">
+					  <figcaption>focal distance 4.5</figcaption>
 					</div>
 				  </div>
 				  <div class="row">
 					<div class="column">
-					  <img src="images/bunny_16.png" width="480px" style="margin: 5px 5px 5px 5px;">
-					  <figcaption>16 samples per pixel</figcaption>
+					  <img src="images/focal/dragon4p65.png" width="480px" style="margin: 5px 5px 5px 5px;">
+					  <figcaption>focal distance 4.65</figcaption>
 					</div>
 					<div class="column">
-					  <img src="images/bunny_32.png" width="480px" style="margin: 5px 5px 5px 5px;">
-					  <figcaption>32 samples per pixel</figcaption>
+					  <img src="images/focal/dragon4p8.png" width="480px" style="margin: 5px 5px 5px 5px;">
+					  <figcaption>focal distance 4.8</figcaption>
 					</div>
 				  </div>
 				  <div class="row">
 					<div class="column">
-					  <img src="images/bunny_64.png" width="480px" style="margin: 5px 5px 5px 5px;">
-					  <figcaption>64 samples per pixel</figcaption>
+					  <img src="images/focal/dragon5.png" width="480px" style="margin: 5px 5px 5px 5px;">
+					  <figcaption>focal distance 5</figcaption>
 					</div>
 					<div class="column">
-					  <img src="images/bunny_1024.png" width="480px" style="margin: 5px 5px 5px 5px;">
-					  <figcaption>1024 samples per pixel</figcaption>
+					  <img src="images/focal/dragon5p5.png" width="480px" style="margin: 5px 5px 5px 5px;">
+					  <figcaption>focal distance 5.5</figcaption>
+					</div>
+				  </div>
+				  <div class="row">
+					<div class="column">
+					  <img src="images/focal/dragon6.png" width="480px" style="margin: 5px 5px 5px 5px;">
+					  <figcaption>focal distance 6</figcaption>
 					</div>
 				  </div>
 
+				  <p>Here are all the images in a row to create the focus stack effect -- you can see how the focus travels from the front of the dragon the the back:</p>
+				  <div class="row">
+					<div class="column">
+					  <img src="images/focal/dragon4p5.png" width="250px" style="margin: 5px 5px 5px 5px;">
+				  </div>
+					<div class="column">
+					  <img src="images/focal/dragon4p65.png" width="250px" style="margin: 5px 5px 5px 5px;">
+					</div>
+					<div class="column">
+					  <img src="images/focal/dragon4p8.png" width="250px" style="margin: 5px 5px 5px 5px;">
+				  </div>
+					<div class="column">
+					  <img src="images/focal/dragon5.png" width="250px" style="margin: 5px 5px 5px 5px;">
+					</div>
+				  </div>
+				  <p></p>
+
+          <p><strong>Aperture</strong>: Here is a sequence of images with different aperture sizes ranging from 0.05 to 0.4, all focused at a focal distance of 4.5.</p>
+          <div class="row">
+					<div class="column">
+					  <img src="images/Task4/dragonap5.png" width="480px" style="margin: 5px 5px 5px 5px;">
+					  <figcaption>aperture 0.05</figcaption>
+					</div>
+					<div class="column">
+					  <img src="images/Task4/dragona1.png" width="480px" style="margin: 5px 5px 5px 5px;">
+					  <figcaption>aperture 0.1</figcaption>
+					</div>
+				  </div>
+				  <div class="row">
+					<div class="column">
+					  <img src="images/Task4/dragona2.png" width="480px" style="margin: 5px 5px 5px 5px;">
+					  <figcaption>aperture 0.2</figcaption>
+					</div>
+					<div class="column">
+					  <img src="images/Task4/CBdragon_aperture0.23.png" width="480px" style="margin: 5px 5px 5px 5px;">
+					  <figcaption>aperture 0.23</figcaption>
+					</div>
+				  </div>
+				  <div class="row">
+					<div class="column">
+					  <img src="images/Task4/dragona3.png" width="480px" style="margin: 5px 5px 5px 5px;">
+					  <figcaption>aperture 0.3</figcaption>
+					</div>
+					<div class="column">
+					  <img src="images/Task4/dragona4.png" width="480px" style="margin: 5px 5px 5px 5px;">
+					  <figcaption>aperture 0.4</figcaption>
+					</div>
+				  </div>
+				  <div class="row">
+					<div class="column">
+					  <img src="images/Task4/CBdragon_angle_0.01.png" width="480px" style="margin: 5px 5px 5px 5px;">
+					  <figcaption>aperture 0.01 (at an angle)</figcaption>
+					</div>
+					<div class="column">
+					  <img src="images/Task4/CBdragon_angle_0.1.png" width="480px" style="margin: 5px 5px 5px 5px;">
+					  <figcaption>aperture 0.1 (at an angle)</figcaption>
+					</div>
+				  </div>
+
+				  <p>Note how a larger aperture makes the image appear softer. Aperture combined with focal distance create very interesting depth of field effects when rendering scenes, such the bokeh in the angled aperture 0.1 image.</p>
+
         <hr class="divider">
+
+     <!-- Paragraph on Collaboration -->
+	     <section id="collab">
+	     	<h2>Reflection on Collaboration</h2>
+	     	<p>For this project, we mainly collaborated by splitting up the tasks, but also reconvening whenever we were stuck on a specific part of our implementation or once we finished the tasks (to discuss our approach and update each other on what was happening in said task). In this way, we both become familiar with all parts of the project and can pick up where the other leaves whenever needed. For example, when creating the mirror and glass material, it took time for us to understand how to calculate Schlick’s reflection coefficient and how it ties into creating the glass material (where ultimately it helps approximate the ratio of reflection to refraction). After figuring it out, we learned how that could be used in our implementation and what was needed to find the approximation. While working on part 4 of the project, we would take turns debugging each iteration of code to eventually figure out how to properly generate the ray. We also work together on the writeup, mainly each writing about the parts that we worked on the most, but working together to render images and create the final report. Overall, the collaboration went well and we learned a lot about the entire project and how everything works together.</p>
+	     </section>
+
+	     <hr class="divider">
 
     <!-- Website Link -->
         <section id="website_link">
