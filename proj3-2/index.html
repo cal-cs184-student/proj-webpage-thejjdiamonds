@@ -110,7 +110,7 @@
 		============================ -->
         <section id="overview_content">
           <h2>Overview</h2>
-          <p class="lead mb-5">For this project, we created additional features to add to what was already done in the previous part of the project. More specifically, we added in mirror and glass materials that could be used to render some images and depth of field effects. To create the mirror and glass materials, we implemented a reflect and refract method for each material respectively; when it came to the glass material, we used Schlick’s coefficient to determine if we reflected or refracted. There weren’t any large issues for this part of the project, with the exception of calculating the incorrect angle to the normal (the incoming ray was switched accidently with the outgoing ray). For more depth of field effects, we used a thin-lens model as opposed to the pinhole model. This allows us to focus on certain objects when rendering, instead of the entire image being in focus. To do this, we implemented a thin lens model for ray generation that takes into account the aperture of the lens and the focal distance of the part of the object we are rendering. The trickiest part was calculating the correct point of intersection between the plane of focus and the ray as it refracts through the lens, but once that calculation was done, the rest of the ray generation was similar to the previous project.</p>
+          <p class="lead mb-5">For this project, we created additional features to add to what was already done in the previous part of the project. More specifically, we added in mirror and glass materials that could be used to render some images and depth of field effects. To create the mirror and glass materials, we implemented a reflect and refract method for each material respectively; when it came to the glass material, we used Schlick’s coefficient to determine if we reflected or refracted. There weren’t any large issues for this part of the project, with the exception of calculating the incorrect angle to the normal (the incoming ray was switched accidently with the outgoing ray). For more depth of field effects, we used a thin-lens model as opposed to the pinhole model. This allows us to focus on certain objects when rendering, instead of the entire image being in focus. To do this, we implemented a thin lens model for ray generation that takes into account the aperture of the lens and the focal distance of the part of the object we were rendering. The trickiest part was calculating the correct point of intersection between the plane of focus and the ray as it refracts through the lens, but once that calculation was done, the rest of the ray generation was similar to the previous project.</p>
         </section>
 
     <hr class="divider">
@@ -133,9 +133,9 @@
 		  </ul>
 		  For our glass material, we implemented three functions to help us render: <code>refract</code>, <code>RefractionBSDF::sample_f</code> and <code>GlassBSDF::sample_f</code>: 
 		  <ul>
-			<li><code>refract</code>: For refraction, we wanted to first determine if the incoming ray was entering the non-air material, or exiting. If it was entering, the index of refraction would <code>1/ior</code>; if it was exiting, then it would just be the variable <code>ior</code>. From there, we would determine if there was total internal reflection, based on if <code>1 - η2(1 - cos2θ) < 0</code>. 
-				If there was total internal reflection, we would return false. Otherwise, we would appropriately assign the refraction to<code>wi</code> and return true (where refraction did occur).</li>
-			<li><code>MirrorBSDF::sample_f</code>:Relying on our <code>refract</code> implementation, we first determined if there was refraction. If there was, then we would calculate the resulting vector’s angle with the normal (using <code>abs_cos_theta</code>) and return the transmittance divided by the angle and <code>pow(eta, 2)</code> (or the index of refraction squared). </li>
+			<li><code>refract</code>: For refraction, we wanted to first determine if the incoming ray was entering the non-air material, or exiting. If it was entering, the index of refraction would be <code>1/ior</code>; if it was exiting, then it would just be the variable <code>ior</code>. From there, we would determine if there was total internal reflection, based on if <code>1 - η2(1 - cos2θ) < 0</code>. 
+				If there was total internal reflection, we would return false. Otherwise, we would appropriately assign the refraction  <code>wi</code> and return true (where refraction did occur).</li>
+			<li><code>MirrorBSDF::sample_f</code>: Relying on our <code>refract</code> implementation, we first determined if there was refraction. If there was, then we would calculate the resulting vector’s angle with the normal (using <code>abs_cos_theta</code>) and return the transmittance divided by the angle and <code>pow(eta, 2)</code> (or the index of refraction squared). </li>
 			<li><code>GlassBSDF::sample_f</code>: For sampling glass, when refraction does occur, both reflection and refraction occur at this point, so we wanted to model this by determining if we should reflect or refract based on Schlick’s reflection coefficient. If there was total internal reflection, then we would reflect normally. Otherwise, we would determine if we wanted to reflect or refract using Shclick’s 
 				reflection coefficient (and using the function <code>coin_flip</code>). If we reflected, then we would multiply Schlick's coefficient with the reflectance divided by the cosine term; otherwise, we would multiply the transmittance divided by the cosine term and <code>eta</code> with 1 - Schlick’s reflection coefficient. 
 			</li>
@@ -155,7 +155,7 @@
 				</div>
 			  </div>
 			  <p> Starting at max ray depth of 0, no light bounces are done before the light enters the camera - this is shown by the fact that we don’t see any of the spheres in the image and the only thing that renders in the image is the light source coming from the ceiling. At max ray depth of 1, we start to see spheres forming and the room light up, but the spheres are still mostly black. 
-				At this point, the spheres are now reflective, so after once bounce, we observe that only the ceiling light is reflected on the surface of the spheres (since there would only be one bounce when the light hits the surface of the sphere and then enters the camera). 
+				At this point, the spheres are now reflective, so after one bounce, we observe that only the ceiling light is reflected on the surface of the spheres (since there would only be one bounce when the light hits the surface of the sphere and then enters the camera). 
 			 </p>
 			  <div class="row">
 				<div class="column">
@@ -168,7 +168,7 @@
 				</div>
 			  </div>
 			  <p> When we increase it to 2 for the max ray depth, we note that the surface of the spheres become more “clear”, such that the reflection on the left sphere becomes more apparent and we start to also see more on the right sphere. However, we still don’t have enough bounces, or more specifically, the glass material is still slightly dark since we need one more additional bounce of 
-				light (the refracted light is still within the sphere). At max ray depth of 3 though, we start to see the highlight under the sphere. This results from the light going to the surface of the sphere at top, then going towards the surface at the bottom, then the floor and then entering the camera (i.e. the light hits 3 different surfaces/points before entering the camera). This results 
+				light (the refracted light is still within the sphere in some sense). At max ray depth of 3 though, we start to see the highlight under the sphere. This results from the light going to the surface of the sphere at top, then going towards the surface at the bottom, then the floor and then entering the camera (i.e. the light hits 3 different surfaces/points before entering the camera). This results 
 				in the glass material being able to more “fully refract.” However, the sphere reflected in the left sphere is still slightly dark. 
 			</p>
 			  <div class="row">
@@ -181,8 +181,8 @@
 				  <figcaption>../dae/sky/CBspheres.dae at max ray depth 5</figcaption>
 				</div>
 			  </div>
-			  <p>Between max ray depths of 4 and 5, we don’t see any huge noticeable change between the two, but we do notice that the right sphere has refracted some light to the wall. At 4 and 5, the light ends up bouncing the same way that it did with max ray depth of 3, but hitting some additional surfaces, leading to the light being refracted onto the wall. In addition, the reflection of the sphere 
-				in the left sphere appears to be brighter. 
+			  <p>Between max ray depths of 4 and 5, we don’t see any huge noticeable changes between the two (except that the image with max ray depth of 5 is slightly brighter), but we do notice that the right sphere has refracted some light to the wall for both images. At 4 and 5, the light ends up bouncing the same way that it did with max ray depth of 3, but hitting some additional surfaces, leading to the light being refracted onto the wall. In addition, the reflection of the right sphere 
+				in the left sphere appears to be brighter or more apparent, as compared to the previous render with max ray depth 3. 
 			</p>
 
 				<div class="column centerImage">
@@ -198,7 +198,7 @@
 		============================ -->
         <section id="task4">
           <h2>Part 4: Depth of Field</h2>
-          <p>A pinhole camera model assumes light rays from a scene pass through one point (the center of the camera) to land on the image produced by the camera. A thin-lens camera model, on the other hand, takes into account the refraction of a ray of light as it passes through a clear circular lens from the scene to the image. The size of the lens (the aperture) and the distance the ray has to travel from a particular plane on the scene (the focal distance) can be changed while using a thin-lens model, allowing for us to create depth of field effects. A pinhole camera model cannot create depth of field effects, as it models rays of light traveling through the camera with no distortion and distance taken into account, and so the entire scene will always be in focus.</p>
+          <p>A pinhole camera model assumes light rays from a scene passes through one point (the center of the camera) to land on the image produced by the camera. A thin-lens camera model, on the other hand, takes into account the refraction of a ray of light as it passes through a clear circular lens from the scene to the image. The size of the lens (the aperture) and the distance the ray has to travel from a particular plane on the scene (the focal distance) can be changed while using a thin-lens model, allowing for us to create depth of field effects. A pinhole camera model cannot create depth of field effects, as it models rays of light traveling through the camera with no distortion and distance taken into account, and so the entire scene will always be in focus.</p>
 
           <p>Our implementation of the <code>Camera::generate_ray_for_thin_lens()</code> function followed the five steps outlined in the spec:
           	<ul>
@@ -241,12 +241,10 @@
 					  <figcaption>focal distance 5.5</figcaption>
 					</div>
 				  </div>
-				  <div class="row">
-					<div class="column">
+					<div class="column centerImage">
 					  <img src="images/focal/dragon6.png" width="480px" style="margin: 5px 5px 5px 5px;">
 					  <figcaption>focal distance 6</figcaption>
 					</div>
-				  </div>
 
 				  <p>Here are all the images in a row to create the focus stack effect -- you can see how the focus travels from the front of the dragon the the back:</p>
 				  <div class="row">
@@ -314,7 +312,7 @@
      <!-- Paragraph on Collaboration -->
 	     <section id="collab">
 	     	<h2>Reflection on Collaboration</h2>
-	     	<p>For this project, we mainly collaborated by splitting up the tasks, but also reconvening whenever we were stuck on a specific part of our implementation or once we finished the tasks (to discuss our approach and update each other on what was happening in said task). In this way, we both become familiar with all parts of the project and can pick up where the other leaves whenever needed. For example, when creating the mirror and glass material, it took time for us to understand how to calculate Schlick’s reflection coefficient and how it ties into creating the glass material (where ultimately it helps approximate the ratio of reflection to refraction). After figuring it out, we learned how that could be used in our implementation and what was needed to find the approximation. While working on part 4 of the project, we would take turns debugging each iteration of code to eventually figure out how to properly generate the ray. We also work together on the writeup, mainly each writing about the parts that we worked on the most, but working together to render images and create the final report. Overall, the collaboration went well and we learned a lot about the entire project and how everything works together.</p>
+	     	<p>For this project, we mainly collaborated by splitting up the tasks, but also reconvening whenever we were stuck on a specific part of our implementation or once we finished the tasks (to discuss our approach and update each other on what was happening in said task). In this way, we both become familiar with all parts of the project and can pick up where the other leaves whenever needed. For example, when creating the mirror and glass material, it took time for us to understand how to calculate Schlick’s reflection coefficient and how it ties into creating the glass material (where ultimately it helps approximate the ratio of reflection to refraction). After figuring it out, we learned how that could be used in our implementation and what was needed to find the approximation. While working on part 4 of the project, we would take turns debugging each iteration of code to eventually figure out how to properly generate the ray. We would also work together on the writeup, mainly each writing about the parts that we worked on the most, but working together to render images and create the final report. Overall, the collaboration went well and we learned a lot about the entire project and how everything works together.</p>
 	     </section>
 
 	     <hr class="divider">
