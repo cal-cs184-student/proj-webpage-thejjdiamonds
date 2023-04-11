@@ -406,42 +406,147 @@
 		============================ -->
         <section id="task5">
           <h2>Part 5: Shaders</h2>
-          <div>
-            <p>Adaptive sampling improves the efficiency of rendering. Before, we would take a fixed number of samples from each pixel for our Monte Carlo integration algorithm, regardless of how much detail is present in the scene. This can result in images that are noisy or blurry, particularly in areas with high contrast or fine details. Adaptive sampling works by dynamically adjusting the number of samples taken in each pixel based on the complexity of the scene. In areas with high detail or contrast, more samples are taken to capture the fine details and reduce noise. In areas with less detail or lower contrast, fewer samples are taken to reduce rendering time without sacrificing image quality. The algorithm gradually increases the number of samples until a desired level of image quality is achieved. This approach significantly minimized rendering time and improved the overall quality of the image.</p>
-            <p>In our implementation of adaptive sampling, we followed the specifications and computed the illuminance of estimated radiance using the <code>Vector3D::illum()</code> function. We also stored two running sums, <code>s1</code> and <code>s2</code>, where <code>s1</code> holds the illuminances and <code>s2</code> holds the squares of the illuminances. After every <code>samplesPerBatch</code> iterations, we perform a convergence check by calculating the mean and variance using <code>s1</code> and <code>s2</code> to determine if the condition <code>I <= maxTolerance * 𝜇</code> has been satisfied. If it has, we break out of the loop and update the <code>sampleBuffer</code> and <code>sampleCountBuffer</code> accordingly.</p>
-            <p>Here are some scenes rendered with 2048 samples per pixel, 1 sample per light, and max ray depth of 5 along with a heatmap of their respective sampling rates.</p>
-            <div class="row">
-						<div class="column">
-						  <img src="images/adaptive_walle.png" width="480px" style="margin: 5px 5px 5px 5px;">
-						  <figcaption>noise-free wall-e render</figcaption>
-						</div>
-						<div class="column">
-						  <img src="images/adaptive_walle_rate.png" width="480px" style="margin: 5px 5px 5px 5px;">
-						  <figcaption>sampling rate heatmap of wall-e</figcaption>
-						</div>
-					  </div>
-            <div class="row">
-						<div class="column">
-						  <img src="images/adaptive_bunny.png" width="480px" style="margin: 5px 5px 5px 5px;">
-						  <figcaption>noise-free bunny render</figcaption>
-						</div>
-						<div class="column">
-						  <img src="images/adaptive_bunny_rate.png" width="480px" style="margin: 5px 5px 5px 5px;">
-						  <figcaption>sampling rate heatmap of bunny</figcaption>
-						</div>
-					  </div>
-					  <div class="row">
-						<div class="column">
-						  <img src="images/adaptive_banana.png" width="480px" style="margin: 5px 5px 5px 5px;">
-						  <figcaption>noise-free banana render</figcaption>
-						</div>
-						<div class="column">
-						  <img src="images/adaptive_banana_rate.png" width="480px" style="margin: 5px 5px 5px 5px;">
-						  <figcaption>sampling rate heatmap of banana</figcaption>
-						</div>
-					  </div>
-					  <p>Red represents high sampling rates (the ratio between the actual number of samples and the maximum number of samples), and blue represents low sampling rates.</p>
-					  
+		  <p> A shader program, in a very basic sense, takes in an input and returns an output - in the case of the graphics pipeline, it mainly handles determining the appropriate lighting, 
+			color and darkness when rendering a scene. For this project, the information outputted ends up being stored in a <code>vec4</code> and might include information like displacement. 
+			Vertex shader applies transformation to vertices and can change properties like their position. Fragment shaders generally take in certain attributes to write out a color. Combined, 
+			they can help produce specific lighting and material effects by modifying the appropriate inputs for the mentioned shaders above. 
+		</p>
+		<p>
+			The Blinn-Phong model accounts for different types of lighting, specifically, it accounts for ambient lighting, diffuse lighting and specular lighting. Ambient lighting can be thought 
+			of as “constant” lighting or available lighting (hence the term in the equation in the spec). Diffuse lighting is part of the light that bounces off an object and ends up scattering or 
+			diffusing in several directions. Specular lighting refers to the specular highlights that can be found of objects (otherwise known as the “glossy” part of an object) and occurs when a 
+			light hits the surface of an object. 
+		</p>
+		<p>
+			Below are images that reference each component of the Blinn-Phong shading model as well as the full model itself: 
+		</p>
+
+		  <div class="row">
+			<div class="column">
+			  <img src="images/part5/ambient.png" width="480px" style="margin: 5px 5px 5px 5px;">
+			  <figcaption>Ambient component only (<code>ka = 0.1</code>)</figcaption>
+			</div>
+			<div class="column">
+			  <img src="images/part5/diffuse.png" width="480px" style="margin: 5px 5px 5px 5px;">
+			  <figcaption>Diffuse component only</figcaption>
+			</div>
+		  </div>
+		  <div class="row">
+			<div class="column">
+			  <img src="images/part5/specular.png" width="480px" style="margin: 5px 5px 5px 5px;">
+			  <figcaption>Specular component only</figcaption>
+			</div>
+			<div class="column">
+			  <img src="images/part5/full_blinn_phong.png" width="480px" style="margin: 5px 5px 5px 5px;">
+			  <figcaption>Full Blinn-Phong model</figcaption>
+			</div>
+		  </div>
+
+		  <p>
+			For bump shading, we first computed the bitangent vector and then created a 3-d matrix made up of the tangent vector, bitangent vector and normal vector. We then computed the local 
+			space normal, which helped us find the displaced model space normal. Similar to what we did in Blinn-Phong shading, instead of using the vector normal though, we used the displaced 
+			model space normal that we found when calculating the lighting. 
+		  </p>
+		  <p>
+			For displacement modeling, we did something similar and used the same implementation for bump shading in our displacement fragment shader. The main difference was that we modified the 
+			displacement vector shader - for this portion, we wanted to displace our vertex position in the direction of the original model space and scale it according to the height scaling factor. 
+			Once this was computed and we had a vector, we set <code>gl_Postition</code> to a product of that vector and <code>u_view_projection</code>. 
+		  </p>
+
+		  <p>
+			Below are the images for bump and displacement mapping: 
+		  </p>
+
+		  <div class="row">
+			<div class="column">
+			  <img src="images/part5/bump_sphere.png" width="480px" style="margin: 5px 5px 5px 5px;">
+			  <figcaption>Bump mapping on sphere</figcaption>
+			</div>
+			<div class="column">
+			  <img src="images/part5/bump_cloth.png" width="480px" style="margin: 5px 5px 5px 5px;">
+			  <figcaption>Bump mapping on cloth</figcaption>
+			</div>
+		  </div>
+
+		  <div class="row">
+			<div class="column">
+			  <img src="images/part5/displacement_sphere.png" width="480px" style="margin: 5px 5px 5px 5px;">
+			  <figcaption>Displacement mapping on sphere</figcaption>
+			</div>
+			<div class="column">
+			  <img src="images/part5/displacement_cloth.png" width="480px" style="margin: 5px 5px 5px 5px;">
+			  <figcaption>Displacement mapping on cloth</figcaption>
+			</div>
+		  </div>
+
+		  <p>
+			Looking at both renders, there is a noticeable difference in the geometry of the objects. Specifically speaking, looking at bump mapping, the geometry of the sphere and cloth aren’t really affected, 
+			but we’ll notice that ridges and bumps on the outer edge of the sphere and cloth for displacement mapping start to appear. From our implementation, bump mapping modifies the texture or fragment shader, 
+			while for displacement, we end up modifying the vector shader, which results in the change of geometry for the sphere and cloth (i.e. it also modifies the vectors). 
+		  </p>
+		  
+		  <p>
+			We then render with varying levels of coarseness: 
+		  </p>
+
+		  <div class="row">
+			<div class="column">
+			  <img src="images/part5/bump_16.png" width="480px" style="margin: 5px 5px 5px 5px;">
+			  <figcaption>Bump mapping with -o 16 -a 16</figcaption>
+			</div>
+			<div class="column">
+			  <img src="images/part5/displacement_16.png" width="480px" style="margin: 5px 5px 5px 5px;">
+			  <figcaption>Displacement mapping with -o 16 -a 16</figcaption>
+			</div>
+		  </div>
+		  <div class="row">
+			<div class="column">
+			  <img src="images/part5/bump_128.png" width="480px" style="margin: 5px 5px 5px 5px;">
+			  <figcaption>Bump mapping with -o 128 -a 128</figcaption>
+			</div>
+			<div class="column">
+			  <img src="images/part5/displacement_128.png" width="480px" style="margin: 5px 5px 5px 5px;">
+			  <figcaption>Displacement mapping with -o 128 -a 128</figcaption>
+			</div>
+		  </div>
+		  <p>
+			At coarseness 16, we note that render produced with displacement mapping is slightly inaccurate in the sense that there are still uneven ridges around the sphere’s outline, as opposed to bump mapping where the 
+			edges of the sphere appear more smoothed out. At higher levels though, while bump mapping still produces an accurate render, displacement mapping leads to a more accurate image where the geometry of the sphere more
+			closely resembles the expected shape of a sphere. 
+		  </p>
+
+
+
+		  <p>
+			For the texture mapping shader, we used the built-in function <code>texture(sampler2D tex, vec2 uv)</code>, that took in a texture and space coordinate, 
+			to sample from our texture map. 
+		  </p>
+		  <div class="row">
+			<div class="column">
+			  <img src="images/part5/custom_texture_1.png" width="450px" style="margin: 5px 5px 5px 5px;">
+			  <figcaption>Custom texture mapping before cloth falls</figcaption>
+			</div>
+			<div class="column">
+			  <img src="images/part5/custom_texture_2.png" width="450px" style="margin: 5px 5px 5px 5px;">
+			  <figcaption>Custom texture mapping after cloth falls</figcaption>
+			</div>
+		  </div>
+		  <p>
+			For the mirror shader and taking <code>u_cam_pos</code> (camera’s position) and <code>v_position</code> (fragment’s position), we computed the outgoing ray 
+			and then reflected it across the surface normal in <code>v_normal</code>. The resulting reflected vector was then passed into the built-in function <code>texture</code>.
+		  </p>
+
+		  <div class="row">
+			<div class="column">
+			  <img src="images/part5/sphere_reflection.png" width="468px" style="margin: 5px 5px 5px 5px;">
+			  <figcaption>Reflection on the sphere</figcaption>
+			</div>
+			<div class="column">
+			  <img src="images/part5/cloth_reflection.png" width="450px" style="margin: 5px 5px 5px 5px;">
+			  <figcaption>Reflection on the cloth</figcaption>
+			</div>
+		  </div>
+
     <hr class="divider">
 
     <!-- Website Link -->
