@@ -166,59 +166,83 @@
 		============================ -->
         <section id="task2">
           <h2>Part 2: Simulation via numerical integration</h2>
-      <p>A Bounding Volume Hierarchy (BVH) acceleration structure is used to organize objects in a scene for the purpose of speeding up ray-object intersection tests. It starts by dividing the scene into a hierarchy of bounding boxes, and subdivides them recursively until each leaf node contains only a small number of primitives. When a ray is cast into the scene, it is tested against the bounding volumes at each level of the hierarchy, which enables the renderer to quickly eliminate large groups of objects that the ray does not intersect. This leads to a significant reduction in the number of intersection tests that need to be performed, resulting in faster rendering times.</p>
-		  <p>
-			Our BVH construction algorithm recursively creates each node in the BVH according to the <code>max_leaf_size</code> passed in and our splitting point heuristic. The process is as follows:
-			</p>
-			<p>
-			<ul>
-				<li>First, we compute the bounding box of the entire list of primitives passed in (from the iterators <code>start</code> to <code>end</code>) and initialize a new BVHNode <code>node</code> with that bounding box.</li>
-				<li>If the number of primitives in this bounding box is less than or equal to <code>max_leaf_size</code>, we simply set this new node’s <code>start</code> and <code>end</code> iterators to be the same as the ones passed in, and return node. This is our base case.</li>
-				<li>Otherwise, we must start the process of splitting the primitives into two parts and creating a BVHNode for the left and right children recursively.</li>
-				<ul>
-					<li>Our splitting heuristic was to choose the longest axis of the current bounding box that all the primitives lie in, then split the primitives based on which half of this axis they lie on.</li>
-					<li>We made a lambda function that would take in a primitive and return true if its centroid lay to the left of the midpoint of the longest bounding box axis, and false otherwise.</li>
-					<li>We passed this lambda function into <code>std::partition</code>, which would sort the list in-place based on this function. It returns an iterator which we called <code>mid</code> that points to the part of the list where the primitives stop landing on one side of the axis and belong to the other.</li>
-					<li>Finally, we simply made the two recursive calls to <code>BVHAccel::construct_bvh</code> on the left and right members of node, passing in the iterators <code>start</code> and <code>mid</code> for the left child, and the iterators <code>mid</code> and <code>end</code> for the right child.</li>
-				</ul>
-				<li>Our splitting scheme has a chance of choosing a split point such that all primitives lie on only one side of the split point. To avoid the infinite recursion of this case, we made an extra check through the iterators after <code>std::partition</code> is called to see if any part of the list has zero primitives. If we found that this was the case, we simply divided the remaining list of primitives in half, set the <code>mid</code> iterator to the middle of this list, and proceeded to the recursive calls.</li>
-			</ul>
-			</p>
-			<p>
-				After completing <code>BVHAccel::has_intersection</code> and <code>BVHAccel::intersect</code>, the following large .dae files can render in a fraction of a second:
-			</p>
-			<div class="row">
-				<div class="column">
-				  <img src="images/bunny.png" width="480px" style="margin: 5px 5px 5px 5px;">
-				  <figcaption>dae/sky/CBbunny.dae</figcaption>
-				</div>
-				<div class="column">
-				  <img src="images/lucy.png" width="480px" style="margin: 5px 5px 5px 5px;">
-				  <figcaption>dae/sky/CBlucy.dae</figcaption>
-				</div>
-				<div class="column">
-				  <img src="images/planck.png" width="800px" style="margin: 5px 5px 5px 5px;">
-				  <figcaption>dae/meshedit/maxplanck.dae</figcaption>
-				</div>
+
+          <p>
+          	In this part, we wrote the bulk of the <code>Cloth::simulate</code> function. Given all the forces acting on each point mass, we must calculate the position it will take in the next time step.
+          </p>
+          <p>
+          	The first step is accumulating relevant forces acting upon each point mass. The force coming as a result of external accelerations is calculated and applied to each point mass; then, the spring correction forces are applied to each point mass by iterating through every spring and calculating the equal but opposite forces acting on each of the masses on either end of the spring using Hooke’s Law.
+          </p>
+          <p>
+          	After all relevant forces have been accumulated, we iterate through the point masses and calculate each unpinned one’s new position using Verlet integration. We update the point mass’s <code>position</code> and <code>last_position</code> members accordingly.
+          </p>
+          <p>
+          	Finally, we iterate through all the springs again to ensure none are stretched beyond reason. The correction is calculated based on the heuristic that the spring's length must be at most 10% greater than its <code>rest_length</code> at the end of any time step. Then this correction is applied to the point masses at either end of the spring, taking into account any pinned masses.
+          </p>
+          <p>
+          	Changing the spring constant <code>ks</code> varies how the cloth in <code>scene/pinned2</code> behaves as it falls to a resting position. At higher <code>ks</code>, the cloth seems to be stiffer and deform less as it falls, whereas, for lower <code>ks</code>, it acts stretchier and sags more as it falls into the resting position. This makes sense, as a high spring constant means the spring is stiffer (it takes more force to change its position), while a lower spring constant makes springs less stiff. Our cloth, being modeled upon the physics of springs, also acts stiffer or stretchier when the <code>ks</code> is changed accordingly, as you can see when compared to the standard <code>ks</code> parameter.
+          </p>
+          <div class="row centerImage">
+			<div class="column">
+			  <img src="images/part2/lowk.png" width="330px" style="margin: 5px 5px 5px 5px;">
+			  <figcaption> ks = 100 </figcaption>
+			</div>
+			<div class="column">
+			  <img src="images/part2/standardk.png" width="330px" style="margin: 5px 5px 5px 5px;">
+			  <figcaption> ks = 5000 </figcaption>
+			</div>
+			<div class="column">
+				<img src="images/part2/highk.png" width="330px" style="margin: 5px 5px 5px 5px;">
+				<figcaption> ks = 200000 </figcaption>
 			  </div>
-			<p>
-				Let us take a look at <code>dae/meshedit/cow.dae</code>, <code>dae/sky/bench.dae</code>, and <code>dae/sky/CBcoil.dae</code> to see how BVH acceleration helps render times increase. The cow took 0.1789s, the bench took 0.0539s, and the coil took 0.0680s to render with BVH. Without the BVH acceleration implemented, the cow took 40.1128s, the bench took 277.2048s, and the coil took 39.2773s! As you can see with these rendering times, Bounding Volume Hierarchies greatly enhanced the speed at which we can calculate ray-object intersections using recursion and good heuristics for partitioning objects into bounded boxes.
-			</p>
-			<div class="row">
-				<div class="column">
-				  <img src="images/cow.png" width="360px" style="margin: 5px 5px 5px 5px;">
-				  <figcaption>cow</figcaption>
-				</div>
-				<div class="column">
-				  <img src="images/bench.png" width="360px" style="margin: 5px 5px 5px 5px;">
-				  <figcaption>bench</figcaption>
-				</div>
-				<div class="column">
-				  <img src="images/coil.png" width="360px" style="margin: 5px 5px 5px 5px;">
-				  <figcaption>coil</figcaption>
-				</div>
+		  </div>
+          <p>
+          	Density affects the cloth in a very similar way to the spring constant. The cloth with standard density settings stretches slightly as it falls to rest. At higher densities, the cloth is heavier so the external forces acting on it are stronger, and so it stretches and sags more. Lower density causes the cloth to be less heavy and so it falls more stiffly to the resting position.
+          </p>
+          <div class="row centerImage">
+			<div class="column">
+			  <img src="images/part2/lowdensity.png" width="330px" style="margin: 5px 5px 5px 5px;">
+			  <figcaption> density = 1 </figcaption>
+			</div>
+			<div class="column">
+			  <img src="images/part2/standarddensity.png" width="330px" style="margin: 5px 5px 5px 5px;">
+			  <figcaption> density = 15 </figcaption>
+			</div>
+			<div class="column">
+				<img src="images/part2/highdensity.png" width="330px" style="margin: 5px 5px 5px 5px;">
+				<figcaption> density = 1000 </figcaption>
 			  </div>
-		</section>
+		  </div>
+          <p>
+          	Changing the damping for the cloth simulation is akin to changing the amount of friction and resistance forces that affect the cloth. At the standard value, the cloth falls to rest with ease but does eventually rest at a steady position without moving around. When the damping is high, the cloth takes much longer to get to the same steady rest position – it’s as if the cloth is facing a lot of air resistance while falling. When the damping is low, the cloth moves around more wildly as it encounters less resistance. It flutters back and forth, and it would take a while with low damping for the forces in the system to dissipate and allow the cloth to come to a steady rest state.
+	      </p>
+	      <div class="row centerImage">
+			<div class="column">
+			  <img src="images/part2/lowdamp1.png" width="330px" style="margin: 5px 5px 5px 5px;">
+			  <figcaption> low damping </figcaption>
+			</div>
+			<div class="column">
+			  <img src="images/part2/lowdamp2.png" width="330px" style="margin: 5px 5px 5px 5px;">
+			  <figcaption> low damping </figcaption>
+			</div>
+		  </div>
+		  <div class="row centerImage">
+		  	<div class="column">
+				<img src="images/part2/standarddamp.png" width="330px" style="margin: 5px 5px 5px 5px;">
+				<figcaption> standard damping </figcaption>
+			 </div>
+			 <div class="column">
+				<img src="images/part2/highdamp.png" width="330px" style="margin: 5px 5px 5px 5px;">
+				<figcaption> high damping </figcaption>
+			 </div>
+		  </div>
+	      <p>
+	      	Here is the normally shaded cloth from <code>scene/pinned4.json</code> with standard parameters at resting state:
+          </p>
+          <div id="centerImage">
+			<img src="images/part2/pinned4.png" width="800px" style="margin: 5px 5px 5px 5px;">
+			<figcaption>scene/pinned4.json</figcaption>	
+		  </div>
 
 		<hr class="divider">
 
@@ -278,127 +302,114 @@
 		============================ -->
         <section id="task4">
           <h2>Part 4: Handling self-collisions</h2>
-          <p>In our implementation of indirect lighting function, we first implemented the function <code>sample_f</code> that would help us take a sample for the function <code>at_least_one_bounce_radiance</code>. In this function, we considered the case of when <code>max_ray_depth = 0</code> and when <code>max_ray_depth = 1</code>. In the former situation, 
-			we would return zero bounce illumination; in the latter case, we would return one bounce illumination. This was to account for the cases where we would only have direct illumination. So, specifically for indirect illumination, when <code>max_ray_depth</code> was greater than 1, we wanted to ensure that we always did at least 1 indirect bounce and 
-			that once that bounce was done, Russian Roulette would account for whether we would terminate on a certain bounce. To account for both cases, we had two checks in our code. For our first check: if the current ray’s depth was equal to the max ray depth, that implied that we haven’t had 1 indirect bounce yet (and this is assuming that <code>max_ray_depth</code> 
-			is greater than 1). For our second check, we set our termination probability to 0.35 (so the probability of the algorithm continuing would be 0.65), and we used the <code>coin_flip</code> function to determine if Russian Roulette would terminate the process. Assuming that the process wasn’t terminated, we casted our ray and decremented the ray’s depth and then 
-			checked its intersection with our bvh. If it intersected, then we recursively called on <code>at_least_one_bounce_radiance</code> and the recursive result was factored into <code>L_out</code>. More specifically, the recursive result was multiplied by our sample from <code>sample_f</code> and the derived cosine factor and then divided by the pdf and the probability 
-			of continuation. 
-		</p>
-		<p>
-			To show what it looks like, we rendered two images as shown below using our implementation of global illumination: 
-		</p>
-
-		<div class="row">
+          <p>
+          	In this part, we implemented cloth self-collision with spatial hashing. This is an efficient way to look up all the points near a particular point mass and check for collisions, and correct their positions if necessary.
+          </p>
+          <p>
+          	We first implemented the <code>Cloth::hash_position</code> method. Assuming that the volume of the simulation is bounded by 3D boxes as described in the spec, we round down each coordinate of the given point mass’s position to one of these boxes. We return a simple hash value calculated linearly based on these three rounded coordinates.
+          </p>
+          <p>
+          	Then we implemented <code>Cloth::build_spatial_map</code>, which iterates through each point mass, gets its position’s hash using <code>hash_position</code>, and places the point mass into the map.
+          </p>
+          <p>
+          	Finally, in the <code>Cloth::self_collide method</code>, we check if the given point mass collides with any of its closest neighbors. We calculate its position’s hash and look up the corresponding point masses in the map. Then for each of these point masses, we check if it’s less than <code>2 * thickness</code> away from the given point mass, and calculate a correction if so. We apply the accumulated corrections to the given point mass’s position, scaling the correction as necessary. This method is called in the <code>Cloth::simulate</code> method so that we check for self-collisions for every point mass at every time step.
+          </p>
+          <p>
+          	Here are several screenshots that show the progression of the cloth folding on itself as it falls onto a plane. At its final resting state, the cloth is lying on its front with a few folds.
+          </p>
+          <div class="row centerImage">
 			<div class="column">
-			  <img src="images/bunny_global.png" width="480px" style="margin: 5px 5px 5px 5px;">
-			  <figcaption> CBbunny.dae with Global Illumination </figcaption>
+			  <img src="images/part4/1.png" width="330px" style="margin: 5px 5px 5px 5px;">
+			  <figcaption>1</figcaption>
 			</div>
 			<div class="column">
-			  <img src="images/dragon_global.png" width="480px" style="margin: 5px 5px 5px 5px;">
-			  <figcaption> dragon.dae with Global Illumination </figcaption>
+				<img src="images/part4/2.png" width="330px" style="margin: 5px 5px 5px 5px;">
+				<figcaption>2</figcaption>
+			  </div>
+			<div class="column">
+				<img src="images/part4/3.png" width="330px" style="margin: 5px 5px 5px 5px;">
+				<figcaption>3</figcaption>
+			  </div>
+		  </div>
+		  <div class="row centerImage">
+			<div class="column">
+			  <img src="images/part4/4.png" width="330px" style="margin: 5px 5px 5px 5px;">
+			  <figcaption>4</figcaption>
+			</div>
+			<div class="column">
+			  <img src="images/part4/5.png" width="330px" style="margin: 5px 5px 5px 5px;">
+			  <figcaption>5</figcaption>
+			</div>
+			<div class="column">
+				<img src="images/part4/6.png" width="330px" style="margin: 5px 5px 5px 5px;">
+				<figcaption>6</figcaption>
+			  </div>
+		  </div>
+		  <div class="row centerImage">
+			<div class="column">
+			  <img src="images/part4/7.png" width="330px" style="margin: 5px 5px 5px 5px;">
+			  <figcaption>7</figcaption>
+			</div>
+		  </div>
+          <p>
+          	Varying ks makes the cloth either stretchier or stiffer, and that affects how much it rolls and bends as it falls. Higher k, stiffer cloths stay more “intact” while falling, resulting in fewer folds. Lower k, stretchier cloth folds a lot more while falling.
+          </p>
+          <div class="row centerImage">
+			<div class="column">
+			  <img src="images/part4/lowk1.png" width="330px" style="margin: 5px 5px 5px 5px;">
+			  <figcaption> lowk ks </figcaption>
+			</div>
+			<div class="column">
+			  <img src="images/part4/lowk2.png" width="330px" style="margin: 5px 5px 5px 5px;">
+			  <figcaption> lowk ks </figcaption>
+			</div>
+			<div class="column">
+				<img src="images/part4/lowk3.png" width="330px" style="margin: 5px 5px 5px 5px;">
+				<figcaption> lowk ks </figcaption>
+			  </div>
+		  </div>
+		  <div class="row centerImage">
+			<div class="column">
+			  <img src="images/part4/hik1.png" width="330px" style="margin: 5px 5px 5px 5px;">
+			  <figcaption>high ks</figcaption>
+			</div>
+			<div class="column">
+			  <img src="images/part4/hik2.png" width="330px" style="margin: 5px 5px 5px 5px;">
+			  <figcaption>high ks</figcaption>
+			</div>
+			<div class="column">
+				<img src="images/part4/hik3.png" width="330px" style="margin: 5px 5px 5px 5px;">
+				<figcaption>high ks</figcaption>
+			  </div>
+		  </div>
+          <p>
+          	Varying density also similarly affects the cloth. High-density cloth is effecting by gravity more and folds more while falling, whereas low-density cloth folds less.
+          </p>
+          <div class="row centerImage">
+			<div class="column">
+			  <img src="images/part4/lowd (2).png" width="330px" style="margin: 5px 5px 5px 5px;">
+			  <figcaption> low density </figcaption>
+			</div>
+			<div class="column">
+			  <img src="images/part4/lowd (3).png" width="330px" style="margin: 5px 5px 5px 5px;">
+			  <figcaption> low density </figcaption>
+			</div>
+			<div class="column">
+				<img src="images/part4/lowd (1).png" width="330px" style="margin: 5px 5px 5px 5px;">
+				<figcaption> low density </figcaption>
+			  </div>
+		  </div>
+		  <div class="row centerImage">
+			<div class="column">
+			  <img src="images/part4/highd (2).png" width="330px" style="margin: 5px 5px 5px 5px;">
+			  <figcaption>high density</figcaption>
+			</div>
+			<div class="column">
+			  <img src="images/part4/highd (1).png" width="330px" style="margin: 5px 5px 5px 5px;">
+			  <figcaption>high density</figcaption>
 			</div>
 		  </div>
 
-		  <p>
-			To see what direct and indirect lighting look like, we rendered CBbunny.dae with both types of lighting. 
-		  </p>
-
-		  <div class="row">
-			<div class="column">
-			  <img src="images/bunny_direct.png" width="480px" style="margin: 5px 5px 5px 5px;">
-			  <figcaption> CBbunny.dae with Direct Lighting </figcaption>
-			</div>
-			<div class="column">
-			  <img src="images/bunny_indirect.png" width="480px" style="margin: 5px 5px 5px 5px;">
-			  <figcaption> CBbunny.dae with Indirect Lighting </figcaption>
-			</div>
-		  </div>
-
-		  <p>Between the two, rendering with direct lighting creates a harsher contrast with lighting - more specifically, the shadows are more harsh and more apparent on the bunny's body. In addition, the ceiling is mostly dark, with only the ceiling lighting lit up. 
-			In comparison, indirect lighting creates a softer look, where the shadows aren't as apparent and the ceiling is completely lit up (the shadows are much less distinguishable than they are with just direct lighting). If comparing both images though with the one 
-			above it, specifically with global illumination, both images are "darker" or "dimmer" than their global illumination counterpart. 
-		  </p>
-
-		  <p>
-			We then rendered some sceens with varying levels of max ray depth. 
-		  </p>
-			<div class="row">
-				<div class="column">
-				<img src="images/task4_max_ray_depth/bunny_ray_0.png" width="480px" style="margin: 5px 5px 5px 5px;">
-				<figcaption> Max Ray Depth of 0 </figcaption>
-				</div>
-				<div class="column">
-				<img src="images/task4_max_ray_depth/bunny_ray_1.png" width="480px" style="margin: 5px 5px 5px 5px;">
-				<figcaption> Max Ray Depth of 1</figcaption>
-				</div>
-			</div>
-			<div class="row">
-				<div class="column">
-				<img src="images/task4_max_ray_depth/bunny_ray_2.png" width="480px" style="margin: 5px 5px 5px 5px;">
-				<figcaption> Max Ray Depth of 2 </figcaption>
-				</div>
-				<div class="column">
-				<img src="images/task4_max_ray_depth/bunny_ray_3.png" width="480px" style="margin: 5px 5px 5px 5px;">
-				<figcaption> Max Ray Depth of 3 </figcaption>
-				</div>
-			</div>
-			<div class="row">
-				<div class="column">
-				<img src="images/task4_max_ray_depth/bunny_ray_depth100.png" width="480px" style="margin: 5px 5px 5px 5px;">
-				<figcaption> Max Ray Depth of 100 </figcaption>
-				</div>
-			</div>
-			<p>
-				Comparing the CBbunny.dae renders at different settings of max ray depth, the most noticeable difference comes from the jump between 1 and 2. At max ray depth of 0, it is only a black screen with the light on top; at max ray depth of 1, the bunny starts to show up 
-				but it is still relatively dark, with some harsh shadows on the bottom portion of the bunny and with the ceiling still mostly dark with the exception of the ceiling light. At max ray depth of 2, the ceiling is completely lit up and the bunny's shadow becomes softer. 
-				As we increase the max ray depth, the changes becomes less discernable, and it doesn't appear that the image changes too much in regards to lighting and shadows. 
-			</p>
-			
-          <p>Now, below are the scenes rendered with various sample-per-pixel rates (using 4 light rays):</p>
-          <div class="row">
-					<div class="column">
-					  <img src="images/bunny_1.png" width="480px" style="margin: 5px 5px 5px 5px;">
-					  <figcaption>1 sample per pixel</figcaption>
-					</div>
-					<div class="column">
-					  <img src="images/bunny_2.png" width="480px" style="margin: 5px 5px 5px 5px;">
-					  <figcaption>2 samples per pixel</figcaption>
-					</div>
-				  </div>
-				  <div class="row">
-					<div class="column">
-					  <img src="images/bunny_4.png" width="480px" style="margin: 5px 5px 5px 5px;">
-					  <figcaption>4 samples per pixel</figcaption>
-					</div>
-					<div class="column">
-					  <img src="images/bunny_8.png" width="480px" style="margin: 5px 5px 5px 5px;">
-					  <figcaption>8 samples per pixel</figcaption>
-					</div>
-				  </div>
-				  <div class="row">
-					<div class="column">
-					  <img src="images/bunny_16.png" width="480px" style="margin: 5px 5px 5px 5px;">
-					  <figcaption>16 samples per pixel</figcaption>
-					</div>
-					<div class="column">
-					  <img src="images/bunny_32.png" width="480px" style="margin: 5px 5px 5px 5px;">
-					  <figcaption>32 samples per pixel</figcaption>
-					</div>
-				  </div>
-				  <div class="row">
-					<div class="column">
-					  <img src="images/bunny_64.png" width="480px" style="margin: 5px 5px 5px 5px;">
-					  <figcaption>64 samples per pixel</figcaption>
-					</div>
-					<div class="column">
-					  <img src="images/bunny_1024.png" width="480px" style="margin: 5px 5px 5px 5px;">
-					  <figcaption>1024 samples per pixel</figcaption>
-					</div>
-				  </div>
-				  <p> Most noticeably from all these scenes is that the more the sampling per pixel rate increases, the more clear the image becomes. In other words, sampling at a lower rate means there is much more noise in the image; the more that we increase the sampling
-					rate, the less noisy the images becomes and it starts to appear more smooth. 
-				 </p>
 
         <hr class="divider">
 		
