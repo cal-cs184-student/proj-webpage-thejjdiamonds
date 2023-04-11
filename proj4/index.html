@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1.0, shrink-to-fit=no">
 <link href="assets/images/diamond.png" rel="icon" />
-<title>Project 3-1</title>
+<title>Project 4</title>
 <meta name="description" content="184 Project 4 Writeup">
 <meta name="author" content="harnishdesign.net">
 
@@ -95,7 +95,7 @@
           <h1>Project 4: Cloth Sim</h1>
           <div id="centerImage">
           	<!-- <p><img src="images/cow.PNG" alt="cow mesh" width="800px" align="middle"/></p> -->
-          	<p><img src="images/spec.jpg" alt="bunnies" width="900px" align="middle"/></p>
+          	<p><img src="images/part5/proj4_header_image.png" alt="bunnies" width="800px" align="middle"/></p>
         	</div>
         </section>
 
@@ -105,7 +105,9 @@
 		============================ -->
         <section id="overview_content">
           <h2>Overview</h2>
-          <p class="lead mb-5">REPLACE OVERVIEW</p>
+          <p class="lead mb-5">
+			For this project, we implemented a real-time simulation of cloth that relies on a mass and spring based system. To set up our simulation, we built our cloth using an underlying data structure and applied physical constraints on said cloth to render it realistically. We then applied numerical integration to model how the cloth would move over time. We also handled the case where cloth could self-collide or collide with itself, to prevent the cloth from clipping itself. To model also how the cloth might fall over a sphere and plane, our implementation also handled collisions with a sphere and collisions with a plane. The last part of our project consisted of creating shaders - this was so that we would be able to render our scenes with specific lighting and texture that would not only show up on spheres, but the cloth itself. In terms of issues that we ran into, majority of them were due to small errors, such as normalizing a vector when we didn’t need to and small arithmetic errors (such as adding instead of subtracting or vise versa).
+			</p>
         </section>
 
     <hr class="divider">
@@ -234,7 +236,7 @@
         <h2>Part 3: Handling collisions with other objects</h2>
 		<p>To support cloth collision, we wrote an implementation that would support cloth collision with a sphere and cloth collision with a plane.</p>
 		<p>
-			For sphere collision, we first check whether the point mass is in the sphere, which is done based on its distance from the center of the sphere. If the distance was less than the sphere’s radius, then the position of the point mass was located inside the sphere. 
+			For sphere collision, we first check whether the point mass is in the sphere, which is done based on its distance from the center of the sphere. If the distance is less than the sphere’s radius, then the position of the point mass was located inside the sphere. 
 			From there, we calculated the tangent point (if we extended the path between the point mass’s position and the sphere’s origin to the sphere’s surface, the intersection with the sphere’s surface would be the tangent point). The tangent point was calculated by finding 
 			the direction between the point mass and origin and then multiplying it by the radius. We then added that result to the origin (effectively extending to the sphere’s surface). We then computed the correction vector, which was the difference between the tangent point and <code>pm.last_position</code>. 
 			Finally, <code>pm.position</code> was updated with <code>pm.last_position + correction_vector * (1 - this->friction)</code>. 
@@ -414,7 +416,7 @@
 		<p>
 			The Blinn-Phong model accounts for different types of lighting, specifically, it accounts for ambient lighting, diffuse lighting and specular lighting. Ambient lighting can be thought 
 			of as “constant” lighting or available lighting (hence the term in the equation in the spec). Diffuse lighting is part of the light that bounces off an object and ends up scattering or 
-			diffusing in several directions. Specular lighting refers to the specular highlights that can be found of objects (otherwise known as the “glossy” part of an object) and occurs when a 
+			diffusing in several directions. Specular lighting refers to the specular highlights that can be found on objects (otherwise known as the “glossy” part of an object) and occurs when a 
 			light hits the surface of an object. 
 		</p>
 		<p>
@@ -459,7 +461,7 @@
 
 		  <p>
 			For bump shading, we first computed the bitangent vector and then created a 3-d matrix made up of the tangent vector, bitangent vector and normal vector. We then computed the local 
-			space normal, which helped us find the displaced model space normal. Similar to what we did in Blinn-Phong shading, instead of using the vector normal though, we used the displaced 
+			space normal, which helped us find the displaced model space normal. Similar to what we did in Blinn-Phong shading, but instead of using the vector normal, we used the displaced 
 			model space normal that we found when calculating the lighting. 
 		  </p>
 		  <p>
