@@ -443,6 +443,21 @@
 		  </div>
 
 		  <p>
+			For the texture mapping shader, we used the built-in function <code>texture(sampler2D tex, vec2 uv)</code>, that took in a texture and space coordinate, 
+			to sample from our texture map. 
+		  </p>
+		  <div class="row">
+			<div class="column">
+			  <img src="images/part5/custom_texture_1.png" width="450px" style="margin: 5px 5px 5px 5px;">
+			  <figcaption>Custom texture mapping before cloth falls</figcaption>
+			</div>
+			<div class="column">
+			  <img src="images/part5/custom_texture_2.png" width="450px" style="margin: 5px 5px 5px 5px;">
+			  <figcaption>Custom texture mapping after cloth falls</figcaption>
+			</div>
+		  </div>
+
+		  <p>
 			For bump shading, we first computed the bitangent vector and then created a 3-d matrix made up of the tangent vector, bitangent vector and normal vector. We then computed the local 
 			space normal, which helped us find the displaced model space normal. Similar to what we did in Blinn-Phong shading, instead of using the vector normal though, we used the displaced 
 			model space normal that we found when calculating the lighting. 
@@ -515,22 +530,6 @@
 			closely resembles the expected shape of a sphere. 
 		  </p>
 
-
-
-		  <p>
-			For the texture mapping shader, we used the built-in function <code>texture(sampler2D tex, vec2 uv)</code>, that took in a texture and space coordinate, 
-			to sample from our texture map. 
-		  </p>
-		  <div class="row">
-			<div class="column">
-			  <img src="images/part5/custom_texture_1.png" width="450px" style="margin: 5px 5px 5px 5px;">
-			  <figcaption>Custom texture mapping before cloth falls</figcaption>
-			</div>
-			<div class="column">
-			  <img src="images/part5/custom_texture_2.png" width="450px" style="margin: 5px 5px 5px 5px;">
-			  <figcaption>Custom texture mapping after cloth falls</figcaption>
-			</div>
-		  </div>
 		  <p>
 			For the mirror shader and taking <code>u_cam_pos</code> (camera’s position) and <code>v_position</code> (fragment’s position), we computed the outgoing ray 
 			and then reflected it across the surface normal in <code>v_normal</code>. The resulting reflected vector was then passed into the built-in function <code>texture</code>.
