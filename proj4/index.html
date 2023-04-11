@@ -232,75 +232,45 @@
 		============================ -->
         <section id="task3">
         <h2>Part 3: Handling collisions with other objects</h2>
-		<p> Below, we describe both implementations of the direct lighting function: </p>
-		<ul>
-			<li><code>estimate_direct_lighting_hemisphere</code>: To implement direct lighting with uniform hemisphere sampling, we started out with <code>num_samples</code> (<code>scene->lights.size() * ns_area_light</code>), 
-				which indicates the number of samples that we wanted to take. Using the <code>hemisphereSampler</code> variable, we grabbed an object-space vector that was uniformly randomly sampled on the hemisphere. We then 
-				transformed the vector into world space and created our ray based on the hit point of the ray (<code>hit_p</code>) and our world-space vector. We then checked for an intersection with our ray, specifically if 
-				if it intersected with our <code>bvh</code>, and we would then calculate the amount of light that was reflected back/outgoing light (this was also estimated with the Monte Carlo Estimator). Note that the sampling process 
-				was done <code>num_samples</code> of time. 
-			</li>
-			<li><code>estimate_direct_lighting_importance</code>: For this implementation, it was similar to uniform hemisphere sampling, with the main difference that it would be sampling the light source directly. For each light 
-				in the scene, we wanted to sample the directions between the light source and the hit point. For each light source, we checked if it was a point source - if it wasn’t, we would sample from that light source (<code>scene->lights[i]->sample_L</code>) 
-				only once and casted the ray. We would then use the ray to check for an intersection with our <code>bvh</code>, we would then calculate the amount of outgoing light. In the case that the light source was not a point source, we would do a similar process, 
-				but would perform sampling <code>ns_area_light</code> amount of times - the result would be averaged by the number of samples we took. Additionally, we checked first if the light was behind the surface at the hit point for each light source - if 
-				it was behind, we wouldn’t cast the ray. 
-			</li>
-		</ul>
-		<p>Using CBbunny.dae and CBspheres_lambertian.dae, we rendered with <code>estimate_direct_lighting_hemisphere</code> and <code>estimate_direct_lighting_importance</code> respectively, as shown in the below images. </p>
-		<div class="row">
+		<p>To support cloth collision, we wrote an implementation that would support cloth collision with a sphere and cloth collision with a plane.</p>
+		<p>
+			For sphere collision, we first check whether the point mass is in the sphere, which is done based on its distance from the center of the sphere. If the distance was less than the sphere’s radius, then the position of the point mass was located inside the sphere. 
+			From there, we calculated the tangent point (if we extended the path between the point mass’s position and the sphere’s origin to the sphere’s surface, the intersection with the sphere’s surface would be the tangent point). The tangent point was calculated by finding 
+			the direction between the point mass and origin and then multiplying it by the radius. We then added that result to the origin (effectively extending to the sphere’s surface). We then computed the correction vector, which was the difference between the tangent point and <code>pm.last_position</code>. 
+			Finally, <code>pm.position</code> was updated with <code>pm.last_position + correction_vector * (1 - this->friction)</code>. 
+		</p>
+		<p>
+			Below, we can see the images of the cloth’s resting position at varying values of ks. At <code>ks = 5000</code>, we see the default value of <code>ks</code>. The differences are more apparent when compared to <code>ks = 500</code> and <code>ks = 50000</code>. At 500, the cloth over the sphere droops 
+			down a bit more (where it appears that the cloth is more weighted down than the default value of <code>ks</code>). At 50000, the cloth is more “inflated” than the default value of <code>ks</code>, and appears to be more elevated (in other words, droops less over the sphere). 
+		</p>
+		<div class="row centerImage">
 			<div class="column">
-			  <img src="images/CBbunny_H.png" width="480px" style="margin: 5px 5px 5px 5px;">
-			  <figcaption> CBbunny.dae Uniform Hemisphere Sampling </figcaption>
+			  <img src="images/part3/ks500.png" width="330px" style="margin: 5px 5px 5px 5px;">
+			  <figcaption> ks = 500 </figcaption>
 			</div>
 			<div class="column">
-			  <img src="images/CBbunny_importance.png" width="480px" style="margin: 5px 5px 5px 5px;">
-			  <figcaption> CBbunny.dae Importance Sampling </figcaption>
-			</div>
-		  </div>
-		  <div class="row">
-			<div class="column">
-			  <img src="images/CBsphere_uniform.png" width="480px" style="margin: 5px 5px 5px 5px;">
-			  <figcaption> CBspheres_lambertian.dae Uniform Hemisphere Sampling </figcaption>
+			  <img src="images/part3/ks5000.png" width="330px" style="margin: 5px 5px 5px 5px;">
+			  <figcaption> ks = 5000</figcaption>
 			</div>
 			<div class="column">
-			  <img src="images/CBsphere_importance.png" width="480px" style="margin: 5px 5px 5px 5px;">
-			  <figcaption> CBspheres_lambertian.dae Importance Sampling </figcaption>
-			</div>
+				<img src="images/part3/ks50000.png" width="330px" style="margin: 5px 5px 5px 5px;">
+				<figcaption> ks = 500000 </figcaption>
+			  </div>
 		  </div>
 		  <p>
-			The images above were rendered with unfirom hemisphere sampling and importance sampling respectively. Comparing the images side by side with their counterparts, the ones that were rendered with uniform hemisphere sampling
-			appear more granier, with more noise rendered in the image - this is partly because it doesn’t distinguish between what ray is pointing to a light source. On the other hand, importance sampling produces a more smooth and clean image, 
-			because it considers whether a ray points to a light source and focuses on specific samples that would contribute more to the result. Both were rendered at a sampling rate of 16 pixels. 
+			For plane collision, it’s a similar process to the sphere collision. In this case, we want to check if the point mass moved from one side of the plane to the other. In other words, we want to check if the point mass intersected with the plane based on <code>pm.position</code> and <code>pm.last_position</code>. 
+			For those variables, we found their difference with the point on the plane. Taking those differences, we found their dot product with the plane’s normal respectively to determine which side of the plane they were on - if the dot products had opposite signs, it implied that an intersection with the plane did occur. 
+			We then calculated the tangent point based on the position of the point mass, the plane’s normal and the dot product between the plane’s normal and <code>pm.position - this->point</code> (point on the plane). The correction_vector was based on the difference between the tangent point and <code>pm.last_position</code> 
+			with the addition of a surface offset to account for a slight displacement above the tangent point. Finally, <code>pm.position</code> was updated the same as was done in the sphere. 
 		  </p>
-		  <p>
-			To showcase how noise levels in soft shadows differ with varying amount of light rays, we rendered wall-e.dae with the -l flag changed and with -s set to 1 (or 1 sample per pixel). This was done 
-			with light sampling.  
-		  </p>
-		  <div class="row">
-			<div class="column">
-			  <img src="images/task3_importance/walle_light_test_1_1.png" width="480px" style="margin: 5px 5px 5px 5px;">
-			  <figcaption> 1 light ray with wall-e.dae </figcaption>
-			</div>
-			<div class="column">
-			  <img src="images/task3_importance/walle_light_test_4_1.png" width="480px" style="margin: 5px 5px 5px 5px;">
-			  <figcaption> 4 light rays with wall-e.dae </figcaption>
-			</div>
+
+		  <p>Below is an image of the shaded cloth laying on the plane: </p>
+		  	
+		  <div id="centerImage">
+			<img src="images/part3/plane_rest.png" width="800px" style="margin: 5px 5px 5px 5px;">
+			<figcaption>Cloth laying (peacefully) on the plane</figcaption>	
 		  </div>
-		  <div class="row">
-			<div class="column">
-			  <img src="images/task3_importance/walle_light_test_16_1.png" width="480px" style="margin: 5px 5px 5px 5px;">
-			  <figcaption> 16 light rays with wall-e.dae </figcaption>
-			</div>
-			<div class="column">
-			  <img src="images/task3_importance/walle_light_test_64_1.png" width="480px" style="margin: 5px 5px 5px 5px;">
-			  <figcaption> 64 light rays with wall-e.dae </figcaption>
-			</div>
-		  </div>
-		  <p>
-			For each light sampling done, we changed the number of light rays between 1, 4, 16 and 64. As we increase the number of light rays in each image, the picture becomes less “grainy” and less dark spots appear on the figure. More specifically, it becomes more distinguishable where the shadow is 
-			(i.e. a little bit below wall-e’s figure). With less light rays, there is more noise and it’s harder to tell where the soft shadow is relative to the figure. And with more light rays, it's easier to tell where the soft shadows are with less noise being produced. 
-		  </p>
+			
 		
         <hr class="divider">
 
